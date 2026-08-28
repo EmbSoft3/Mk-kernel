@@ -1,0 +1,103 @@
+name: Build ARM Firmware
+
+# -----------------------------------------------------------------------------
+# Workflow triggers
+# -----------------------------------------------------------------------------
+# - Runs automatically on push to the main branch
+# - Runs on pull requests targeting main
+# - Can also be triggered manually from the GitHub Actions UI
+# -----------------------------------------------------------------------------
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.preset }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false   # les autres builds continuent si l'un échoue
+      matrix:
+        preset:
+          - release-eval2
+          - debug-eval2
+          - release-disco
+          - debug-disco
+
+    steps:
+      # -----------------------------------------------------------------------
+      # Step 1 - Checkout the current repository
+      # Retrieves the project source code so the workflow can build it.
+      # -----------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # -----------------------------------------------------------------------
+      # Step 2 - Install the ARM GCC toolchain
+      # Installs the ARM GNU compiler used to build the firmware.
+      # Version used: 10.3-2021.10
+      # -----------------------------------------------------------------------
+      - name: Install Arm GNU Toolchain (arm-none-eabi-gcc)
+        uses: carlosperate/arm-none-eabi-gcc-action@v1
+        with:
+          release: "10.3-2021.10"
+
+      # -----------------------------------------------------------------------
+      # Step 3 - Install CMake and Ninja
+      # Installs CMAke and Ninja toolkit.
+      # Version used: latest
+      # -----------------------------------------------------------------------
+
+      - name: Installer les dépendances
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            ninja-build \
+            cmake
+
+      # -----------------------------------------------------------------------
+      # Step 4 - Mark sym2srec as executable
+      # Git does not always preserve executable permissions on Linux.
+      # sym2srec is committed directly in the repository and must be
+      # executable before the Makefile calls it during the link step.
+      # -----------------------------------------------------------------------
+      - name: Set sym2srec executable permission
+        run: chmod +x Mk/Make/sym2srec
+
+      # -----------------------------------------------------------------------
+      # Step 5 - Configure
+      # -----------------------------------------------------------------------
+
+      - name: Configure (${{ matrix.preset }})
+        run: cmake --preset ${{ matrix.preset }}
+
+      # -----------------------------------------------------------------------
+      # Step 6 - Build the firmware 
+      # -----------------------------------------------------------------------
+      - name: Build (${{ matrix.preset }})
+        run: cmake --build --preset ${{ matrix.preset }}
+
+      # -----------------------------------------------------------------------
+      # Step 7 - Upload build artifacts
+      # Uploads the generated firmware files (.elf, .map) so they can
+      # be downloaded from the GitHub Actions interface.
+      #
+      # The step is skipped when running locally with "act" because artifact
+      # upload requires the GitHub runtime environment.
+      # -----------------------------------------------------------------------
+      - name: Upload artifacts (${{ matrix.preset }})
+        if: ${{ !env.ACT }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.preset }}
+          path: |
+            build/${{ matrix.preset }}/Mk.elf
+            build/${{ matrix.preset }}/Mk.map
+          if-no-files-found: error
+      

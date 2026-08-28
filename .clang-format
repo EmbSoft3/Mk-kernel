@@ -1,0 +1,127 @@
+---
+# ============================================================
+# .clang-format — Mk Style
+# ============================================================
+
+Language: C
+BasedOnStyle: LLVM
+
+# ----------------------------------------------------------
+# Indentation
+# ----------------------------------------------------------
+# 3 spaces, never tabs
+IndentWidth:        3
+TabWidth:           3
+UseTab:             Never
+ContinuationIndentWidth: 3
+
+# ----------------------------------------------------------
+# Braces — Allman style
+# Opening brace always on a new line,
+# for both functions and control blocks (if/for/while).
+# ----------------------------------------------------------
+BreakBeforeBraces: Allman
+
+# ----------------------------------------------------------
+# Spaces inside parentheses
+# Style : mk_func ( param1, param2 )
+# ----------------------------------------------------------
+# For clang-format >= 14
+SpacesInParens: Custom
+SpacesInParensOptions:
+  InConditionalStatements: true
+  InCStyleCasts:           true
+  InEmptyParentheses:      true
+  Other:                   true
+
+# For clang-format < 14 (backward compatibility)
+# SpacesInParentheses: true
+
+# Space between function/keyword name and opening parenthesis
+SpaceBeforeParens: Always
+
+# ----------------------------------------------------------
+# Pointers and references
+# Style : T_mkType* p_var  (star attached to the type)
+# ----------------------------------------------------------
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+# ----------------------------------------------------------
+# Spaces around operators and assignments
+# ----------------------------------------------------------
+SpaceBeforeAssignmentOperators: true
+SpaceAroundPointerQualifiers:   Default
+SpaceBeforeSquareBrackets:      true
+SpacesInSquareBrackets:         true
+SpaceAfterCStyleCast:           true
+
+# ----------------------------------------------------------
+# Line length
+# No strict limit in the project (lines can exceed 170 chars)
+# ----------------------------------------------------------
+ColumnLimit: 0
+
+# ----------------------------------------------------------
+# Trailing comments
+# Align /* ... */ comments to the same column
+# within consecutive declaration blocks (structs, enums, etc.)
+# ----------------------------------------------------------
+AlignTrailingComments:
+  Kind:            Always
+  OverEmptyLines:  0
+
+# ----------------------------------------------------------
+# Consecutive alignment
+# ----------------------------------------------------------
+AlignConsecutiveAssignments:  false
+AlignConsecutiveDeclarations: false
+AlignConsecutiveMacros:       false
+
+# ----------------------------------------------------------
+# Includes
+# Do not sort — #include order is semantic
+# ----------------------------------------------------------
+SortIncludes: Never
+IncludeBlocks: Preserve
+
+# ----------------------------------------------------------
+# Line breaks and empty lines
+# ----------------------------------------------------------
+MaxEmptyLinesToKeep:                    2
+KeepEmptyLinesAtTheStartOfBlocks:       false
+EmptyLineAfterAccessModifier:           Never
+EmptyLineBeforeAccessModifier:          LogicalBlock
+
+# ----------------------------------------------------------
+# Line wrapping in long expressions
+# ----------------------------------------------------------
+BreakBeforeBinaryOperators: None
+BreakBeforeTernaryOperators: true
+AlwaysBreakAfterReturnType: None
+
+# ----------------------------------------------------------
+# Initialization and parameter lists
+# ----------------------------------------------------------
+BinPackParameters:  false
+BinPackArguments:   false
+AllowAllParametersOfDeclarationOnNextLine: false
+
+# ----------------------------------------------------------
+# Short statements on a single line
+# Per project conventions: even empty blocks
+# use { /* Do nothing */ } spread across multiple lines.
+# ----------------------------------------------------------
+AllowShortBlocksOnASingleLine:      Never
+AllowShortFunctionsOnASingleLine:   None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine:       false
+AllowShortCaseLabelsOnASingleLine:  false
+
+# ----------------------------------------------------------
+# Miscellaneous
+# ----------------------------------------------------------
+SpacesBeforeTrailingComments: 1
+ReflowComments: false
+InsertTrailingCommas: None
+...
