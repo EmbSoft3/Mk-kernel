@@ -62,15 +62,6 @@ jobs:
             cmake
 
       # -----------------------------------------------------------------------
-      # Step 4 - Mark sym2srec as executable
-      # Git does not always preserve executable permissions on Linux.
-      # sym2srec is committed directly in the repository and must be
-      # executable before the Makefile calls it during the link step.
-      # -----------------------------------------------------------------------
-      - name: Set sym2srec executable permission
-        run: chmod +x Mk/Make/sym2srec
-
-      # -----------------------------------------------------------------------
       # Step 5 - Configure
       # -----------------------------------------------------------------------
 
