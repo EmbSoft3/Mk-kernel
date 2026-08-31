@@ -14,26 +14,8 @@
       "binaryDir": "${sourceDir}/build/${presetName}"
     },
     {
-      "name": "release-eval2",
-      "displayName": "Release — EVAL2",
-      "inherits": "base",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "BOARD": "EVAL2"
-      }
-    },
-    {
-      "name": "debug-eval2",
-      "displayName": "Debug — EVAL2",
-      "inherits": "base",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "BOARD": "EVAL2"
-      }
-    },
-    {
-      "name": "release-disco",
-      "displayName": "Release — DISCO_REV_C",
+      "name": "release",
+      "displayName": "Release",
       "inherits": "base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
@@ -41,8 +23,8 @@
       }
     },
     {
-      "name": "debug-disco",
-      "displayName": "Debug — DISCO_REV_C",
+      "name": "debug",
+      "displayName": "Debug",
       "inherits": "base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
@@ -52,20 +34,12 @@
   ],
   "buildPresets": [
     {
-      "name": "release-eval2",
-      "configurePreset": "release-eval2"
+      "name": "release",
+      "configurePreset": "release"
     },
     {
-      "name": "debug-eval2",
-      "configurePreset": "debug-eval2"
-    },
-    {
-      "name": "release-disco",
-      "configurePreset": "release-disco"
-    },
-    {
-      "name": "debug-disco",
-      "configurePreset": "debug-disco"
+      "name": "debug",
+      "configurePreset": "debug"
     }
   ]
 }

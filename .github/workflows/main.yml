@@ -25,10 +25,8 @@ jobs:
       fail-fast: false   # les autres builds continuent si l'un échoue
       matrix:
         preset:
-          - release-eval2
-          - debug-eval2
-          - release-disco
-          - debug-disco
+          - release
+          - debug
 
     steps:
       # -----------------------------------------------------------------------
