@@ -187,6 +187,39 @@ set(COMMON_OPTIONS
 )
 
 ################################################################################
+# Disable warning for specific files
+################################################################################
+
+set_source_files_properties(
+    Mk/Sources/Kernel/Handler/mk_handler_callbackFault.c
+    Mk/Sources/Kernel/Handler/mk_handler_busFault.c
+    Mk/Sources/Kernel/Handler/mk_handler_hardFault.c
+    Mk/Sources/Kernel/Handler/mk_handler_handleFault.c
+    Mk/Sources/Kernel/Handler/mk_handler_memFault.c
+    Mk/Sources/Kernel/Handler/mk_handler_fpuFault.c
+    Mk/Sources/Kernel/Handler/mk_handler_nmiFault.c
+    Mk/Sources/Kernel/Handler/mk_handler_rightFault.c
+    Mk/Sources/Kernel/Handler/mk_handler_kernelFault.c
+    Mk/Sources/Kernel/Handler/mk_handler_stackFault.c
+    Mk/Sources/Kernel/Handler/mk_handler_usageFault.c
+    Mk/Sources/Kernel/Scheduler/mk_scheduler_checkHealth.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultBusFaultHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultDebugMonHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultExceptionHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultHardFaultHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultMemManagementHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultNMIHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultPendSVHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultSVCHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultSystickHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultUsageFaultHandler.c
+    Mk/Sources/mk_recovery.c
+    Mk/Sources/mk_main.c
+    PROPERTIES
+    COMPILE_OPTIONS "-Wno-analyzer-infinite-loop"
+)
+
+################################################################################
 # Debug / Release options
 #
 # CMake automatically injects CMAKE_BUILD_TYPE into flags;
