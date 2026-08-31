@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -90,7 +90,7 @@ T_mkCode mk_pool_create ( T_mkPoolArea* p_mkArea, T_mkPool** p_mkPool, uint32_t 
    T_mkSVCObject* l_svcPnt;
 
    /* Déclaration des variables de travail */
-   uint32_t* l_base = ( uint32_t* ) ( p_mkArea->currentAddr ), *l_next = 0;
+   uint32_t* l_base = 0, *l_next = 0;
 
    /* Déclaration d'une variable stockant le statut d'interruption */
    uint32_t l_isr = mk_scheduler_isr ( );
@@ -101,6 +101,9 @@ T_mkCode mk_pool_create ( T_mkPoolArea* p_mkArea, T_mkPool** p_mkPool, uint32_t 
       /* Si les paramètres d'entrées sont valides */
       if ( ( p_mkArea != K_MK_NULL ) && ( p_mkPool != K_MK_NULL ) && ( p_mkCount != 0 ) )
       {
+         /* Initialisation de la variable contenant l'adresse de base de la pool */
+         l_base = ( uint32_t* ) ( p_mkArea->currentAddr );
+         
          /* Déclenchement d'une requête SVC */
          l_svcPnt = mk_pool_call ( p_mkArea, p_mkAreaType, p_mkSize, p_mkCount );
 

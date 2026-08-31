@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -72,7 +72,7 @@ T_mkCode mk_pool_init ( T_mkPoolArea* p_mkArea, T_mkPool* p_mkPool, uint32_t p_m
    T_mkCode l_result = K_MK_OK;
 
    /* Déclaration des variables de travail */
-   uint32_t* l_base = ( uint32_t* ) ( p_mkArea->currentAddr ), *l_next = 0;
+   uint32_t* l_base = 0, *l_next = 0;
 
    /* Si les paramètres d'entrées sont valides */
    if ( ( p_mkArea != K_MK_NULL ) && ( p_mkPool != K_MK_NULL ) && ( p_mkCount != 0 ) )
@@ -80,6 +80,9 @@ T_mkCode mk_pool_init ( T_mkPoolArea* p_mkArea, T_mkPool* p_mkPool, uint32_t p_m
       /* Si la zone mémoire peut être allouée */
       if (  ( l_base + ( p_mkSize * p_mkCount ) - 1 ) <= ( uint32_t* ) ( p_mkArea->lastAddr ) )
       {
+         /* Initialisation de la variable contenant l'adresse de base de la pool */
+         l_base = ( uint32_t* ) ( p_mkArea->currentAddr );
+
          /* Initialisation des attributs du gestionnaire d'allocation */
          mk_pool_setAttribute ( p_mkPool, p_mkAreaType, p_mkSize, p_mkCount );
 

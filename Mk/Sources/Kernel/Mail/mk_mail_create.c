@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -96,8 +96,8 @@ T_mkCode mk_mail_create ( T_mkMail** p_mkMail, uint32_t p_mkAreaType, T_mkPoolAr
    uint32_t l_counter;
 
    /* Configuration des pointeurs de travails */
-   uint32_t* l_itemArea = ( uint32_t* ) ( ( uint32_t* ) p_mkMsgArea->currentAddr ) + ( MK_MAIL_ITEM_SIZE );
-   uint32_t* l_dataArea = ( uint32_t* ) ( ( uint32_t* ) p_mkMsgArea->currentAddr ) + ( p_mkMsgNumber * MK_MAIL_ITEM_SIZE );
+   uint32_t* l_itemArea = 0;
+   uint32_t* l_dataArea = 0;
 
    /* Déclaration d'une variable stockant le statut d'interruption */
    uint32_t l_isr = mk_scheduler_isr ( );
@@ -109,6 +109,10 @@ T_mkCode mk_mail_create ( T_mkMail** p_mkMail, uint32_t p_mkAreaType, T_mkPoolAr
       if ( ( p_mkMail != K_MK_NULL ) && ( p_mkMsgArea != K_MK_NULL ) &&
            ( p_mkMsgSize != 0 ) && ( p_mkMsgNumber != 0 ) )
       {
+         /* Configuration des pointeurs de travails */
+         l_itemArea = ( uint32_t* ) ( ( uint32_t* ) p_mkMsgArea->currentAddr ) + ( MK_MAIL_ITEM_SIZE );
+         l_dataArea = ( uint32_t* ) ( ( uint32_t* ) p_mkMsgArea->currentAddr ) + ( p_mkMsgNumber * MK_MAIL_ITEM_SIZE );
+         
          /* Déclenchement d'une requête SVC */
          l_svcPnt = mk_mail_call ( p_mkMsgArea, p_mkAreaType, p_mkMsgSize, p_mkMsgNumber );
 
