@@ -1,6 +1,6 @@
 # Mk Kernel
 
-![License](https://img.shields.io/badge/license-BSD%203--Clause-blue) ![Platform](https://img.shields.io/badge/platform-STM32F746G--Eval2%20%7C%20DISCO-orange) ![Architecture](https://img.shields.io/badge/arch-Cortex--M7-green) ![Toolchain](https://img.shields.io/badge/toolchain-arm--none--eabi--gcc%2010.3-lightgrey) ![Language](https://img.shields.io/badge/language-C%20%2B%20ARM%20ASM-yellow)
+![License](https://img.shields.io/badge/license-BSD%203--Clause-blue) ![Platform](https://img.shields.io/badge/platform-STM32F74xxx%20%7C%20STM32F75xxx-orange) ![Architecture](https://img.shields.io/badge/arch-Cortex--M7-green) ![Toolchain](https://img.shields.io/badge/toolchain-arm--none--eabi--gcc%2015.3-lightgrey) ![Language](https://img.shields.io/badge/language-C%20%2B%20ARM%20ASM-yellow)
 
 The **Mk Kernel** is a bare-metal, zero-dependency Real-Time Operating System (RTOS) core written from scratch in C and ARM Thumb-2 assembly. Designed specifically for the **ARM Cortex-M7** processor (targeting the STM32F74xxx and STM32F75xxx MCU families), it sits at the **Foundation layer** of the Mk OS software ecosystem.
 
