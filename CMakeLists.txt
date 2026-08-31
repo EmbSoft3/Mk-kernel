@@ -204,15 +204,15 @@ set_source_files_properties(
     Mk/Sources/Kernel/Handler/mk_handler_usageFault.c
     Mk/Sources/Kernel/Scheduler/mk_scheduler_checkHealth.c
     Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultBusFaultHandler.c
-    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultDebugMonHandler.c
-    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultExceptionHandler.c
-    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultHardFaultHandler.c
-    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultMemManagementHandler.c
-    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultNMIHandler.c
-    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultPendSVHandler.c
-    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultSVCHandler.c
-    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultSystickHandler.c
-    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_defaultUsageFaultHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultDebugMonHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultExceptionHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultHardFaultHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultMemManagementHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultNMIHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultPendSVHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultSVCHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultSystickHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultUsageFaultHandler.c
     Mk/Sources/mk_recovery.c
     Mk/Sources/mk_main.c
     PROPERTIES
