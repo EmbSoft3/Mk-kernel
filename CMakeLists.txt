@@ -211,7 +211,7 @@ set_source_files_properties(
     Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultNMIHandler.c
     Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultPendSVHandler.c
     Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultSVCHandler.c
-    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultSystickHandler.c
+    Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultSysTickHandler.c
     Mk/Sources/Mcu/Peripherals/vectors/mk_peripheral_vector_DefaultUsageFaultHandler.c
     Mk/Sources/mk_recovery.c
     Mk/Sources/mk_main.c
