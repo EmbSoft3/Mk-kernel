@@ -33,7 +33,7 @@ It provides a deterministic execution environment with memory protection, hardwa
 
 ### Requirements
 
-- [GNU Arm Embedded Toolchain 10.3-2021.10](https://developer.arm.com/downloads/-/gnu-rm)
+- [GNU Arm Embedded Toolchain 15.3 (rel1)](https://developer.arm.com/downloads/-/gnu-rm)
 - CMake ≥ 3.25
 - Ninja
 
@@ -60,8 +60,7 @@ available:
    ```
 
    This produces in `build/<preset>/`:
-   - `Mk.elf` — full debug symbols
-   - `Mk.srec` — S-Record with embedded symbol table
+   - `Mk.elf` — programming file
    - `Mk.map` — linker map file
 
 ### Compiler versions used
@@ -80,8 +79,8 @@ using the [Cortex-Debug](https://github.com/Marus/cortex-debug) extension with J
 
 | Configuration | Type | Binary flashed |
 |---|---|---|
-| `Debug Mk (J-Link)` | Debug | `build/debug-eval2/Mk.elf` |
-| `Release Mk (J-Link)` | Release | `build/release-eval2/Mk.elf` |
+| `Debug Mk (J-Link)` | Debug | `build/debug/Mk.elf` |
+| `Release Mk (J-Link)` | Release | `build/release/Mk.elf` |
 
 All configurations require a J-Link probe (or a ST-Link flashed with the J-Link firmware) and
 the [J-Link Software](https://www.segger.com/downloads/jlink/) installed.

@@ -25,7 +25,7 @@ if(WIN32)
   # Adaptez ce chemin à votre installation Windows
   set(TOOLCHAIN_PATH $ENV{ARM_TOOLCHAIN_PATH} CACHE PATH "ARM toolchain path")
   if(NOT TOOLCHAIN_PATH)
-    set(TOOLCHAIN_PATH "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin")
+    set(TOOLCHAIN_PATH "C:/Program Files (x86)/GNU Arm Embedded Toolchain/15.3.rel1/bin")
   endif()
   set(TC_EXT ".exe")
 else()

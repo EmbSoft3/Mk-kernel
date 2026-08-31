@@ -39,12 +39,12 @@ jobs:
       # -----------------------------------------------------------------------
       # Step 2 - Install the ARM GCC toolchain
       # Installs the ARM GNU compiler used to build the firmware.
-      # Version used: 10.3-2021.10
+      # Version used: 15.3.Rel1
       # -----------------------------------------------------------------------
       - name: Install Arm GNU Toolchain (arm-none-eabi-gcc)
         uses: carlosperate/arm-none-eabi-gcc-action@v1
         with:
-          release: "10.3-2021.10"
+          release: "15.3.Rel1"
 
       # -----------------------------------------------------------------------
       # Step 3 - Install CMake and Ninja
