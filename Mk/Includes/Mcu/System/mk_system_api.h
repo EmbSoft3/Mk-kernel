@@ -90,7 +90,6 @@
 #include "mk_system_boot_constants.h"
 #include "mk_system_boot_data.h"
 #include "mk_system_boot.h"
-#include "mk_system_bsp.h"
 #include "mk_system_cache.h"
 #include "mk_system_clock_constants.h"
 #include "mk_system_clock.h"

@@ -127,6 +127,24 @@ T_sysCode mk_system_clock_enableLSE ( void );
 T_sysCode mk_system_clock_enablePLL ( void );
 
 /**
+ * @fn T_sysCode mk_system_clock_init ( void );
+ * @brief Cette fonction initialise les horloges du système. Elle désactive dans un premier temps l'ensemble des
+ *        horloges envoyées aux périphériques puis dans un second temps active l'oscillateur HSE et les PLLs. Ensuite,
+ *        elle modifie la source de l'horloge système en sélectionnant la PLL principale (PLL_MAIN).\n
+ *        Si un problème survient au niveau de l'activation de l'oscillateur HSE alors la fonction sélectionne
+ *        l'oscillateur HSI comme source des PLL.\n
+ *        Si un problème survient au niveau de l'activation des PLL, alors la fonction ne modifie pas la source de
+ *        l'horloge système (oscillateur HSI).\n
+ *        L'horloge des périphériques est activée uniquement si la fonction s'exécute sans erreur.
+ *
+ * @return Cette fonction retourne \ref K_SYS_OK si les horloges ont été configurées, sinon les valeurs
+ *         \ref K_SYS_ERROR_HSE, \ref K_SYS_ERROR_PLL, \ref K_SYS_ERROR_OVERDRIVE et/ou \ref K_SYS_ERROR_OVERDRIVE_SWITCH.
+ *
+ */
+
+T_sysCode mk_system_clock_init ( void );
+
+/**
  *
  */
 

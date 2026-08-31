@@ -28,73 +28,21 @@
 * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
-* @file mk_system_bsp_setPLL.c
-* @brief Définition de la fonction mk_system_bsp_setPLL.
+* @file mk_system_clock_setPLL.c
+* @brief Définition de la fonction mk_system_clock_setPLL.
 * @date 23 mars 2026
 *
 */
 
 #include "mk_system_api.h"
 
-/* Si compilation pour la carte EVAL2 */
-#if defined ( MK_BOARD_EVAL2 )
-
 /**
  * @internal
  * @brief
  * @endinternal
  */
 
-void mk_system_bsp_setPLL ( uint32_t p_source, uint32_t p_prescaler )
-{
-   /* Désactivation des trois PLLs */
-   clock_disablePLL ( K_CLOCK_PLL_MAIN | K_CLOCK_PLL_I2S | K_CLOCK_PLL_SAI );
-
-   /* Configuration de la source et du prédiveur des 3 PLLs. La fréquence d'entrée des VCOs est égale à : */
-   /* Freq ( VCO_IN ) = freq ( HSE ) / p_source = 25MHz / 25 = 1MHz */
-   /* Freq ( VCO_IN ) = freq ( HSI ) / p_source = 16MHz / 16 = 1MHz */
-   clock_selectPLLSource ( p_source, p_prescaler );
-
-   /* Configuration de la PLL principale ( N = 432, P = 2 et Q = 5 ) */
-   /* La fréquence de sortie du VCO est égale à : */
-   /* Freq ( VCO_OUT ) = N * freq ( VCO_IN ) = 432 * 1MHz = 432MHz */
-   /* Les fréquences des sorties PLLP et PLLQ sont égale à : */
-   /* Freq ( PLL_P ) = freq ( VCO_OUT ) / P = 432MHz / 2 = 216MHz */
-   /* Freq ( PLL_Q ) = freq ( VCO_OUT ) / Q = 432MHz / 9 = 48MHz */
-   clock_setMainPLL ( 432, 2, 9 );
-
-   /* Configuration de la PLL SAI ( N = 273, P = 8, R = 3 et Q = 12 ) */
-   /* La fréquence de sortie du VCO est égale à : */
-   /* Freq ( VCO_OUT ) = N * freq ( VCO_IN ) = 273 * 1MHz = 306MHz */
-   /* Les fréquences de sorties des SAI_P, SAI_Q et SAI_R sont égales à : */
-   /* Freq ( SAI_P ) = freq ( VCO_OUT ) / P = 273MHz / 8  = 34.125MHz */
-   /* Freq ( SAI_R ) = freq ( VCO_OUT ) / R = 273MHz / 3  = 91MHz */
-   /* Freq ( SAI_Q ) = freq ( VCO_OUT ) / Q = 273MHz / 12 = 22.75MHz */
-   clock_setSAIPLL ( 273, 3, 8, 12 );
-
-   /* Configuration de la PLL I2S ( N = 112, P = 8, R = 7 et Q = 8 ) */
-   /* La fréquence de sortie du VCO est égale à : */
-   /* Freq ( VCO_OUT ) = N * freq ( VCO_IN ) = 112 * 1MHz = 112MHz */
-   /* Les fréquences de sorties des I2S_P, I2S_Q et I2S_R sont égales à : */
-   /* Freq ( I2S_P ) = freq ( VCO_OUT ) / P = 112MHz / 8 = 14MHz */
-   /* Freq ( I2S_R ) = freq ( VCO_OUT ) / R = 112MHz / 7 = 16MHz */
-   /* Freq ( I2S_Q ) = freq ( VCO_OUT ) / Q = 112MHz / 8 = 14MHz */
-   clock_setI2SPLL ( 112, 7, 8, 8 );
-
-   /* Retour */
-   return;
-}
-
-/* Sinon si compilation pour la carte DISCO_REV_C */
-#elif defined ( MK_BOARD_DISCO_REV_C )
-
-/**
- * @internal
- * @brief
- * @endinternal
- */
-
-void mk_system_bsp_setPLL ( uint32_t p_source, uint32_t p_prescaler )
+void mk_system_clock_setPLL ( uint32_t p_source, uint32_t p_prescaler )
 {
    /* Désactivation des trois PLLs */
    clock_disablePLL ( K_CLOCK_PLL_MAIN | K_CLOCK_PLL_I2S | K_CLOCK_PLL_SAI );
@@ -133,9 +81,3 @@ void mk_system_bsp_setPLL ( uint32_t p_source, uint32_t p_prescaler )
    /* Retour */
    return;
 }
-
-/* Sinon erreur de compilation */
-#else
-#error "No board defined. Use BOARD=EVAL2 or BOARD=DISCO_REV_C in the Makefile"
-#endif
-

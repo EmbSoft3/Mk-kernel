@@ -28,16 +28,13 @@
 * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
-* @file mk_system_bsp_initClock.c
-* @brief Définition de la fonction mk_system_bsp_initClock.
+* @file mk_system_clock_init.c
+* @brief Définition de la fonction mk_system_clock_init.
 * @date 23 mars 2026
 *
 */
 
 #include "mk_system_api.h"
-
-/* Si carte EVAL2 ou DISCO_REV_C */
-#if ( defined ( MK_BOARD_EVAL2 ) || defined ( MK_BOARD_DISCO_REV_C ) )
 
 /**
  * @internal
@@ -45,7 +42,7 @@
  * @endinternal
  */
 
-T_sysCode mk_system_bsp_initClock ( void )
+T_sysCode mk_system_clock_init ( void )
 {
    /* Déclaration de la variable de retour */
    T_sysCode l_result;
@@ -67,7 +64,7 @@ T_sysCode mk_system_bsp_initClock ( void )
    {
       /* Configuration des trois PLL avec l'oscillateur HSE comme source */
       /* Configuration du diviseur de manière à fixé la fréquence des VCO à 1MHz */
-      mk_system_bsp_setPLL ( K_CLOCK_PLL_HSE, 25 );
+      mk_system_clock_setPLL ( K_CLOCK_PLL_HSE, 25 );
    }
 
    /* Sinon, l'oscillateur HSE n'est pas présent ou est défectueux */
@@ -75,7 +72,7 @@ T_sysCode mk_system_bsp_initClock ( void )
    {
       /* Configuration des trois PLL avec l'oscillateur HSE comme source */
       /* Configuration du diviseur de manière à fixé la fréquence des VCO à 1MHz */
-      mk_system_bsp_setPLL ( K_CLOCK_PLL_HSI, 16 );
+      mk_system_clock_setPLL ( K_CLOCK_PLL_HSI, 16 );
    }
 
    /* Configuration des sources d'horloge de chaque périphérique */
@@ -107,9 +104,4 @@ T_sysCode mk_system_bsp_initClock ( void )
    /* Retour */
    return ( l_result );
 }
-
-/* Sinon erreur de compilation */
-#else
-#error "No board defined. Use BOARD=EVAL2 or BOARD=DISCO_REV_C in the Makefile"
-#endif
 

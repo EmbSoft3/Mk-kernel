@@ -60,7 +60,7 @@ void mk_system_init ( void )
    mk_system_cache_init ( );
 
    /* Initialisation de l'arbre d'horloge */
-   l_result = mk_system_bsp_initClock ( );
+   l_result = mk_system_clock_init ( );
 
    /* Si l'initialisation du système a réussi */
    if ( l_result == K_SYS_OK )
