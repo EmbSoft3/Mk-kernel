@@ -15,7 +15,7 @@ It provides a deterministic execution environment with memory protection, hardwa
 - **Zero Dynamic Allocation**: Built entirely on fixed-size memory pools (`T_mkPool`), completely eliminating heap fragmentation and non-deterministic allocation delays.
 - **FPU Context Management**: Full support for floating-point (`K_MK_TYPE_FLOATING`) and non-floating-point tasks.
 - **Synchronization Primitives**: Semaphores, Mutexes (with priority inheritance), Event Fields, and Mailboxes.
-- **Zero-Latency Interrupts**: High-priority hardware interrupts are never masked by the kernel (`BASEPRI` masking).
+- **Zero-Latency Interrupts**: High-priority hardware interrupts (7 to 0) are never masked by the kernel (`BASEPRI` masking).
 - **Asynchronous Callback Manager**: Deferred execution engine handling up to 30 concurrent function callbacks via dedicated background tasks.
 - **Structured Fault Handling**: Built-in trap handlers for `HardFault`, `MemManage`, `BusFault`, `UsageFault`, and stack overflow detection.
 - **Zero External Dependencies**: Pure standalone implementation written in C and Assembly.
@@ -31,16 +31,6 @@ It provides a deterministic execution environment with memory protection, hardwa
 
 ## Build
 
-### Hardware targets
-
-Both boards are supported from the `main` branch. The target is selected at build time via the
-CMake preset:
-
-| Preset | Board | MCU |
-|--------|-------|-----|
-| `release-eval2` / `debug-eval2` | STM32F746G-Eval2 | STM32F746NG |
-| `release-disco` / `debug-disco` | STM32F746G-DISCO REV.C | STM32F746NG |
-
 ### Requirements
 
 - [GNU Arm Embedded Toolchain 10.3-2021.10](https://developer.arm.com/downloads/-/gnu-rm)
@@ -49,31 +39,28 @@ CMake preset:
 
 ### Build system
 
-The project uses **CMake** with **presets** defined in `CMakePresets.json`. Four presets are
+The project uses **CMake** with **presets** defined in `CMakePresets.json`. Two presets are
 available:
 
 | Preset | Board | Type |
 |--------|-------|------|
-| `release-eval2` | STM32F746G-Eval2 | Release (`-Ofast`) |
-| `debug-eval2` | STM32F746G-Eval2 | Debug (`-O0 -g3`) |
-| `release-disco` | STM32F746G-DISCO REV.C | Release (`-Ofast`) |
-| `debug-disco` | STM32F746G-DISCO REV.C | Debug (`-O0 -g3`) |
+| `release` | STM32F746G-Eval2 | Release (`-Ofast`) |
+| `debug` | STM32F746G-Eval2 | Debug (`-O0 -g3`) |
 
 ### Steps
 
 1. Configure the project using the desired preset:
    ```
-   cmake --preset debug-eval2
+   cmake --preset debug
    ```
 
 2. Build the firmware:
    ```
-   cmake --build --preset debug-eval2
+   cmake --build --preset debug
    ```
 
    This produces in `build/<preset>/`:
    - `Mk.elf` — full debug symbols
-   - `Mk-Strip.elf` — stripped binary
    - `Mk.srec` — S-Record with embedded symbol table
    - `Mk.map` — linker map file
 
@@ -91,19 +78,17 @@ available:
 Debug configurations for **VS Code** are included in the repository in `.vscode/launch.json`,
 using the [Cortex-Debug](https://github.com/Marus/cortex-debug) extension with J-Link:
 
-| Configuration | Board | Type | Binary flashed |
-|---|---|---|---|
-| `Debug Mk — EVAL2 (J-Link)` | STM32F746G-Eval2 | Debug | `build/debug-eval2/Mk.elf` |
-| `Debug Mk — DISCO (J-Link)` | STM32F746G-DISCO REV.C | Debug | `build/debug-disco/Mk.elf` |
-| `Release Mk — EVAL2 (J-Link)` | STM32F746G-Eval2 | Release | `build/release-eval2/Mk.elf` |
-| `Release Mk — DISCO (J-Link)` | STM32F746G-DISCO REV.C | Release | `build/release-disco/Mk.elf` |
+| Configuration | Type | Binary flashed |
+|---|---|---|
+| `Debug Mk (J-Link)` | Debug | `build/debug-eval2/Mk.elf` |
+| `Release Mk (J-Link)` | Release | `build/release-eval2/Mk.elf` |
 
 All configurations require a J-Link probe (or a ST-Link flashed with the J-Link firmware) and
 the [J-Link Software](https://www.segger.com/downloads/jlink/) installed.
 
 ## License
 
-Copyright © 2019-2026 **Mathieu Renard**. All rights reserved.
+Copyright © 2018-2026 **Mathieu Renard**. All rights reserved.
 
 This project is licensed under the **BSD 3-Clause License** — see the [LICENSE](LICENSE) file for
 details.
