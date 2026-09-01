@@ -53,8 +53,9 @@ void mk_scheduler_checkHealth ( void )
    {
       /* Si au moins une tâche est présente dans la liste alors que le bit correspondant */
       /* dans le registre de priorité n'est pas positionné */
-      if ( ( g_mkScheduler.readyList [ l_counter + 1 ].current != K_MK_NULL ) &&
-         ( ( g_mkScheduler.priorityRegister & ( uint32_t ) ( 1 << l_counter ) ) == 0 ) )
+      if ( ( g_mkScheduler.statusRegister.started == 1 ) &&
+           ( g_mkScheduler.readyList [ l_counter + 1 ].current != K_MK_NULL ) &&
+           ( ( g_mkScheduler.priorityRegister & ( uint32_t ) ( 1 << l_counter ) ) == 0 ) )
       {
          /* Une erreur grave vient de se produire */
          /* Boucle pour toujours */
