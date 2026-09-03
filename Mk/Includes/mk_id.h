@@ -38,68 +38,11 @@
 #define MK_ID_H
 
 /**
- * @note La plage 0x100 à 0x3FF est réservée aux terminaux.
+ * @def K_MK_TASK_ID_MY_TASK
+ * @brief Définition de l'identifiant de la tâche.
  */
 
-/**
- * @def K_MK_TASK_ID_ENGINE_PRIVILEGED_PAINTER
- * @brief Définition de l'indentifiant de la tâche 'painter' privilégiée. \n
- *        Cette constante peut être modifiée par l'utilisateur.
- */
-
-#define K_MK_TASK_ID_ENGINE_PRIVILEGED_PAINTER 0x00000400
-
-/**
- * @def K_MK_TASK_ID_ENGINE_UNPRIVILEGED_PAINTER
- * @brief Définition de l'indentifiant de la tâche 'painter' non privilégiée. \n
- *        Cette constante peut être modifiée par l'utilisateur.
- */
-
-#define K_MK_TASK_ID_ENGINE_UNPRIVILEGED_PAINTER 0x00000401
-
-/**
- * @def K_MK_TASK_ID_ENGINE_PRIVILEGED_LISTENER
- * @brief Définition de l'indentifiant de la tâche 'listener' privilégiée. \n
- *        Cette constante peut être modifiée par l'utilisateur.
- */
-
-#define K_MK_TASK_ID_ENGINE_PRIVILEGED_LISTENER 0x00000402
-
-/**
- * @def K_MK_TASK_ID_ENGINE_UNPRIVILEGED_LISTENER
- * @brief Définition de l'indentifiant de la tâche 'listener' non privilégiée. \n
- *        Cette constante peut être modifiée par l'utilisateur.
- */
-
-#define K_MK_TASK_ID_ENGINE_UNPRIVILEGED_LISTENER 0x00000403
-
-/**
- * @def K_MK_TASK_ID_ENGINE_HANDLER
- * @brief Définition de l'indentifiant de la tâche 'handler'. \n
- *        Cette constante peut être modifiée par l'utilisateur.
- */
-
-#define K_MK_TASK_ID_ENGINE_HANDLER 0x00000404
-
-/**
- * @def K_MK_TASK_ID_SUPERVISOR
- * @brief Définition de l'identifiant de la tâche 'supervisor'. \n
- *        Cette constante peut être modifiée par l'utilisateur.
- */
-
-#define K_MK_TASK_ID_SUPERVISOR 0x00000500
-
-/**
- * @def K_MK_TASK_ID_SHELL
- * @brief Définition de l'identifiant de la tâche 'CmdHandler'. \n
- *        Cette constante peut être modifiée par l'utilisateur.
- */
-
-#define K_MK_TASK_ID_SHELL 0x00000600
-
-/**
- *
- */
+#define K_MK_TASK_ID_MY_TASK 0x00000600
 
 /**
  *

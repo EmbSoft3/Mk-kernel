@@ -46,6 +46,59 @@
  * @endinternal
  */
 
+ /* Déclaration du buffer où sera stocké la tâche */
+ /* Celui-ci doit être dans une zone protégée */
+ K_MK_PRIVILEGED_DMA_MEMORY uint32_t l_privilegedStackBuf [ 512 ];
+
+/**
+ * @internal
+ * @brief
+ * @endinternal
+ */
+
+T_mkCode mk_task_init ( void ) {
+   
+   /* Déclaration d'une structure de contrôle permettant d'initialiser la tâche */
+   T_mkTaskCtrlBlock l_taskCtrlBlock;
+   
+   /* Déclaration d'un pointeur de stack */
+   T_mkStack l_stackPtr;
+
+   /* Déclaration d'un pointeur de tâches */
+   T_mkTask* l_task;
+
+   /* Configuration du registre de contrôle de la nouvelle tâche */
+   /* Type : tâche privilégiée non flottante */
+   /* Identifiant : K_MK_TASK_ID_MY_TASK */
+   /* Priorité : 10 */
+   /* Propriétaire : NULL */
+   T_mkCode l_result = mk_task_setTaskCtrlBlock ( &l_taskCtrlBlock, K_MK_TYPE_PRIVILEGED, K_MK_TASK_ID_MY_TASK, 10, K_MK_NULL );
+   
+   /* Si aucune erreur ne s'est produite */
+   if ( l_result == K_MK_OK )
+   {
+      /* Initialisation de la stack de la tâche */
+      l_result = mk_stack_create ( &l_stackPtr, K_MK_TYPE_DEFAULT, l_privilegedStackBuf, 512 );
+   }
+
+   /* Si aucune erreur ne s'est produite */
+   if ( l_result == K_MK_OK )
+   {
+      /* Création de la tâche */
+      /* Allocation statique */
+      l_result = mk_task_create ( &l_task, &l_stackPtr, K_MK_NULL, &l_taskCtrlBlock, mk_task_privileged, ( T_mkAddr ) "Hello world !" );
+   }
+
+   /* Retour */
+   return ( l_result );
+}
+
+/**
+ * @internal
+ * @brief
+ * @endinternal
+ */
+
 void mk_main ( void )
 {
    /* Si l'initialisation du système a échoué */
@@ -58,6 +111,9 @@ void mk_main ( void )
 
          /* Initialisation de la tâche de repos */
          mk_createIdle ( g_mkIdleStack, K_MK_TASK_IDLE_STACK_SIZE, mk_task_idle, ( T_mkAddr ) 'I' ) ||
+
+         /* Initialisation des tâches */
+         mk_task_init ( ) || 
 
          /* Lançement du noyau avec un tick de 1ms */
          mk_start ( 27000 ) )
@@ -93,6 +149,30 @@ void mk_task_idle ( T_mkAddr p_param )
    {
       /* Ne rien faire */
       _nop ( );
+   }
+
+   /* Retour */
+   return;
+}
+
+/**
+ * @internal
+ * @brief
+ * @endinternal
+ */
+
+void mk_task_privileged ( T_mkAddr p_param )
+{
+   /* Déclaration de la variable de retour */
+   T_mkCode l_result = K_MK_OK;
+
+   /* Suppression warning */
+   ( void ) p_param;
+
+   /* Boucle pour toujours... */
+   while ( 1 )
+   {
+      l_result |= mk_task_sleep ( 10 );
    }
 
    /* Retour */

@@ -74,6 +74,26 @@ void mk_recovery ( uint32_t p_hParam, uint32_t p_lParam );
 void mk_task_idle ( T_mkAddr p_param );
 
 /**
+ * @fn void mk_task_privileged ( T_mkAddr p_param );
+ * @brief Cette fonction est une tâche privilégiée non flottante.
+ * @param p_param Sans objet.
+ * @return Sans objet.
+ *
+ */
+
+void mk_task_privileged ( T_mkAddr p_param );
+
+/**
+ * @fn T_mkCode mk_task_init ( T_mkAddr p_param );
+ * @brief Cette fonction initialise les tâches de notre application.
+ * @param p_param Sans objet.
+ * @return Cf. fonctions
+ *
+ */
+
+T_mkCode mk_task_init ( void );
+
+/**
  *
  */
 
