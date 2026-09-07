@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -77,10 +77,16 @@ void mk_call_createPool ( T_mkSVCObject* p_mkObject )
    /* Déclaration d'une variable stockant l'adresse de la zone mémoire associée à la pool */
    T_mkPoolArea* l_area = p_mkObject->data [ K_MK_OFFSET_AREA ];
 
+   /* Déclaration d'une variable de travail */
+   uint32_t l_privilegedArea;
+
    /* Déclaration des variables stockant les caractéristiques de la pool */
    uint32_t l_type = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_AREA_TYPE ];
    uint32_t l_size = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_CHUNK_SIZE ];
    uint32_t l_count = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_CHUNK_COUNT ];
+
+   /* Déclaration d'une variable stockant le niveau d'exécution de la tâche courante*/
+   uint32_t l_right = _mk_scheduler_privileged ( );
 
    /* Actualisation de la variable de retour */
    p_mkObject->result = K_MK_OK;
@@ -88,17 +94,42 @@ void mk_call_createPool ( T_mkSVCObject* p_mkObject )
    /* Si les paramètres d'entrées sont valides */
    if ( ( l_area != K_MK_NULL ) && ( l_count != 0 ) )
    {
-      /* Si la zone mémoire peut être allouée */
-      if (  ( ( uint32_t* ) l_area->currentAddr + ( l_size * l_count ) - 1 ) <= ( uint32_t* ) ( l_area->lastAddr ) )
+      /* Récupération du type de la zone où la pool sera créée*/
+      l_privilegedArea = _mk_memory_isPrivilegedArea ( ( uint32_t* ) l_area->currentAddr );
+      l_privilegedArea |= _mk_memory_isPrivilegedArea ( ( uint32_t* ) l_area->lastAddr );
+      
+      /* Si la pool est dans une zone privilégiée et si l'appel système a été réalisé par une tâche non privilégiée */
+      if ( ( l_right == K_MK_MODE_THREAD ) && ( l_privilegedArea == K_MK_AREA_PROTECTED ) )
       {
-         /* Allocation d'une pool dans l'espace privilégié */
-         l_pool = mk_pool_alloc ( &g_mkAreaPool.pool, K_MK_POOL_CLEAR );
+         /* Déclenchement de la routine gérant les conflits */
+         mk_handler_rightFault ( );
 
-         /* Si aucune erreur ne s'est produite */
-         if ( l_pool != K_MK_NULL )
+         /* Actualisation de la variable de retour */
+         p_mkObject->result = K_MK_ERROR_RIGHT;
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Si la zone mémoire peut être allouée */
+         if (  ( ( uint32_t* ) l_area->currentAddr + ( l_size * l_count ) - 1 ) <= ( uint32_t* ) ( l_area->lastAddr ) )
          {
-            /* Initialisation de la pool */
-            mk_call_initPool ( l_pool, l_area, l_type, l_size, l_count );
+            /* Allocation d'une pool dans l'espace privilégié */
+            l_pool = mk_pool_alloc ( &g_mkAreaPool.pool, K_MK_POOL_CLEAR );
+
+            /* Si aucune erreur ne s'est produite */
+            if ( l_pool != K_MK_NULL )
+            {
+               /* Initialisation de la pool */
+               mk_call_initPool ( l_pool, l_area, l_type, l_size, l_count );
+            }
+
+            /* Sinon */
+            else
+            {
+               /* Actualisation de la variable de retour */
+               p_mkObject->result = K_MK_ERROR_MALLOC;
+            }
          }
 
          /* Sinon */
@@ -108,14 +139,7 @@ void mk_call_createPool ( T_mkSVCObject* p_mkObject )
             p_mkObject->result = K_MK_ERROR_MALLOC;
          }
       }
-
-      /* Sinon */
-      else
-      {
-         /* Actualisation de la variable de retour */
-         p_mkObject->result = K_MK_ERROR_MALLOC;
-      }
-   }
+  }
 
    /* Sinon */
    else
