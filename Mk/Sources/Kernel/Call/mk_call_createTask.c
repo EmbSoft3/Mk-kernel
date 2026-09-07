@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -330,8 +330,22 @@ void mk_call_createTask ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    /* Si la stack doit être allouée dynamiquement */
    if ( ( l_pool != K_MK_NULL ) && ( l_type & K_MK_TYPE_DYNAMIC ) == K_MK_TYPE_DYNAMIC )
    {
-      /* Analyse de la quantité de mémoire disponible dans la pool de stack */
-      l_stack =  mk_pool_available ( l_pool );
+      /* Vérification de la validité de l'instance */
+      p_mkObject->result = mk_call_isValidHandle ( ( T_mkAddr ) &g_mkAreaPool.poolArea [ 0 ], 
+         K_MK_SCHEDULER_MAX_NUMBER_OF_POOLS, sizeof ( T_mkPool ), ( T_mkAddr ) l_pool );
+      
+      /* Si la pool spécifiée par l'utilisateur est valide */
+      if ( p_mkObject->result == K_MK_OK )
+      {
+         /* Analyse de la quantité de mémoire disponible dans la pool de stack */
+         l_stack = mk_pool_available ( l_pool );
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }
    }
 
    /* Sinon */
@@ -340,22 +354,32 @@ void mk_call_createTask ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
       /* Ne rien faire */
    }
 
-   /* Analyse de la quantité de mémoire disponible dans la pool des tâches */
-   l_task = mk_pool_available ( &g_mkTaskPool.pool );
-
-   /* Si une tâche peut être allouée dynamiquement */
-   if ( ( l_task != K_MK_NULL ) && ( l_stack != K_MK_NULL ) )
+   /* Si la pool spécifiée par l'utilisateur est valide */
+   if ( p_mkObject->result == K_MK_OK )
    {
-      /* Exécution de la séquence de création de la tâche */
-      mk_call_executeCreate ( p_mkObject, p_mkStatus );
+      /* Analyse de la quantité de mémoire disponible dans la pool des tâches */
+      l_task = mk_pool_available ( &g_mkTaskPool.pool );
+
+      /* Si une tâche peut être allouée dynamiquement */
+      if ( ( l_task != K_MK_NULL ) && ( l_stack != K_MK_NULL ) )
+      {
+         /* Exécution de la séquence de création de la tâche */
+         mk_call_executeCreate ( p_mkObject, p_mkStatus );
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Actualisation de la variable de retour */
+         p_mkObject->result = K_MK_ERROR_MALLOC;
+      }
    }
 
    /* Sinon */
    else
    {
-      /* Actualisation de la variable de retour */
-      p_mkObject->result = K_MK_ERROR_MALLOC;
-   }
+      /* Ne rien faire */
+   }   
 
    /* Retour */
    return;
