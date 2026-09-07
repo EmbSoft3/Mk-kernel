@@ -77,6 +77,9 @@ void mk_call_createPool ( T_mkSVCObject* p_mkObject )
    /* Déclaration d'une variable stockant l'adresse de la zone mémoire associée à la pool */
    T_mkPoolArea* l_area = p_mkObject->data [ K_MK_OFFSET_AREA ];
 
+   /* Déclaration des variables de travail */
+   uint64_t l_bytesNeeded = 0, l_bytesAvailable = 0;
+
    /* Déclaration d'une variable de travail */
    uint32_t l_privilegedArea;
 
@@ -92,7 +95,7 @@ void mk_call_createPool ( T_mkSVCObject* p_mkObject )
    p_mkObject->result = K_MK_OK;
 
    /* Si les paramètres d'entrées sont valides */
-   if ( ( l_area != K_MK_NULL ) && ( l_count != 0 ) )
+   if ( ( l_area != K_MK_NULL ) && ( l_count != 0 ) && ( l_size != 0 ) )
    {
       /* Récupération du type de la zone où la pool sera créée*/
       l_privilegedArea = _mk_memory_isPrivilegedArea ( ( uint32_t* ) l_area->currentAddr );
@@ -112,16 +115,31 @@ void mk_call_createPool ( T_mkSVCObject* p_mkObject )
       else
       {
          /* Si la zone mémoire peut être allouée */
-         if (  ( ( uint32_t* ) l_area->currentAddr + ( l_size * l_count ) - 1 ) <= ( uint32_t* ) ( l_area->lastAddr ) )
+         if ( l_area->currentAddr <= l_area->lastAddr )
          {
-            /* Allocation d'une pool dans l'espace privilégié */
-            l_pool = mk_pool_alloc ( &g_mkAreaPool.pool, K_MK_POOL_CLEAR );
+            /* Vérification des arguments de l'utilisateur */
+            l_bytesNeeded    = ( uint64_t ) 4 * ( uint64_t ) l_size * ( uint64_t ) l_count;
+            l_bytesAvailable = ( uint64_t ) ( ( ( uint8_t* ) l_area->lastAddr - ( uint8_t* ) l_area->currentAddr ) + 4 );
 
-            /* Si aucune erreur ne s'est produite */
-            if ( l_pool != K_MK_NULL )
+            /* Si la zone mémoire peut être allouée */
+            if ( l_bytesAvailable >= l_bytesNeeded )
             {
-               /* Initialisation de la pool */
-               mk_call_initPool ( l_pool, l_area, l_type, l_size, l_count );
+               /* Allocation d'une pool dans l'espace privilégié */
+               l_pool = mk_pool_alloc ( &g_mkAreaPool.pool, K_MK_POOL_CLEAR );
+
+               /* Si aucune erreur ne s'est produite */
+               if ( l_pool != K_MK_NULL )
+               {
+                  /* Initialisation de la pool */
+                  mk_call_initPool ( l_pool, l_area, l_type, l_size, l_count );
+               }
+
+               /* Sinon */
+               else
+               {
+                  /* Actualisation de la variable de retour */
+                  p_mkObject->result = K_MK_ERROR_MALLOC;
+               }
             }
 
             /* Sinon */

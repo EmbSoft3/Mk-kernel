@@ -73,42 +73,58 @@ T_mkCode mk_pool_init ( T_mkPoolArea* p_mkArea, T_mkPool* p_mkPool, uint32_t p_m
 
    /* Déclaration des variables de travail */
    uint32_t* l_base = 0, *l_next = 0;
+   uint64_t l_bytesNeeded = 0, l_bytesAvailable = 0;
 
    /* Si les paramètres d'entrées sont valides */
-   if ( ( p_mkArea != K_MK_NULL ) && ( p_mkPool != K_MK_NULL ) && ( p_mkCount != 0 ) )
+   if ( ( p_mkArea != K_MK_NULL ) && ( p_mkPool != K_MK_NULL ) && ( p_mkCount != 0 ) && ( p_mkSize != 0 ) )
    {
       /* Initialisation de la variable contenant l'adresse de base de la pool */
       l_base = ( uint32_t* ) ( p_mkArea->currentAddr );
 
       /* Si la zone mémoire peut être allouée */
-      if (  ( l_base + ( p_mkSize * p_mkCount ) - 1 ) <= ( uint32_t* ) ( p_mkArea->lastAddr ) )
+      if ( p_mkArea->currentAddr <= p_mkArea->lastAddr )
       {
-         /* Initialisation des attributs du gestionnaire d'allocation */
-         mk_pool_setAttribute ( p_mkPool, p_mkAreaType, p_mkSize, p_mkCount );
-
-         /* Détermination de l'adresse du prochain bloc disponible dans la zone mémoire */
-         p_mkArea->currentAddr = ( uint32_t* ) ( p_mkArea->currentAddr ) + ( p_mkSize * p_mkCount );
-
-         /* Réalisation du chainage des blocs de taille fixe */
-         /* La chaine est réalisée directement dans les blocs mémoire non alloués */
-         /* Pour le nombre d'objets devant être alloués */
-         while ( p_mkCount != 0 )
+         /* Vérification des arguments de l'utilisateur */
+         l_bytesNeeded    = ( uint64_t ) 4 * ( uint64_t ) p_mkSize * ( uint64_t ) p_mkCount;
+         l_bytesAvailable = ( uint64_t ) ( ( ( uint8_t* ) p_mkArea->lastAddr - ( uint8_t* ) p_mkArea->currentAddr ) + 4 );
+         
+         /* Si la zone mémoire peut être allouée */
+         if ( l_bytesAvailable >= l_bytesNeeded )
          {
-            /* Configuration de l'adresse où se situe le prochain élément */
-            *l_base = ( uint32_t ) l_next;
+            /* Initialisation des attributs du gestionnaire d'allocation */
+            mk_pool_setAttribute ( p_mkPool, p_mkAreaType, p_mkSize, p_mkCount );
 
-            /* Actualisation de la valeur du prochain élément */
-            l_next = l_base;
+            /* Détermination de l'adresse du prochain bloc disponible dans la zone mémoire */
+            p_mkArea->currentAddr = ( uint32_t* ) ( p_mkArea->currentAddr ) + ( p_mkSize * p_mkCount );
 
-            /* Passage à l'élément suivant */
-            l_base = l_base + p_mkSize;
+            /* Réalisation du chainage des blocs de taille fixe */
+            /* La chaine est réalisée directement dans les blocs mémoire non alloués */
+            /* Pour le nombre d'objets devant être alloués */
+            while ( p_mkCount != 0 )
+            {
+               /* Configuration de l'adresse où se situe le prochain élément */
+               *l_base = ( uint32_t ) l_next;
 
-            /* Décrémentation du nombre d'objet */
-            p_mkCount--;
+               /* Actualisation de la valeur du prochain élément */
+               l_next = l_base;
+
+               /* Passage à l'élément suivant */
+               l_base = l_base + p_mkSize;
+
+               /* Décrémentation du nombre d'objet */
+               p_mkCount--;
+            }
+
+            /* Configuration de l'adresse du premier bloc de taille fixe disponible */
+            p_mkPool->current = l_base - p_mkSize;
          }
 
-         /* Configuration de l'adresse du premier bloc de taille fixe disponible */
-         p_mkPool->current = l_base - p_mkSize;
+         /* Sinon */
+         else
+         {
+            /* Actualisation de la variable de retour */
+            l_result = K_MK_ERROR_MALLOC;
+         }
       }
 
       /* Sinon */
