@@ -77,12 +77,12 @@ T_mkCode mk_pool_init ( T_mkPoolArea* p_mkArea, T_mkPool* p_mkPool, uint32_t p_m
    /* Si les paramètres d'entrées sont valides */
    if ( ( p_mkArea != K_MK_NULL ) && ( p_mkPool != K_MK_NULL ) && ( p_mkCount != 0 ) )
    {
+      /* Initialisation de la variable contenant l'adresse de base de la pool */
+      l_base = ( uint32_t* ) ( p_mkArea->currentAddr );
+
       /* Si la zone mémoire peut être allouée */
       if (  ( l_base + ( p_mkSize * p_mkCount ) - 1 ) <= ( uint32_t* ) ( p_mkArea->lastAddr ) )
       {
-         /* Initialisation de la variable contenant l'adresse de base de la pool */
-         l_base = ( uint32_t* ) ( p_mkArea->currentAddr );
-
          /* Initialisation des attributs du gestionnaire d'allocation */
          mk_pool_setAttribute ( p_mkPool, p_mkAreaType, p_mkSize, p_mkCount );
 
