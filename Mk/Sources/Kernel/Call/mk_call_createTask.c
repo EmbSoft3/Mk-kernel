@@ -112,54 +112,116 @@ static void mk_call_checkRight ( T_mkSVCObject* p_mkObject, T_mkTask* p_mkTask, 
  * @endinternal
  */
 
-static T_mkCode mk_call_createStack ( T_mkTask* p_mkTask, uint32_t p_mkType, uint32_t* p_mkStackAddr, uint32_t p_mkStackSize )
+static T_mkCode mk_call_createStack ( T_mkTask* p_mkTask, uint32_t p_mkType, uint32_t* p_mkStackAddr, uint32_t p_mkStackSize, uint32_t p_mkStatus )
 {
    /* Déclaration de la variable de retour */
-   T_mkCode l_result;
+   T_mkCode l_result = K_MK_OK;
 
    /* Déclaration d'un pointeur de pool */
    T_mkPool* l_pool = ( T_mkPool* ) ( p_mkStackAddr );
 
+   /* Déclaration des variables de travail */
+   uint32_t l_privilegedArea = 0, l_right = 0;
+   uint64_t l_startAddr = 0, l_lastAddr = 0;
+
+   /* Récupération du niveau d'exécution de la tâche courante*/
+   l_right = _mk_scheduler_privileged ( );
+
    /* Si la stack doit être allouée dynamiquement */
    if ( ( p_mkType & K_MK_TYPE_DYNAMIC ) == K_MK_TYPE_DYNAMIC )
    {
-      /* Récupération de l'adresse de la stack */
-      p_mkStackAddr = mk_pool_alloc ( l_pool, K_MK_POOL_NO_CLEAR );
-
-      /* Si l'allocation dynamique a réussi */
-      if ( p_mkStackAddr != K_MK_NULL )
+      /* Si une tâche non privilégiée tente d'accéder à une pool protégée */
+      if ( ( p_mkStatus == K_MK_ISR_NO ) && 
+           ( l_right == K_MK_MODE_THREAD ) && ( ( l_pool->type & K_MK_AREA_PROTECTED ) == K_MK_AREA_PROTECTED ) )
       {
-         /* Enregistrement de l'adresse de la pool */
-         p_mkTask->pool = l_pool;
+         /* Déclenchement de la routine gérant les erreurs de droits */
+         mk_handler_rightFault ( );
 
-         /* Initialisation de la stack */
-         l_result = mk_stack_create ( ( T_mkStack* ) &p_mkTask->stack, p_mkType & K_MK_TYPE_FLOATING , p_mkStackAddr, l_pool->size );
+         /* Actualisation de la variable de retour */
+         l_result = K_MK_ERROR_RIGHT;
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Récupération de l'adresse de la stack */
+         p_mkStackAddr = mk_pool_alloc ( l_pool, K_MK_POOL_NO_CLEAR );
+
+         /* Si l'allocation dynamique a réussi */
+         if ( p_mkStackAddr != K_MK_NULL )
+         {
+            /* Enregistrement de l'adresse de la pool */
+            p_mkTask->pool = l_pool;
+
+            /* Initialisation de la stack */
+            l_result = mk_stack_create ( ( T_mkStack* ) &p_mkTask->stack, p_mkType & K_MK_TYPE_FLOATING , p_mkStackAddr, l_pool->size );
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Actualisation de la variable de retour */
+            l_result = K_MK_ERROR_MALLOC;
+         }
+      }
+   }
+
+   /* Sinon */
+   else
+   {
+      /* Si les paramètres sont valides */
+      if ( ( p_mkStackAddr != K_MK_NULL ) && ( p_mkStackSize != 0 ) )
+      {
+         /* Détermination des adresses de début et de fin de la stack*/
+         l_startAddr = ( uint64_t ) ( uint32_t ) p_mkStackAddr;
+         l_lastAddr = l_startAddr + 4 * ( ( uint64_t ) p_mkStackSize - 1 );
+
+         /* Si la taille de stack ne provoque pas un débordement de l'espace mémoire */
+         if ( l_lastAddr < 0x100000000 )
+         {
+            /* Récupération du type de la zone où la stack sera créée */
+            l_privilegedArea  = _mk_memory_isPrivilegedArea ( p_mkStackAddr );
+            l_privilegedArea |= _mk_memory_isPrivilegedArea ( ( uint32_t* ) p_mkStackAddr + p_mkStackSize - 1 );
+            
+            /* Si une tâche non privilégiée tente d'accéder à une zone privilégiée */
+            if ( ( p_mkStatus == K_MK_ISR_NO ) && ( l_right == K_MK_MODE_THREAD ) && ( l_privilegedArea == K_MK_AREA_PROTECTED ) )
+            {
+               /* Déclenchement de la routine gérant les erreurs de droits */
+               mk_handler_rightFault ( );
+
+               /* Actualisation de la variable de retour */
+               l_result = K_MK_ERROR_RIGHT;
+            }
+
+            /* Sinon */
+            else
+            {
+               /* Initialisation de la stack */
+               l_result = mk_stack_create ( ( T_mkStack* ) &p_mkTask->stack, p_mkType & K_MK_TYPE_FLOATING , p_mkStackAddr, p_mkStackSize );
+            }
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Actualisation de la variable de retour */
+            l_result = K_MK_ERROR_PARAM;
+         }
       }
 
       /* Sinon */
       else
       {
          /* Actualisation de la variable de retour */
-         l_result = K_MK_ERROR_MALLOC;
-      }
-
-   }
-
-   /* Sinon */
-   else
-   {
-      /* Initialisation de la stack */
-      l_result = mk_stack_create ( ( T_mkStack* ) &p_mkTask->stack, p_mkType & K_MK_TYPE_FLOATING , p_mkStackAddr, p_mkStackSize );
+         l_result = K_MK_ERROR_PARAM;
+      }      
    }
 
    /* Si une erreur s'est produite */
-   if ( ( l_result != K_MK_OK ) || ( p_mkStackAddr == K_MK_NULL ) )
+   if ( l_result != K_MK_OK )
    {
       /* Libération de la mémoire allouée par la tâche */
       ( void ) mk_pool_free ( ( T_mkPool* ) &g_mkTaskPool.pool, ( T_mkAddr ) p_mkTask );
-
-      /* Actualisation de la variable de retour */
-      l_result = K_MK_ERROR_MALLOC;
    }
 
    /* Sinon */
@@ -244,7 +306,7 @@ static void mk_call_executeCreate ( T_mkSVCObject* p_mkObject, uint32_t p_mkStat
 
       /* Configuration de la stack */
       l_result = mk_call_createStack ( l_task, l_task->attribute.type, p_mkObject->data [ K_MK_OFFSET_STACK_BUF ],
-                                       ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_STACK_SIZE ] );
+                                       ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_STACK_SIZE ], p_mkStatus );
 
       /* Si la configuration de stack a réussi */
       if ( l_result == K_MK_OK )
