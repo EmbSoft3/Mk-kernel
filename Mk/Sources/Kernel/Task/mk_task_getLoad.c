@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -66,7 +66,7 @@ T_mkCode mk_task_getLoad ( T_mkTask* p_mkTask, uint32_t* p_mkTaskLoad )
          if ( l_right != K_MK_MODE_THREAD )
          {
             /* Entrée en section critique */
-            /* Cette fonction n'a aucun effet lorsqu'elle est exécutée dans un contexte non privilégié. */
+            /* Le contexte est obligatoirement privilégié */
             ( void ) _mk_scheduler_mask ( K_MK_SCHEDULER_MASK_PRIORITY );
 
             /* Si le taux de charge peut être calculé */
@@ -83,7 +83,6 @@ T_mkCode mk_task_getLoad ( T_mkTask* p_mkTask, uint32_t* p_mkTaskLoad )
             }
 
             /* Sortie de la section critique */
-            /* Cette fonction n'a aucun effet lorsqu'elle est exécutée dans un contexte non privilégié. */
             _mk_scheduler_unmask ( K_MK_SCHEDULER_IDLE_PRIORITY );
          }
 

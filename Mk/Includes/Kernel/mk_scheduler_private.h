@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -172,6 +172,21 @@ void mk_scheduler_checkHealth ( void );
 uint32_t _mk_scheduler_mask ( uint32_t p_priority );
 
 /**
+ * @fn uint32_t _mk_scheduler_maskFromIsr ( uint32_t p_priority );
+ * @brief Cette fonction exécute la fonction _mk_scheduler_mask() seulement si le processeur est en mode Thread.
+ *
+ * @param[in] p_priority Ce paramètre contient la valeur de la priorité à appliquer. Elle doit être comprise entre
+ *                       [0 et 15].
+ *
+ * @return Cette fonction retourne la valeur de priorité du registre BASEPRI avant l'écriture de la nouvelle valeur.
+ * @warning En raison d'un bug matériel, un patch logiciel est appliqué à cette fonction. La description est disponible
+ *          dans la définition de la fonction.
+ *
+ */
+
+uint32_t _mk_scheduler_maskFromIsr ( uint32_t p_priority );
+
+/**
  * @fn void _mk_scheduler_unmask ( uint32_t p_priority );
  * @brief Cette fonction démasque un ensemble d'interruptions. Les interruptions dont la priorité st inférieure ou égale
  *        à p_priority sont masquées (elles sont positionnées dans la fil d'attente du périphérique NVIC).
@@ -186,6 +201,21 @@ uint32_t _mk_scheduler_mask ( uint32_t p_priority );
  */
 
 void _mk_scheduler_unmask ( uint32_t p_priority );
+
+/**
+ * @fn uint32_t _mk_scheduler_unmaskFromIsr ( uint32_t p_priority );
+ * @brief Cette fonction exécute la fonction _mk_scheduler_unmask() seulement si le processeur est en mode Thread.
+ *
+ * @param[in] p_priority Ce paramètre contient la valeur de la priorité à appliquer. Elle doit être comprise entre
+ *                       [0 et 15].
+ *
+ * @return Sans objet.
+ * @warning En raison d'un bug matériel, un patch logiciel est appliqué à cette fonction. La description est disponible
+ *          dans la définition de la fonction.
+ *
+ */
+
+void _mk_scheduler_unmaskFromIsr ( uint32_t p_priority );
 
 /**
  * @fn uint32_t mk_scheduler_isr ( void );

@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -186,15 +186,15 @@ T_mkCode mk_task_create ( T_mkTask** p_mkHandle, T_mkStack* p_mkStack, T_mkPool*
          /* Entrée en section critique */
          /* La valeur du masque doit être récupérée car cette fonction peut être */
          /* exécutée dans un vecteur d'interruption. */
-         /* Cette fonction n'a aucun effet lorsqu'elle est exécutée dans un contexte non privilégié. */
-         l_mask = _mk_scheduler_mask ( K_MK_SCHEDULER_MASK_PRIORITY );
+         /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
+         l_mask = _mk_scheduler_maskFromIsr ( K_MK_SCHEDULER_MASK_PRIORITY );
 
          /* Déclenchement d'une requête SVC */
          l_svcPnt = mk_task_call ( p_mkStack, p_mkPool, p_mkAttribute, p_mkFunction, p_mkArg );
 
          /* Sortie de la section critique */
-         /* Cette fonction n'a aucun effet lorsqu'elle est exécutée dans un contexte non privilégié. */
-         _mk_scheduler_unmask ( l_mask );
+         /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
+         _mk_scheduler_unmaskFromIsr ( l_mask );
 
          /* Si l'appel système s'est correctement déroulé */
          if ( l_svcPnt->result == K_MK_OK )

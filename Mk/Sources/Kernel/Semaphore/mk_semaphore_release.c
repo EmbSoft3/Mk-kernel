@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -99,15 +99,15 @@ T_mkCode mk_semaphore_release ( T_mkSemaphore* p_mkSemaphore )
          /* Entrée en section critique */
          /* La valeur du masque doit être récupérée car cette fonction peut être */
          /* exécutée dans un vecteur d'interruption. */
-         /* Cette fonction n'a aucun effet lorsqu'elle est exécutée dans un contexte non privilégié. */
-         l_mask = _mk_scheduler_mask ( K_MK_SCHEDULER_MASK_PRIORITY );
+         /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
+         l_mask = _mk_scheduler_maskFromIsr ( K_MK_SCHEDULER_MASK_PRIORITY );
 
          /* Déclenchement d'une requête SVC */
          l_svcPnt = mk_semaphore_call ( p_mkSemaphore );
 
          /* Sortie de la section critique */
-         /* Cette fonction n'a aucun effet lorsqu'elle est exécutée dans un contexte non privilégié. */
-         _mk_scheduler_unmask ( l_mask );
+         /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
+         _mk_scheduler_unmaskFromIsr ( l_mask );
 
          /* Actualisation de la variable de retour */
          l_result = l_svcPnt->result;

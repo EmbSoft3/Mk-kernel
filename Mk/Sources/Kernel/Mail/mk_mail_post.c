@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -126,15 +126,15 @@ T_mkCode mk_mail_post ( T_mkMail* p_mkMail, T_mkAddr p_mkMessage, uint32_t p_sta
             /* Entrée en section critique */
             /* La valeur du masque doit être récupérée car cette fonction peut être */
             /* exécutée dans un vecteur d'interruption. */
-            /* Cette fonction n'a aucun effet lorsqu'elle est exécutée dans un contexte non privilégié. */
-            l_mask = _mk_scheduler_mask ( K_MK_SCHEDULER_MASK_PRIORITY );
+            /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
+            l_mask = _mk_scheduler_maskFromIsr ( K_MK_SCHEDULER_MASK_PRIORITY );
 
             /* Déclenchement d'une requête SVC */
             l_svcPnt = mk_mail_call ( p_mkMail, p_mkMessage, p_state, p_mkTick );
 
             /* Sortie de la section critique */
-            /* Cette fonction n'a aucun effet lorsqu'elle est exécutée dans un contexte non privilégié. */
-            _mk_scheduler_unmask ( l_mask );
+            /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
+            _mk_scheduler_unmaskFromIsr ( l_mask );
 
             /* Lorsque la tâche se reveille, deux situations peuvent se présenter : */
             /* - la tâche a posté le message, l'attribut "object" pointe sur la boite de messages. */

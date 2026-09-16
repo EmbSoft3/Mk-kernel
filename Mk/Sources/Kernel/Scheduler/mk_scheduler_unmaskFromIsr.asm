@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -28,13 +28,14 @@
 * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
-* @file mk_scheduler_pend.c
-* @brief Définition de la fonction mk_scheduler_pend.
-* @date 30 juin 2018
+* @file _mk_scheduler_unmaskFromIsr.asm
+* @brief Définition de la fonction _mk_scheduler_unmaskFromIsr.
+* @date 15 septembre 2026
 *
 */
 
-#include "mk_kernel_api.h"
+.cpu cortex-m7
+.syntax unified
 
 /**
  * @internal
@@ -42,18 +43,20 @@
  * @endinternal
  */
 
-void mk_scheduler_pend ( uint32_t p_mkStatus )
-{
-   /* Suppression warning */
-   ( void ) p_mkStatus;
+.thumb
+.thumb_func
+
+.align 4
+.global _mk_scheduler_unmaskFromIsr
+_mk_scheduler_unmaskFromIsr:
+
+   /* Si le CPU est en mode thread, on ne fait rien */
+   /* Sinon (IPSR != 0), on exécute la fonction de démasquage */
+   MRS R2, IPSR
+   CMP R2, #0
+   /* Si  */
+   BNE _mk_scheduler_unmask
    
-   /* Vérrouillage de la prochaine tâche qui sera exécutée */
-   g_mkScheduler.statusRegister.locked = 1;
-
-   /* Déclenchement d'un changement de contexte */
-   nvic_setPendingException ( K_NVIC_PENDING_PENDSV );
-
    /* Retour */
-   return;
-}
+   BX LR
 
