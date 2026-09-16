@@ -46,6 +46,14 @@
 extern T_mkSVCObject g_mkSVCObject;
 
 /**
+ * @fn T_mkSVCObject g_mkSVCMainObject;
+ * @brief Déclaration du gestionnaire SVC dédié à la tâche principale.
+ *
+ */
+
+extern T_mkSVCObject g_mkSVCMainObject;
+
+/**
  *
  */
 

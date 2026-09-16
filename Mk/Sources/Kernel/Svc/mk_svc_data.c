@@ -44,4 +44,12 @@
 
 K_MK_PRIVILEGED_MEMORY T_mkSVCObject g_mkSVCObject;
 
+/**
+ * @fn T_mkSVCObject g_mkSVCMainObject;
+ * @brief Déclaration du gestionnaire SVC dédié à la tâche principale.
+ *
+ */
+
+K_MK_PRIVILEGED_MEMORY T_mkSVCObject g_mkSVCMainObject;
+
 

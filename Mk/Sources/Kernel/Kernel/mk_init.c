@@ -109,11 +109,15 @@ static void mk_initFloatingPoint ( uint32_t p_type )
 
 static void mk_initMainTask ( uint32_t* p_stack, uint32_t p_stackSize )
 {
+  
    /* Initialisation des attributs de la stack principale */
     g_mkScheduler.main.stack.base = &p_stack [ p_stackSize - 1 ];
     g_mkScheduler.main.stack.end  = &p_stack [ 0 ];
     g_mkScheduler.main.stack.top  = g_mkScheduler.main.stack.base;
     g_mkScheduler.main.stack.size = p_stackSize;
+
+    /* Initialisation du pointeur SVC */
+    g_mkScheduler.main.svc = ( T_mkAddr ) &g_mkSVCMainObject;
 
     /* Initialisation du pointeur de pool */
     g_mkScheduler.main.pool = K_MK_NULL;

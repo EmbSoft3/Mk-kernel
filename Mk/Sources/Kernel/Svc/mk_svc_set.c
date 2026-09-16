@@ -66,17 +66,11 @@ T_mkSVCObject* mk_svc_set ( T_mkSVCObject* p_mkObject )
       _copy ( ( T_mkAddr ) &g_mkSVCObject, ( T_mkAddr ) p_mkObject, sizeof ( T_mkSVCObject ) );
    }
 
-   /* Sinon si le noyau n'est pas démarré */
-   else if ( g_mkScheduler.statusRegister.started == 0 )
-   {
-      /* Réalisation d'une copie de l'object SVC dans le gestionnaire dédié aux interruptions */
-      _copy ( ( T_mkAddr ) &g_mkSVCObject, ( T_mkAddr ) p_mkObject, sizeof ( T_mkSVCObject ) );
-   }
-
    /* Sinon */
    else
    {
       /* Réalisation d'une copie de l'object SVC dans le gestionnaire de la tâche courante */
+      /* Dans la situation où le noyau n'est pas démarré, la tâche courante est la tâche principale */
       _copy ( g_mkScheduler.currentTask->svc, ( T_mkAddr ) p_mkObject, sizeof ( T_mkSVCObject ) );
 
       /* Actualisation de la variable de retour */

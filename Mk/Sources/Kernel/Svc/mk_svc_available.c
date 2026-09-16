@@ -50,8 +50,8 @@ uint32_t mk_svc_available ( T_mkSVCObject** p_mkSVCObject )
    /* Initialisation du pointeur SVC */
    *p_mkSVCObject = &g_mkSVCObject;
 
-   /* Si l'appel système n'a pas été réalisé depuis un vecture d'interruption et si le noyau est démarrée */
-   if ( ( g_mkScheduler.statusRegister.isr == K_MK_ISR_NO ) && ( g_mkScheduler.statusRegister.started == 1 ) )
+   /* Si l'appel système n'a pas été réalisé depuis un vecture d'interruption */
+   if ( g_mkScheduler.statusRegister.isr == K_MK_ISR_NO )
    {
       /* L'objet SVC est stocké la structure de la tâche courante */
       *p_mkSVCObject = g_mkScheduler.currentTask->svc;
