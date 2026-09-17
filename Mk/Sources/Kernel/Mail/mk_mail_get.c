@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -101,19 +101,6 @@ static void mk_mail_setTaskAddr ( T_mkTask* p_mkTask, T_mkMail* p_mkMail )
 {
    /* Déclaration d'une instance SVC */
    T_mkSVCObject* l_svc = ( T_mkSVCObject* ) p_mkTask->svc;
-
-   /* Si l'appel système a été réalisé depuis un vecteur d'interruption */
-   if ( l_svc == K_MK_NULL )
-   {
-      /* Récupération de l'adresse du gestionnaire SVC d'interruption */
-      l_svc = &g_mkSVCObject;
-   }
-
-   /* Sinon */
-   else
-   {
-      /* Ne rien faire */
-   }
 
    /* Enregistrement de l'adresse de la tâche ayant postée le message */
    /* dans le gestionnaire SVC */
