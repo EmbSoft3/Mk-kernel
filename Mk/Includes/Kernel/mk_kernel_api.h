@@ -43,7 +43,6 @@
 
 #include "mk_types.h"
 #include "mk_binary.h"
-#include "mk_peripheral_math.h"
 #include "mk_peripheral_nvic_constants.h"
 #include "mk_peripheral_nvic.h"
 #include "mk_peripheral_fpu_constants.h"

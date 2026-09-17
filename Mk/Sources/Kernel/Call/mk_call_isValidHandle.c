@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -42,6 +42,18 @@
  * @endinternal
  */
 
+static uint32_t mk_call_modulo ( uint32_t p_value, uint32_t p_modulo )
+{
+   /* Détermination de la valeur du modulo */
+   return ( p_value - ( ( p_value / p_modulo ) * p_modulo ) );
+}
+
+/**
+ * @internal
+ * @brief
+ * @endinternal
+ */
+
 T_mkCode mk_call_isValidHandle ( T_mkAddr p_mkAreaAddr, uint32_t p_mkHandleNumber, uint32_t p_mkHandleSize, T_mkAddr p_mkHandle )
 {
    /* Déclaration de la variable de retour */
@@ -55,7 +67,7 @@ T_mkCode mk_call_isValidHandle ( T_mkAddr p_mkAreaAddr, uint32_t p_mkHandleNumbe
       ( ( uint8_t* ) p_mkHandle < ( ( uint8_t* ) p_mkAreaAddr + p_mkHandleNumber * p_mkHandleSize ) ) )
    {
       /* Vérification de l'alignement de l'adresse */
-      l_modulo = _math_mod ( ( uint32_t ) p_mkHandle - ( uint32_t ) p_mkAreaAddr, p_mkHandleSize );
+      l_modulo = mk_call_modulo ( ( uint32_t ) p_mkHandle - ( uint32_t ) p_mkAreaAddr, p_mkHandleSize );
 
       /* Si l'adresse est alignée */
       if ( l_modulo == 0 )
