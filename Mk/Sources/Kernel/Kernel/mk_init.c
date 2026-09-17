@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -158,6 +158,9 @@ static void mk_initIdleTask ( void )
    g_mkScheduler.idle.stack.end  = &g_mkIdleStack [ 0 ];
    g_mkScheduler.idle.stack.top  = g_mkScheduler.idle.stack.base;
    g_mkScheduler.idle.stack.size = K_MK_TASK_IDLE_STACK_SIZE;
+
+   /* Initialisation du pointeur SVC */
+   g_mkScheduler.idle.svc = ( T_mkAddr ) &g_mkSVCIdleObject;
 
    /* Initialisation du pointeur de pool */
    g_mkScheduler.idle.pool = K_MK_NULL;

@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -52,6 +52,14 @@ extern T_mkSVCObject g_mkSVCObject;
  */
 
 extern T_mkSVCObject g_mkSVCMainObject;
+
+/**
+ * @fn T_mkSVCObject g_mkSVCIdleObject;
+ * @brief Déclaration du gestionnaire SVC dédié à la tâche de repos.
+ *
+ */
+
+extern T_mkSVCObject g_mkSVCIdleObject;
 
 /**
  *
