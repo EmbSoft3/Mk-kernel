@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -28,13 +28,13 @@
 * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
-* @file mk_peripheral_nvic_disableRequest.c
+* @file mk_nvic_disableRequest.c
 * @brief Définition de la fonction nvic_disableRequest.
 * @date 24 janv. 2018
 *
 */
 
-#include "mk_peripheral_api.h"
+#include "mk_core_api.h"
 
 /**
  * @internal

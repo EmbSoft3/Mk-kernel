@@ -45,24 +45,29 @@
 #include "mk_peripheral_constants.h"
 #include "mk_peripheral_clock_constants.h"
 #include "mk_peripheral_clock.h"
-#include "mk_peripheral_core_constants.h"
-#include "mk_peripheral_core.h"
 #include "mk_peripheral_flash.h"
 #include "mk_peripheral_fmc_constants.h"
-#include "mk_peripheral_fpu_constants.h"
-#include "mk_peripheral_fpu.h"
 #include "mk_peripheral_gpio_constants.h"
 #include "mk_peripheral_gpio.h"
-#include "mk_peripheral_mpu_constants.h"
-#include "mk_peripheral_mpu.h"
-#include "mk_peripheral_nvic_constants.h"
-#include "mk_peripheral_nvic.h"
 #include "mk_peripheral_power.h"
 #include "mk_peripheral_reset_constants.h"
 #include "mk_peripheral_reset.h"
 #include "mk_peripheral_vectors_constants.h"
 #include "mk_peripheral_vectors_types.h"
 #include "mk_peripheral_vectors.h"
+
+/**
+ *
+ */
+
+#include "mk_core_constants.h"
+#include "mk_core.h"
+#include "mk_fpu_constants.h"
+#include "mk_fpu.h"
+#include "mk_mpu_constants.h"
+#include "mk_mpu.h"
+#include "mk_nvic_constants.h"
+#include "mk_nvic.h"
 
 /**
  *

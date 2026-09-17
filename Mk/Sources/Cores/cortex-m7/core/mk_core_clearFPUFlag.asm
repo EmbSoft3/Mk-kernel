@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2023 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2023-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -28,7 +28,7 @@
 * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
-* @file _cortex_clearFPUFlag.asm
+* @file mk_core_clearFPUFlag.asm
 * @brief Définition de la fonction _cortex_clearFPUFlag.
 * @date 17 avr. 2023
 *

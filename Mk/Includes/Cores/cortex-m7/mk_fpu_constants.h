@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -28,14 +28,14 @@
 * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
-* @file mk_peripheral_fpu_constants.h
+* @file mk_fpu_constants.h
 * @brief Déclaration des constantes dédiées au périphérique FPU.
 * @date 3 mars 2018
 *
 */
 
-#ifndef MK_PERIPHERAL_FPU_CONSTANTS_H
-#define MK_PERIPHERAL_FPU_CONSTANTS_H
+#ifndef MK_FPU_CONSTANTS_H
+#define MK_FPU_CONSTANTS_H
 
 /**
  * @def K_FPU_FPCCR

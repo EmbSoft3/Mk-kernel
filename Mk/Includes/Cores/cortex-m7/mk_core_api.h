@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -28,22 +28,36 @@
 * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
-* @file mk_core_getRevisionNumber.c
-* @brief Définition de la fonction cortex_getRevisionNumber.
-* @date 27 janv. 2018
+* @file mk_core_api.h
+* @brief Ce fichier contient les directives 'include' utilisées.
+* @date 17 septembre 2026
 *
 */
 
-#include "mk_core_api.h"
+#ifndef MK_CORE_API_H
+#define MK_CORE_API_H
 
 /**
- * @internal
- * @brief
- * @endinternal
+ *
  */
 
-uint32_t cortex_getRevisionNumber ( void )
-{
-   /* Lecture du registre SCB_CPUID */
-   return ( _getField ( K_CORE_CPUID, 0xF, 0 ) );
-}
+#include "mk_types.h"
+#include "mk_binary.h"
+#include "mk_core_constants.h"
+#include "mk_core.h"
+#include "mk_fpu_constants.h"
+#include "mk_fpu.h"
+#include "mk_mpu_constants.h"
+#include "mk_mpu.h"
+#include "mk_nvic_constants.h"
+#include "mk_nvic.h"
+#include "mk_systick_constants.h"
+#include "mk_systick.h"
+
+/**
+ *
+ */
+
+#endif
+
+
