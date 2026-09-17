@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -53,7 +53,7 @@
  *        Le noyau est initialisé en mode non flottant.
  */
 
-#define K_MK_STACK_MIN_SIZE_DEFAULT_MODE_DEFAULT_TYPE   ( 19 + K_MK_STACK_DEFAULT_STACK_PUSH )
+#define K_MK_STACK_MIN_SIZE_DEFAULT_MODE_DEFAULT_TYPE   ( 19 + K_MK_STACK_DEFAULT_STACK_PUSH + ( K_MK_SVC_OBJECT_FULL_SIZE >> 2 ) )
 
 /**
  * @def K_MK_STACK_MIN_SIZE_FLOATING_MODE_DEFAULT_TYPE
@@ -61,7 +61,7 @@
  *        Le noyau est initialisé en mode flottant.
  */
 
-#define K_MK_STACK_MIN_SIZE_FLOATING_MODE_DEFAULT_TYPE  ( 37 + K_MK_STACK_DEFAULT_STACK_PUSH )
+#define K_MK_STACK_MIN_SIZE_FLOATING_MODE_DEFAULT_TYPE  ( 37 + K_MK_STACK_DEFAULT_STACK_PUSH + ( K_MK_SVC_OBJECT_FULL_SIZE >> 2 ) )
 
 /**
  * @def K_MK_STACK_MIN_SIZE_FLOATING_MODE_FLOATING_TYPE
@@ -69,7 +69,7 @@
  *        Le noyau est initialisé en mode flottant.
  */
 
-#define K_MK_STACK_MIN_SIZE_FLOATING_MODE_FLOATING_TYPE ( 53 + K_MK_STACK_DEFAULT_STACK_PUSH )
+#define K_MK_STACK_MIN_SIZE_FLOATING_MODE_FLOATING_TYPE ( 53 + K_MK_STACK_DEFAULT_STACK_PUSH + ( K_MK_SVC_OBJECT_FULL_SIZE >> 2 ) )
 
 /**
  *

@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -50,7 +50,7 @@
  * @brief Définition de la taille d'un gestionnaire SVC [en octets].
  */
 
-#define K_MK_SVC_OBJECT_FULL_SIZE ( 4 + K_MK_SVC_OBJECT_SIZE ) * 4
+#define K_MK_SVC_OBJECT_FULL_SIZE ( ( 4 + K_MK_SVC_OBJECT_SIZE ) * 4 )
 
 /**
  *
