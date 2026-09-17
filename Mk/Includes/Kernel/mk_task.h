@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -83,8 +83,8 @@ T_mkCode mk_task_setTaskCtrlBlock ( T_mkTaskCtrlBlock* p_mkAttribute, uint32_t p
  * @return Cette fonction retourne un des codes suivants:
  *         \li \ref K_MK_OK           : la tâche a été démarrée.
  *         \li \ref K_MK_ERROR_PARAM  : la tâche n'a pas été démarrée car au moins un paramètre est invalide.
- *         \li \ref K_MK_ERROR_MALLOC : la tâche n'a pas été démarrée car le nombre de tâches maximales pouvant être allouées est atteint ou car la quantité de mémoire disponible dans le gestionnaire
- *                                      d'allocation de taille fixe est insuffisante.
+ *         \li \ref K_MK_ERROR_MALLOC : la tâche n'a pas été démarrée car le nombre de tâches maximales pouvant être allouées est atteint, la quantité de mémoire disponible dans le gestionnaire
+ *                                      d'allocation de taille fixe est insuffisante ou la taille de stack statique est insufisante.
  *         \li \ref K_MK_ERROR_RIGHT  : la tâche n'a pas été démarrée car une tâche de type non privilégié ne peut pas créer une tâche de type privilégié.
  *
  * @note Cette fonction peut être exécutée dans un vecteur d'interruption. Le paramètre "p_mkHandle" doit être nul dans ce cas de figure.

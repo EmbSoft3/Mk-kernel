@@ -88,6 +88,64 @@ static uint32_t mk_task_checkType ( uint32_t p_mkType )
  * @endinternal
  */
 
+static T_mkCode mk_task_checkStackSize ( T_mkStack* p_mkStack, T_mkPool* p_mkPool, uint32_t p_mkType )
+{
+   /* Déclaration de la variable de retour */
+   uint32_t l_result = K_MK_ERROR_MALLOC;
+
+   /* Déclaration d'une variable stockant la taille minimale de la stack */
+   uint32_t l_stackSize = mk_stack_getMinSize ( p_mkType );
+
+   /* Si la pile est statique */
+   if ( p_mkStack != K_MK_NULL )
+   {
+      /* Si la taille de stack est suffisante pour enregistrer un contexte */
+      if ( p_mkStack->size >= l_stackSize )
+      {
+         /* Actualisation de la variable de retour */
+         l_result = K_MK_OK;
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }
+   }
+
+   /* Sinon si la pile est allouée de manière dynamique */
+   else if ( p_mkPool != K_MK_NULL )
+   {
+      /* Si la taille de stack est suffisante pour enregistrer un contexte */
+      if ( p_mkPool->size >= l_stackSize )
+      {
+         /* Actualisation de la variable de retour */
+         l_result = K_MK_OK;
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }
+   }
+
+   /* Sinon */
+   else
+   {
+      /* Ne rien faire */
+   }
+
+   /* Retour */
+   return ( l_result );
+}
+
+/**
+ * @internal
+ * @brief
+ * @endinternal
+ */
+
 static T_mkSVCObject* mk_task_call ( T_mkStack* p_mkStack, T_mkPool* p_mkPool, T_mkTaskCtrlBlock* p_mkAttribute, T_mkAddress p_mkFunction, T_mkAddr p_mkArg )
 {
    /* Déclaration d'un gestionnaire SVC */
@@ -177,49 +235,63 @@ T_mkCode mk_task_create ( T_mkTask** p_mkHandle, T_mkStack* p_mkStack, T_mkPool*
       /* ne demande pas la création d'une tâche priviligiée. */
       if ( ( l_isr != K_MK_ISR_NO ) || ( l_right == K_MK_TYPE_PRIVILEGED ) )
       {
-         /* Initialisation du pointeur de tâche */
-         *p_mkHandle = 0;
+         /* Vérification de la taille de la pile */
+         l_result = mk_task_checkStackSize ( p_mkStack, p_mkPool, ( p_mkAttribute->type & K_MK_TYPE_FLOATING ) );
 
-         /* Remise à zéro des bits du champ Type non utilisés */
-         p_mkAttribute->type &= ( K_MK_TYPE_FLOATING_PRIVILEGED );
-
-         /* Entrée en section critique */
-         /* La valeur du masque doit être récupérée car cette fonction peut être */
-         /* exécutée dans un vecteur d'interruption. */
-         /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
-         l_mask = _mk_scheduler_maskFromIsr ( K_MK_SCHEDULER_MASK_PRIORITY );
-
-         /* Déclenchement d'une requête SVC */
-         l_svcPnt = mk_task_call ( p_mkStack, p_mkPool, p_mkAttribute, p_mkFunction, p_mkArg );
-
-         /* Sortie de la section critique */
-         /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
-         _mk_scheduler_unmaskFromIsr ( l_mask );
-
-         /* Si l'appel système s'est correctement déroulé */
-         if ( l_svcPnt->result == K_MK_OK )
+         /* Si la taille est valide */
+         if ( l_result == K_MK_OK )
          {
-            /* Analyse du résultat de l'appel système */
-            if ( ( l_svcPnt->handle == K_MK_NULL ) )
+            /* Initialisation du pointeur de tâche */
+            *p_mkHandle = 0;
+
+            /* Remise à zéro des bits du champ Type non utilisés */
+            p_mkAttribute->type &= ( K_MK_TYPE_FLOATING_PRIVILEGED );
+
+            /* Entrée en section critique */
+            /* La valeur du masque doit être récupérée car cette fonction peut être */
+            /* exécutée dans un vecteur d'interruption. */
+            /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
+            l_mask = _mk_scheduler_maskFromIsr ( K_MK_SCHEDULER_MASK_PRIORITY );
+
+            /* Déclenchement d'une requête SVC */
+            l_svcPnt = mk_task_call ( p_mkStack, p_mkPool, p_mkAttribute, p_mkFunction, p_mkArg );
+
+            /* Sortie de la section critique */
+            /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
+            _mk_scheduler_unmaskFromIsr ( l_mask );
+
+            /* Si l'appel système s'est correctement déroulé */
+            if ( l_svcPnt->result == K_MK_OK )
             {
-               /* Actualisation de la variable de retour */
-               l_result = K_MK_ERROR_MALLOC;
+               /* Analyse du résultat de l'appel système */
+               if ( ( l_svcPnt->handle == K_MK_NULL ) )
+               {
+                  /* Actualisation de la variable de retour */
+                  l_result = K_MK_ERROR_MALLOC;
+               }
+
+               /* Sinon */
+               else
+               {
+                  /* Récupération de l'instance de la tâche */
+                  *p_mkHandle = l_svcPnt->handle;
+               }
             }
 
             /* Sinon */
             else
             {
-               /* Récupération de l'instance de la tâche */
-               *p_mkHandle = l_svcPnt->handle;
+               /* Actualisation de la variable de retour */
+               l_result = l_svcPnt->result;
             }
          }
 
          /* Sinon */
          else
          {
-            /* Actualisation de la variable de retour */
-            l_result = l_svcPnt->result;
-         }
+            /* Ne rien faire */
+            /* L'erreur K_MK_ERROR_MALLOC est déjà configurée */
+         }         
       }
 
       /* Sinon */

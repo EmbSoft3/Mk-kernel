@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -28,9 +28,9 @@
 * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
-* @file mk_stack_create.c
-* @brief Définition de la fonction mk_stack_init.
-* @date 10 mars 2018
+* @file mk_stack_getMinSize.c
+* @brief Définition de la fonction mk_stack_getMinSize.
+* @date 19 septembre 2026
 *
 */
 
@@ -42,40 +42,33 @@
  * @endinternal
  */
 
-T_mkCode mk_stack_create ( T_mkStack* p_mkStack, uint32_t p_mkType, uint32_t* p_mkAddress, uint32_t p_mkSize )
+uint32_t mk_stack_getMinSize ( uint32_t p_mkType )
 {
    /* Déclaration de la variable de retour */
-   T_mkCode l_result = K_MK_OK;
+   uint32_t l_result = K_MK_STACK_MIN_SIZE_DEFAULT_MODE_DEFAULT_TYPE;
 
-   /* Déclaration d'une variable stockant la taille minimale de la stack */
-   uint32_t l_stackSize = mk_stack_getMinSize ( p_mkType );
-
-   /* Si le noyau est initialisé */
-   if ( g_mkScheduler.statusRegister.initialized == 1 )
+   /* Si le noyau est configuré en mode flottant */
+   if ( g_mkScheduler.statusRegister.type == K_MK_MODE_FLOATING )
    {
-      /* Si les paramètres d'entrées sont valides */
-      if ( ( p_mkStack != K_MK_NULL ) && ( p_mkAddress != K_MK_NULL ) && ( p_mkSize >= l_stackSize ) )
+      /* Si le type de la tâche est flottant */
+      if ( p_mkType == K_MK_TYPE_FLOATING )
       {
-         /* Initialisation de la stack */
-         p_mkStack->top  = ( p_mkAddress + p_mkSize - 1 );
-         p_mkStack->base = ( p_mkStack->top );
-         p_mkStack->end  = ( p_mkAddress );
-         p_mkStack->size = ( p_mkSize );
+         /* Ecriture de la taille minimal de la stack dans la variable de retour */
+         l_result = K_MK_STACK_MIN_SIZE_FLOATING_MODE_FLOATING_TYPE;
       }
 
       /* Sinon */
       else
       {
-         /* Actualisation de la variable de retour */
-         l_result = K_MK_ERROR_PARAM;
+         /* Ecriture de la taille minimal de la stack dans la variable de retour */
+         l_result = K_MK_STACK_MIN_SIZE_FLOATING_MODE_DEFAULT_TYPE;
       }
    }
 
    /* Sinon */
    else
    {
-      /* Actualisation de la variable de retour */
-      l_result = K_MK_ERROR_INIT;
+      /* Ne rien faire */
    }
 
    /* Retour */

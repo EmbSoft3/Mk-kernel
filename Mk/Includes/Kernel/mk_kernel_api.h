@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2024 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2024-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -64,12 +64,13 @@
 #include "mk_pool.h"
 #include "mk_list_types.h"
 #include "mk_list_private.h"
-#include "mk_stack_constants.h"
-#include "mk_stack.h"
 #include "mk_svc_constants.h"
 #include "mk_svc_types.h"
 #include "mk_svc_data.h"
 #include "mk_svc_private.h"
+#include "mk_stack_constants.h"
+#include "mk_stack_private.h"
+#include "mk_stack.h"
 #include "mk_event_constants.h"
 #include "mk_event_types.h"
 #include "mk_event.h"
