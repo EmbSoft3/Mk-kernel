@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2024 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2024-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -36,19 +36,6 @@
 
 #ifndef MK_MEMORY_PRIVATE_H
 #define MK_MEMORY_PRIVATE_H
-
-/**
- * @fn uint32_t _mk_memory_isDmaArea ( T_mkAddr p_mkHandle );
- * @brief Cette fonction vérifie si une adresse mémoire mémoire est dans un espace DMA ou non.
- * @param[in] p_mkHandle Ce paramètre contient une adresse 32bits.
- *
- * @return Cette fonction retourne une des valeurs suivantes :
- *         \li La valeur \ref K_MK_AREA_CACHEABLE si l'instance n'est pas située dans l'espace DMA.
- *         \li La valeur \ref K_MK_AREA_DMA si l'instance est située dans l'espace DMA.
- *
- */
-
-uint32_t _mk_memory_isDmaArea ( T_mkAddr p_mkHandle );
 
 /**
  * @fn uint32_t _mk_memory_isPrivilegedArea ( T_mkAddr p_mkHandle );

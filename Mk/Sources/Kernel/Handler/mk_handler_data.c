@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2023 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2023-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -42,5 +42,5 @@
  *
  */
 
-K_MK_PRIVILEGED_MEMORY T_mkKernelCallback g_mkKernelCallback ;
+K_MK_PRIVILEGED_RO_MEMORY T_mkKernelCallback g_mkKernelCallback ;
 

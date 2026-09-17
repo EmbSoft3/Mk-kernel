@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -69,7 +69,7 @@ _vector_resetHandler:
    SUBS  R3, R1, R0
 
    1:
-   /* Ecriture du pattern dans l'intégralité de la section BSS */
+   /* Ecriture du pattern dans l'intégralité de la section */
    /* non privilégiée */
    BEQ 2f
    SUBS R3, R3, #0x04
@@ -78,9 +78,9 @@ _vector_resetHandler:
 
    2:
    /* Récupération de l'adresse de début et de fin de la section BSS */
-   /* privilégiée */
-   LDR R0, =K_PRIVILEGED_BSS_START_ADDR
-   LDR R1, =K_PRIVILEGED_BSS_END_ADDR
+   /* non privilégiée */
+   LDR R0, =K_UNPRIVILEGED_BSS_START_ADDR
+   LDR R1, =K_UNPRIVILEGED_BSS_END_ADDR
 
    /* Création du pattern à écrire dans la section */
    MOV R2, #0x00
@@ -90,8 +90,8 @@ _vector_resetHandler:
    SUBS  R3, R1, R0
 
    1:
-   /* Ecriture du pattern dans l'intégralité de la section BSS */
-   /* privilégiée */
+   /* Ecriture du pattern dans l'intégralité de la section */
+   /* non privilégiée */
    BEQ 2f
    SUBS R3, R3, #0x04
    STR R2, [ R0, R3 ]
@@ -111,7 +111,7 @@ _vector_resetHandler:
    SUBS  R3, R1, R0
 
    1:
-   /* Ecriture du pattern dans l'intégralité de la section BSS */
+   /* Ecriture du pattern dans l'intégralité de la section */
    /* privilégiée */
    BEQ 2f
    SUBS R3, R3, #0x04
@@ -121,12 +121,12 @@ _vector_resetHandler:
 
    2:
    /* Récupération de l'adresse de début et de fin des données initialisées */
-   LDR R0, =K_PRIVILEGED_DATA_START_ADDR
-   LDR R1, =K_PRIVILEGED_DATA_END_ADDR
+   LDR R0, =K_UNPRIVILEGED_DATA_START_ADDR
+   LDR R1, =K_UNPRIVILEGED_DATA_END_ADDR
 
    /* Récupération de l'adresse de début des données initialisée en */
    /* FLASH */
-   LDR R2, =K_PRIVILEGED_DATA_START_FLASH_ADDR
+   LDR R2, =K_UNPRIVILEGED_DATA_START_FLASH_ADDR
 
    /* Détermination de la taille de la section */
    /* R3 = R1 - R0 */

@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -40,61 +40,57 @@
 
 /**
  * @def K_MK_PRIVILEGED_MEMORY
- * @brief Cette constante définit la zone mémoire où les données priviligiées doivent être allouées. \n
+ * @brief Cette constante définit la zone mémoire où les données priviligiées doivent être allouées. \n 
+ *        Une tâche non privilégiée ne peut pas accéder cette zone mémoire. \n
  *        L'adresse de cette section peut être modifiée dans le fichier d'édition de lien.
  */
 
 #define K_MK_PRIVILEGED_MEMORY __attribute__ ((section(".mk_privileged_memory"), aligned(4), used))
 
 /**
- * @def K_MK_PRIVILEGED_STATIC_MEMORY
- * @brief Cette constante définit la zone mémoire où les données statiques priviligiées doivent être allouées. \n
+ * @def K_MK_PRIVILEGED_RO_MEMORY
+ * @brief Cette constante définit la zone mémoire où les données priviligiées doivent être allouées. \n 
+ *        Une tâche non privilégiée peut accéder cette zone mémoire en lecture seulement. \n
  *        L'adresse de cette section peut être modifiée dans le fichier d'édition de lien.
  */
 
-#define K_MK_PRIVILEGED_STATIC_MEMORY __attribute__ ((section(".mk_privileged_data_memory"), aligned(4), used)) static
+#define K_MK_PRIVILEGED_RO_MEMORY __attribute__ ((section(".mk_privileged_ro_memory"), aligned(4), used))
 
 /**
  * @def K_MK_PRIVILEGED_DMA_MEMORY
  * @brief Cette constante définit la zone mémoire où les données priviligiées DMA doivent être allouées. \n
+ *        Une tâche non privilégiée ne peut pas accéder cette zone mémoire. \n
  *        L'adresse de cette section peut être modifiée dans le fichier d'édition de lien.
  */
 
 #define K_MK_PRIVILEGED_DMA_MEMORY __attribute__ ((section(".mk_privileged_dma_memory"), aligned(4), used))
 
 /**
- * @def K_MK_PRIVILEGED_FONT_MEMORY
- * @brief Cette constante définit la zone mémoire où les polices de caractères doivent être allouées. \n
- *        L'adresse de cette section peut être modifiée dans le fichier d'édition de lien.
- *        On utilise l'attribut ('.rodata') plutôt que 'const' afin de pouvoir changer la localisation des polices
- *        de caractères plus simplement.
- */
-
-#define K_MK_PRIVILEGED_FONT_MEMORY __attribute__ ((section(".mk_privileged_font_memory"), aligned(4), used))
-
-/**
- * @def K_MK_PRIVILEGED_QSPI_MEMORY
- * @brief Cette constante définit la zone mémoire où les données priviligiées QSPI doivent être allouées. \n
- *        L'adresse de cette section peut être modifiée dans le fichier d'édition de lien.
- */
-
-#define K_MK_PRIVILEGED_QSPI_MEMORY __attribute__ ((section(".mk_privileged_qspi_memory"), aligned(4), used))
-
-/**
  * @def K_MK_PRIVILEGED_MEMORY
  * @brief Cette constante définit la zone mémoire où les données non priviligiées doivent être allouées. \n
+ *        Une tâche non privilégiée peut accéder cette zone mémoire en lecture/écriture.. \n
  *        L'adresse de cette section peut être modifiée dans le fichier d'édition de lien.
  */
 
 #define K_MK_UNPRIVILEGED_MEMORY __attribute__ ((section(".mk_unprivileged_memory"), aligned(4), used))
 
 /**
- * @def K_MK_UNPRIVILEGED_DMA_MEMORY
- * @brief Cette constante définit la zone mémoire où les données non priviligiées DMA doivent être allouées. \n
+ * @def K_MK_UNPRIVILEGED_STATIC_MEMORY
+ * @brief Cette constante définit la zone mémoire où les données statiques initialisée doivent être allouées. \n
+ *        Une tâche non privilégiée peut accéder cette zone mémoire en lecture/écriture. \n
  *        L'adresse de cette section peut être modifiée dans le fichier d'édition de lien.
  */
 
-#define K_MK_UNPRIVILEGED_DMA_MEMORY __attribute__ ((section(".mk_unprivileged_dma_memory"), aligned(4), used))
+#define K_MK_UNPRIVILEGED_STATIC_MEMORY __attribute__ ((section(".mk_unprivileged_data_memory"), aligned(4), used)) static
+
+/**
+ * @def K_MK_UNPRIVILEGED_BSS_MEMORY
+ * @brief Cette constante définit la zone mémoire où les données statiques non initialisée doivent être allouées. \n
+ *        Une tâche non privilégiée peut accéder cette zone mémoire en lecture/écriture. \n
+ *        L'adresse de cette section peut être modifiée dans le fichier d'édition de lien.
+ */
+
+#define K_MK_UNPRIVILEGED_BSS_MEMORY __attribute__ ((section(".mk_unprivileged_bss_memory"), aligned(4), used))
 
 /**
  *

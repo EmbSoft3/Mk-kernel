@@ -42,7 +42,7 @@
  *
  */
 
-K_MK_PRIVILEGED_MEMORY T_mkSVCObject g_mkSVCObject;
+K_MK_PRIVILEGED_RO_MEMORY T_mkSVCObject g_mkSVCObject;
 
 /**
  * @fn T_mkSVCObject g_mkSVCMainObject;
@@ -50,7 +50,7 @@ K_MK_PRIVILEGED_MEMORY T_mkSVCObject g_mkSVCObject;
  *
  */
 
-K_MK_PRIVILEGED_MEMORY T_mkSVCObject g_mkSVCMainObject;
+K_MK_PRIVILEGED_RO_MEMORY T_mkSVCObject g_mkSVCMainObject;
 
 /**
  * @fn T_mkSVCObject g_mkSVCIdleObject;
@@ -58,4 +58,4 @@ K_MK_PRIVILEGED_MEMORY T_mkSVCObject g_mkSVCMainObject;
  *
  */
 
-K_MK_PRIVILEGED_MEMORY T_mkSVCObject g_mkSVCIdleObject;
+K_MK_PRIVILEGED_RO_MEMORY T_mkSVCObject g_mkSVCIdleObject;

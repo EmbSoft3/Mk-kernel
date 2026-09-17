@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -42,7 +42,7 @@
  *
  */
 
-K_MK_PRIVILEGED_MEMORY T_mkCallbackManager g_mkPrivilegedCallbackManager;
+K_MK_PRIVILEGED_RO_MEMORY T_mkCallbackManager g_mkPrivilegedCallbackManager;
 
 /**
  * @fn T_mkCallbackManager g_mkUnPrivilegedCallbackManager

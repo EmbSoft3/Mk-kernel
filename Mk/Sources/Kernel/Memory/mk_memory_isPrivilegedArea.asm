@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -66,36 +66,6 @@ _mk_memory_isPrivilegedArea:
 
    /* L'adresse analysée est située dans l'espace non privilégié */
    MOV R0, #0x0 /* UNPROTECTED */
-
-   1:
-   /* Récupération des limites de l'espace non privilégié externe (BANK1) */
-   LDR R1, =K_MK_BANK1_START_ADDR
-   LDR R2, =K_MK_BANK1_END_ADDR
-
-   /* Branche si l'adresse mémoire est dans un espace privilégié */
-   CMP R3, R1
-   BLO 1f
-   CMP R3, R2
-   BGE 1f
-
-   /* L'adresse analysée est située dans l'espace non privilégié */
-   MOV R0, #0x0 /* UNPROTECTED */
-
-   /* Récupération des limites de l'espace non privilégié externe (BANK5) */
-   LDR R1, =K_MK_BANK5_START_ADDR
-   LDR R2, =K_MK_BANK5_END_ADDR
-
-   /* Branche si l'adresse mémoire est dans un espace privilégié */
-   CMP R3, R1
-   BLO 1f
-   CMP R3, R2
-   BGE 1f
-
-   /* L'adresse analysée est située dans l'espace non privilégié */
-   MOV R0, #0x00 /* UNPROTECTED */
-
-   /* Retourne la valeur 0 si espace non privilégié, sinon la valeur de */
-   /* R0. */
 
    1:
    /* Retour */
