@@ -52,16 +52,16 @@ void mk_system_mpu_init ( void )
 
    /* Configuration des régions utilisées */
    /* Attributs par défaut de toutes les zones mémoires */
+   /* Une région avec un numéro supérieur prime sur une région avec un numéro plus faible */
+      
    /* Mode priviligié : RW */
+   /* Cache non utilisé */
    /* Mode non priviligié : pas d'accès */
    /* Fetch désactivé */
-   /* Cache activé*/
-   /* Sections : .bss, .data, .mk_privileged_memory */
    mpu_setRegion ( K_MPU_REGION1, 0x00000000,
                    K_MPU_REGION_SIZE_4GB,
-                   K_MPU_TYPE_NORMAL_SHAREABLE,
-                   K_MPU_RW_PRIVILEGED_ACCESS_NO_UNPRIVILEGED_ACCESS | 
-                   K_MPU_TYPE_INNER_WRITEBACK_READ_WRITE_ALLOCATE |
+                   K_MPU_TYPE_DEVICE_NOT_SHAREABLE,
+                   K_MPU_RW_PRIVILEGED_ACCESS_NO_UNPRIVILEGED_ACCESS |
                    K_MPU_FETCH_DISABLED,
                    K_MPU_SUBREGION_DEFAULT );
 
@@ -78,13 +78,47 @@ void mk_system_mpu_init ( void )
                    K_MPU_FETCH_ENABLED,
                    K_MPU_SUBREGION_DEFAULT );
 
-   /* RAM1 (section non privilégiée) : */
+   /* SRAM1 : */
+   /* Cache L1 non utilisé */
+   /* Mode priviligié : RW */
+   /* Mode non priviligié : pas d'accès */
+   /* Fetch désactivé */
+   /* Section : .mk_privileged_dma_memory */
+   
+   /* Couvre par construction la zone DMA privilégiée (.mk_privileged_dma_memory, */
+   /* 0x20021000-0x2004C000, 0x2B000 octets) ainsi que tout l'espace SRAM non */
+   /* explicitement repris par une région de numéro supérieur (REGION4 à 7). */
+   /* Approche préférée à un découpage exact car 0x2B000 n'est pas une */
+   /* puissance de 2 alignée sur son adresse de base. */
+   
+   mpu_setRegion ( K_MPU_REGION3, 0x20000000, 
+                   K_MPU_REGION_SIZE_512KB,
+                   K_MPU_TYPE_DEVICE_NOT_SHAREABLE,
+                   K_MPU_RW_PRIVILEGED_ACCESS_NO_UNPRIVILEGED_ACCESS | 
+                   K_MPU_FETCH_DISABLED,
+                   K_MPU_SUBREGION_DEFAULT );
+
+   /* DTCM_RAM : */
+   /* Cache L1 activé */
+   /* Mode priviligié : RW */
+   /* Mode non priviligié : pas d'accès */
+   /* Fetch désactivé */
+   /* Sections : .bss, .data, .mk_privileged_memory */
+   mpu_setRegion ( K_MPU_REGION4, 0x20000000,
+                   K_MPU_REGION_SIZE_64KB,
+                   K_MPU_TYPE_NORMAL_NOT_SHAREABLE,
+                   K_MPU_RW_PRIVILEGED_ACCESS_NO_UNPRIVILEGED_ACCESS | 
+                   K_MPU_TYPE_INNER_WRITEBACK_READ_WRITE_ALLOCATE |
+                   K_MPU_FETCH_DISABLED,
+                   K_MPU_SUBREGION_DEFAULT );
+
+   /* SRAM1 : */
    /* Cache L1 utilisé */
    /* Mode priviligié : RW */
    /* Mode non priviligié : RW*/
    /* Fetch désactivé */
-   /* Section : .mk_unprivileged_memory */
-   mpu_setRegion ( K_MPU_REGION3, 0x20010000,
+   /* Section : .mk_unprivileged_memory, .process_stack */
+   mpu_setRegion ( K_MPU_REGION5, 0x20010000,
                    K_MPU_REGION_SIZE_64KB,
                    K_MPU_TYPE_NORMAL_NOT_SHAREABLE,
                    K_MPU_RW_PRIVILEGED_ACCESS_RW_UNPRIVILEGED_ACCESS |
@@ -92,56 +126,31 @@ void mk_system_mpu_init ( void )
                    K_MPU_FETCH_DISABLED,
                    K_MPU_SUBREGION_DEFAULT);
 
-   /* RAM1 (stack secondaire) */
-   /* Cache L1 non utilisé */
-   /* Mode priviligié : RW */
-   /* Mode non priviligié : RW */
-   /* Fetch désactivé */
-   /* Sections : .process_stack */
-   mpu_setRegion ( K_MPU_REGION4, ( uint32_t ) g_mkProcessStack, /* 0x2001FC00 */
-                   K_MPU_REGION_SIZE_1KB,
-                   K_MPU_TYPE_NORMAL_NOT_SHAREABLE,
-                   K_MPU_RW_PRIVILEGED_ACCESS_RW_UNPRIVILEGED_ACCESS |
-                   K_MPU_FETCH_DISABLED,
-                   K_MPU_SUBREGION_DEFAULT);
-
-   /* RAM1 (section privilégiée) : */
-   /* Cache L1 non utilisé */
-   /* Mode priviligié : RW */
-   /* Mode non priviligié : pas d'accès */
-   /* Fetch désactivé */
-   /* Section : .mk_privileged_dma_memory */
-   mpu_setRegion ( K_MPU_REGION5, 0x20020000,
-                   K_MPU_REGION_SIZE_128KB,
-                   K_MPU_TYPE_DEVICE_NOT_SHAREABLE,
-                   K_MPU_RW_PRIVILEGED_ACCESS_NO_UNPRIVILEGED_ACCESS | 
-                   K_MPU_FETCH_DISABLED,
-                   K_MPU_SUBREGION_DEFAULT );
-
-   /* SRAM1 (stack principale) */
+   /* SRAM1 */
    /* Cache L1 utilisé */
    /* Mode priviligié : RW */
    /* Mode non priviligié : pas d'accès */
    /* Fetch désactivé */
    /* Section : .main_stack */
+   /* On écrase 4 Ko de REGION3 (DMA privilégiée) sur cette plage */
    mpu_setRegion ( K_MPU_REGION6, ( uint32_t ) g_mkMainStack, /* 0x20020000 */
                    K_MPU_REGION_SIZE_4KB,
-                   K_MPU_TYPE_NORMAL_SHAREABLE,
+                   K_MPU_TYPE_NORMAL_NOT_SHAREABLE,
                    K_MPU_RW_PRIVILEGED_ACCESS_NO_UNPRIVILEGED_ACCESS |
                    K_MPU_TYPE_INNER_WRITEBACK_READ_WRITE_ALLOCATE |
                    K_MPU_FETCH_DISABLED,
                    K_MPU_SUBREGION_DEFAULT );
 
-   /* RAM1 (section privilégiée) : */
+   /* SRAM2 : */
    /* Cache L1 utilisé */
    /* Mode priviligié : RW */
-   /* Mode non priviligié : pas d'accès */
+   /* Mode non priviligié : RO */
    /* Fetch désactivé */
    /* Section : .mk_privileged_ro_memory */
    mpu_setRegion ( K_MPU_REGION7, ( uint32_t ) 0x2004C000, 
                    K_MPU_REGION_SIZE_16KB,
-                   K_MPU_TYPE_NORMAL_SHAREABLE,
-                   K_MPU_RW_PRIVILEGED_ACCESS_NO_UNPRIVILEGED_ACCESS |
+                   K_MPU_TYPE_NORMAL_NOT_SHAREABLE,
+                   K_MPU_RW_PRIVILEGED_ACCESS_RO_UNPRIVILEGED_ACCESS |
                    K_MPU_TYPE_INNER_WRITEBACK_READ_WRITE_ALLOCATE |
                    K_MPU_FETCH_DISABLED,
                    K_MPU_SUBREGION_DEFAULT );
@@ -157,7 +166,7 @@ void mk_system_mpu_init ( void )
    mpu_enableBackground ( );
 
    /* Activation de toutes les régions */
-   for ( l_counter = 0 ; l_counter < 8 ; l_counter++ )
+   for ( l_counter = 0 ; l_counter < 7 ; l_counter++ )
    {
       _mpu_enableRegion ( l_counter );
    }

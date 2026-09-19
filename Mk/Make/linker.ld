@@ -57,6 +57,11 @@ MEMORY
 /* Définition de l'adresse de la table des vecteurs d'interruption */
 K_VECTOR_TABLE_BASE_ADDR = 0x00200000 ;
 
+/* Définition de l'adresse de base des données priviligiées en lecture seule */
+/* Mémoire K_DTCM_RAM */
+/* Taille 65536 octets (0x10000) */
+K_MK_PRIVILEGED_DATA_BASE_ADDR = 0x20000000 ;
+
 /* Définition de l'adresse de base des données non privilégiées */
 /* Mémoire K_SRAM1 */
 /* Taille 64512 octets (0xFC00)*/
@@ -76,7 +81,7 @@ K_MK_PRIVILEGED_DMA_DATA_BASE_ADDR = 0x20021000 ;
 /* Définition de l'adresse de base des données priviligiées en lecture seule */
 /* Mémoire K_SRAM2 */
 /* Taille 16384 octets (0x4000) */
-K_MK_PRIVILEGED_DATA_BASE_ADDR = 0x2004C000 ;
+K_MK_PRIVILEGED_RO_DATA_BASE_ADDR = 0x2004C000 ;
 
 /* Définition des sections */
 SECTIONS
@@ -208,7 +213,13 @@ SECTIONS
       K_DMA_PRIVILEGED_MEMORY_END_ADDR = .;
       
    } > K_SRAM1 
-    
+
+   /* Mapping de la section "mk_privileged_memory" */   
+   .mk_privileged_memory K_MK_PRIVILEGED_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 )
+   {
+      *( .mk_privileged_memory )
+   } > K_DTCM_RAM
+
    /* Mapping de la section "bss" */   
    /* Par défaut toutes les variables globales et statiques non initialisées */
    /* sont privilégiées */
@@ -223,7 +234,7 @@ SECTIONS
       
       /* Création d'un symbole contenant l'adresse de fin de la section BSS. */
       K_BSS_END_ADDR = .; 
-   } > K_SRAM1
+   } > K_DTCM_RAM
 
    /* Mapping de la section ".mk_privileged_data_memory" */
    /* [>region] [AT>lma_region] [:phdr :phdr ...] [=fillexp] */
@@ -244,18 +255,12 @@ SECTIONS
       /* privilégiée. */
       K_DATA_END_ADDR = .;   
       
-   } > K_SRAM1 AT> K_FLASH_ITCM
-
-   /* Mapping de la section "mk_privileged_memory" */   
-   .mk_privileged_memory K_MK_PRIVILEGED_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 )
-   {
-      *( .mk_privileged_memory )
-   } > K_SRAM1  
+   } > K_DTCM_RAM AT> K_FLASH_ITCM
 
    /* ********************************************************************* */
 
    /* Mapping de la section "mk_privileged_ro_memory" */   
-   .mk_privileged_ro_memory K_MK_PRIVILEGED_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 )
+   .mk_privileged_ro_memory K_MK_PRIVILEGED_RO_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 )
    {      
       *( .mk_privileged_ro_memory )
    } > K_SRAM2  
