@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -94,6 +94,14 @@ static T_mkCode mk_call_deleteObject ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, ui
 
 void mk_call_delete ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
 {
+   /* Déclaration des variables stockant l'adresse d'une fonction de rappel et l'adresse d'un gestionnaire de rappel */
+   T_mkCallback* l_callback = K_MK_NULL;
+   T_mkCallbackHandler* l_handler = K_MK_NULL;
+
+   /* Déclaration d'une variable stockant la nouvelle valeur du champ identifiant les fonctions */
+   /* de rappels référencées dans un gestionnaire */
+   uint32_t l_fieldId = 0;
+   
    /* Si un gestionnaire d'allocation doit être détruit */
    if ( p_mkObject->type == K_MK_SYSCALL_DELETE_POOL_FUNCTION )
    {
@@ -146,9 +154,16 @@ void mk_call_delete ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    else if ( p_mkObject->type == K_MK_SYSCALL_DELETE_CALLBACK_FUNCTION )
    {
       /* Récupération de l'adresse de la fonction de rappel */
-      T_mkCallback* l_callback = p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ];
+      l_callback = p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ];
 
-      /* Destruction de la fonction */
+      /* Récupération de l'adresse du gestionnaire de rappel */
+      l_handler = l_callback->handler;
+
+      /* Détermination de la nouvelle valeur du champ identifiant les fonctions */
+      /* de rappels référencées dans un gestionnaire */
+      l_fieldId = ( uint32_t ) ( l_handler->identifier & ( ~ l_callback->identifier ) );
+
+      /* Destruction de la fonction de rappel */
       p_mkObject->result = mk_call_deleteObject ( &g_mkCallbackFunctionPool.pool, ( T_mkAddr ) &g_mkCallbackFunctionPool.callback [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTION,
                            sizeof ( T_mkCallback ), ( T_mkAddr ) l_callback, p_mkStatus );
 
@@ -156,7 +171,7 @@ void mk_call_delete ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
       if ( p_mkObject->result == K_MK_OK )
       {
          /* Actualisation du registre d'identification du gestionnaire */
-         l_callback->handler->identifier = ( uint32_t ) ( l_callback->handler->identifier & ( ~ l_callback->identifier ) );
+         l_handler->identifier = l_fieldId;
       }
    }
 
