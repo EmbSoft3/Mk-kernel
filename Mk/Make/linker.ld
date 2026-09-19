@@ -128,6 +128,8 @@ SECTIONS
       K_UNPRIVILEGED_MEMORY_START_ADDR = .;
       
       *( .mk_unprivileged_memory )  
+      . = ALIGN ( 4 ) ;
+
    } > K_SRAM1
 
    /* Mapping de la section "mk_unprivileged_bss_memory" */ 
@@ -138,6 +140,7 @@ SECTIONS
       K_UNPRIVILEGED_BSS_START_ADDR = .;
       
       *( .mk_unprivileged_bss_memory ) 
+      . = ALIGN ( 4 ) ;
       
       /* Création d'un symbole contenant l'adresse de début de la section BSS */
       K_UNPRIVILEGED_BSS_END_ADDR = .;   
@@ -157,6 +160,7 @@ SECTIONS
       K_UNPRIVILEGED_DATA_START_ADDR = .;
       
       *( .mk_unprivileged_data_memory ) 
+      . = ALIGN ( 4 ) ;
       
       /* Création d'un symbole contenant l'adresse de fin de section DATA */
       /* non privilégiée. */
@@ -180,6 +184,7 @@ SECTIONS
       K_PROCESS_STACK_END_ADDR = .;
       
       KEEP ( *( .process_stack ) ) *( .process_stack );
+      . = ALIGN ( 4 ) ;
       
       /* Création d'un symbole contenant l'adresse de début de la stack */
       /*  secondaire. */
@@ -190,6 +195,7 @@ SECTIONS
       K_MAIN_STACK_END_ADDR = .;
          
       KEEP ( *( .main_stack ) ) *( .main_stack );
+      . = ALIGN ( 4 ) ;
       
       /* Création d'un symbole contenant l'adresse de fin de la stack */
       /* principale. */
@@ -207,6 +213,7 @@ SECTIONS
       K_DMA_PRIVILEGED_MEMORY_START_ADDR = .;
       
       *( .mk_privileged_dma_memory )  
+      . = ALIGN ( 4 ) ;
       
       /* Création d'un symbole contenant l'adresse de fin de la mémoire DMA */
       /* privilégiée */
@@ -218,6 +225,7 @@ SECTIONS
    .mk_privileged_memory K_MK_PRIVILEGED_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 )
    {
       *( .mk_privileged_memory )
+      . = ALIGN ( 4 ) ;
    } > K_DTCM_RAM
 
    /* Mapping de la section "bss" */   
@@ -231,6 +239,7 @@ SECTIONS
       K_BSS_START_ADDR = .;
       
       *( .bss )  
+      . = ALIGN ( 4 ) ;
       
       /* Création d'un symbole contenant l'adresse de fin de la section BSS. */
       K_BSS_END_ADDR = .; 
@@ -250,6 +259,7 @@ SECTIONS
       K_DATA_START_ADDR = .;
       
       *( .data ) 
+      . = ALIGN ( 4 ) ;
       
       /* Création d'un symbole contenant l'adresse de fin de la mémoire non */
       /* privilégiée. */
@@ -263,6 +273,7 @@ SECTIONS
    .mk_privileged_ro_memory K_MK_PRIVILEGED_RO_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 )
    {      
       *( .mk_privileged_ro_memory )
+      . = ALIGN ( 4 ) ;
    } > K_SRAM2  
 }
 
