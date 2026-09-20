@@ -42,6 +42,24 @@
  * @endinternal
  */
 
+static void mk_setControl ( void )
+{
+   /* Configuration du registre CONTROL */
+   /* nPRIV<0> = Thread mode is privileged */
+   /* SPSEL<1> = Current stack pointer is PSP */
+   /* FPCA<2> = No floating point context active */
+   _cortex_setControl ( 0x2 );
+
+   /* Retour */
+   return;
+}
+
+/**
+ * @internal
+ * @brief
+ * @endinternal
+ */
+
 static void mk_setPriority ( void )
 {
    /* Configuration de la priorité du gestionnaire systick */
@@ -281,6 +299,9 @@ T_mkCode mk_init ( uint32_t p_mkType, uint32_t* p_mkStack, uint32_t p_mkStackSiz
          g_mkScheduler.statusRegister.locked = 0;
          g_mkScheduler.statusRegister.isr = 0;
          g_mkScheduler.statusRegister.initialized = 1;
+
+         /* Configuration du registre CONTROL */
+         mk_setControl ( );
 
          /* Configuration de la priorité des interruptions */
          mk_setPriority ( );

@@ -38,6 +38,17 @@
 #define MK_CORE_H
 
 /**
+ * @fn void _cortex_setControl ( void );
+ * @brief Cette fonction écrit une valeur dans le registre CONTROL.
+ * @param[in] p_value Ce paramètre contient la valeur à écrire dans le registre CONTROL.
+ * @return Sans objet.
+ * @note Cette fonction doit être utilisée à un niveau d'exécution privilégié.
+ *
+ */
+
+void _cortex_setControl ( uint32_t p_value );
+
+/**
  * @fn void _cortex_enablePrivilege ( void );
  * @brief Cette fonction active le niveau d'éxécution priviligié.
  * @return Sans objet.

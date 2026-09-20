@@ -43,6 +43,7 @@
 
 #include "mk_types.h"
 #include "mk_binary.h"
+#include "mk_core.h"
 #include "mk_nvic_constants.h"
 #include "mk_nvic.h"
 #include "mk_fpu_constants.h"
