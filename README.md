@@ -11,7 +11,7 @@ It provides a deterministic execution environment with memory protection, hardwa
 ## Key Features
 
 - **Preemptive $O(1)$ Scheduler**: Fixed-priority scheduling with Round-Robin time-slicing for tasks of equal priority. Uses the ARM `CLZ` (*Count Leading Zeros*) instruction for instantaneous selection of the highest-priority ready task.
-- **Hardware-Enforced Security & Isolation (TEE)**: Software Trusted Execution Environment leveraging the Cortex-M7 Memory Protection Unit (MPU) and privilege levels.
+- **Hardware-Enforced Kernel/Userland Isolation**: Privileged/unprivileged separation leveraging the Cortex-M7 Memory Protection Unit (MPU) and ARM privilege levels.
 - **Zero Dynamic Allocation**: Built entirely on fixed-size memory pools (`T_mkPool`), completely eliminating heap fragmentation and non-deterministic allocation delays.
 - **FPU Context Management**: Full support for floating-point (`K_MK_TYPE_FLOATING`) and non-floating-point tasks.
 - **Synchronization Primitives**: Semaphores, Mutexes (with priority inheritance), Event Fields, and Mailboxes.
@@ -25,7 +25,7 @@ It provides a deterministic execution environment with memory protection, hardwa
 
 ## Documentation
 
-ℹ️ For detailed technical articles and API documentation, visit [La Fabrique du MCU](https://lafabriquedumcu.com/articles/rtos/api.html).
+ℹ️ For detailed technical articles and API documentation, visit [La Fabrique du MCU](https://lafabriquedumcu.com/articles/rtos/index.html).
 
 ---
 
