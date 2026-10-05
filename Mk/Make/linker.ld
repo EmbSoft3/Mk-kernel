@@ -148,7 +148,7 @@ SECTIONS
     
    /* Mapping de la section "mk_unprivileged_data_memory" */
    /* [>region] [AT>lma_region] [:phdr :phdr ...] [=fillexp] */
-   /* Virtual Memory Address (VMA) in K_SRAM1, Load Memory Address (LMA) in K_FLASH_ITCM
+   /* Virtual Memory Address (VMA) in K_SRAM1, Load Memory Address (LMA) in K_FLASH_ITCM */
    /* VMA : adresse de la section quand le programme s'exécute. */
    /* LMA : adresse de la section quand le programme est chargé */
    
@@ -245,9 +245,9 @@ SECTIONS
       K_BSS_END_ADDR = .; 
    } > K_DTCM_RAM
 
-   /* Mapping de la section ".mk_privileged_data_memory" */
+   /* Mapping de la section ".data" */
    /* [>region] [AT>lma_region] [:phdr :phdr ...] [=fillexp] */
-   /* Virtual Memory Address (VMA) in K_SRAM1, Load Memory Address (LMA) in K_FLASH_ITCM
+   /* Virtual Memory Address (VMA) in K_SRAM1, Load Memory Address (LMA) in K_FLASH_ITCM */
    /* VMA : adresse de la section quand le programme s'exécute. */
    /* LMA : adresse de la section quand le programme est chargé */
    
