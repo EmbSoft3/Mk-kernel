@@ -51,13 +51,12 @@ MEMORY
   K_ITCM_RAM            ( rwx ) : ORIGIN = 0x00000000, LENGTH = 0x4000
   K_SRAM1               ( rw  ) : ORIGIN = 0x20010000, LENGTH = 0x3C000 
   K_SRAM2               ( rw  ) : ORIGIN = 0x2004C000, LENGTH = 0x4000
-  K_QSPI_FLASH          ( rwx ) : ORIGIN = 0x90000000, LENGTH = 0x1000000
 }
 
 /* Définition de l'adresse de la table des vecteurs d'interruption */
 K_VECTOR_TABLE_BASE_ADDR = 0x00200000 ;
 
-/* Définition de l'adresse de base des données priviligiées en lecture seule */
+/* Définition de l'adresse de base des données priviligiées */
 /* Mémoire K_DTCM_RAM */
 /* Taille 65536 octets (0x10000) */
 K_MK_PRIVILEGED_DATA_BASE_ADDR = 0x20000000 ;
@@ -114,28 +113,20 @@ SECTIONS
 
    /* ********************************************************************* */
 
-   /* Mapping de la section "mk_unprivileged_memory" */
+   /* Mapping des sections non privilégiées */ 
    /* Attention, les sections non privilégiée doivent être juxtaposée et */
    /* délimité par les constantes K_UNPRIVILEGED_MEMORY_START_ADDR et */
    /* K_UNPRIVILEGED_MEMORY_END_ADDR. */   
    /* La stack utilisateur (process) n'est délibérément pas inclus dans */
    /* cette section. */    
 
-   .mk_unprivileged_memory K_MK_UNPRIVILEGED_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 )
+   /* Mapping de la section "mk_unprivileged_bss_memory" */ 
+   .mk_unprivileged_bss_memory K_MK_UNPRIVILEGED_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 )
    {
       /* Création d'un symbole contenant l'adresse de début de la mémoire */
       /* non privilégiée. */
       K_UNPRIVILEGED_MEMORY_START_ADDR = .;
       
-      *( .mk_unprivileged_memory )  
-      . = ALIGN ( 4 ) ;
-
-   } > K_SRAM1
-
-   /* Mapping de la section "mk_unprivileged_bss_memory" */ 
-   /* Directement à la suite de la section précédente */  
-   .mk_unprivileged_bss_memory ( NOLOAD ) : ALIGN ( 4 )
-   {
       /* Création d'un symbole contenant l'adresse de début de la section BSS */
       K_UNPRIVILEGED_BSS_START_ADDR = .;
       
@@ -221,18 +212,11 @@ SECTIONS
       
    } > K_SRAM1 
 
-   /* Mapping de la section "mk_privileged_memory" */   
-   .mk_privileged_memory K_MK_PRIVILEGED_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 )
-   {
-      *( .mk_privileged_memory )
-      . = ALIGN ( 4 ) ;
-   } > K_DTCM_RAM
-
    /* Mapping de la section "bss" */   
    /* Par défaut toutes les variables globales et statiques non initialisées */
    /* sont privilégiées */
    
-   .bss ( NOLOAD ) : ALIGN ( 4 )
+   .bss K_MK_PRIVILEGED_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 )
    {
       /* Création d'un symbole contenant l'adresse de début de la section */
       /* BSS. */
@@ -247,7 +231,7 @@ SECTIONS
 
    /* Mapping de la section ".data" */
    /* [>region] [AT>lma_region] [:phdr :phdr ...] [=fillexp] */
-   /* Virtual Memory Address (VMA) in K_SRAM1, Load Memory Address (LMA) in K_FLASH_ITCM */
+   /* Virtual Memory Address (VMA) in DTCM_RAM, Load Memory Address (LMA) in K_FLASH_ITCM */
    /* VMA : adresse de la section quand le programme s'exécute. */
    /* LMA : adresse de la section quand le programme est chargé */
    
@@ -261,7 +245,7 @@ SECTIONS
       *( .data ) 
       . = ALIGN ( 4 ) ;
       
-      /* Création d'un symbole contenant l'adresse de fin de la mémoire non */
+      /* Création d'un symbole contenant l'adresse de fin de la mémoire */
       /* privilégiée. */
       K_DATA_END_ADDR = .;   
       

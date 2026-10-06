@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2019 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2019-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -42,6 +42,6 @@
  *
  */
 
-K_MK_UNPRIVILEGED_MEMORY uint32_t g_mkIdleStack [ K_MK_TASK_IDLE_STACK_SIZE ];
+K_MK_UNPRIVILEGED_BSS_MEMORY uint32_t g_mkIdleStack [ K_MK_TASK_IDLE_STACK_SIZE ];
 
 

@@ -50,5 +50,5 @@ K_MK_PRIVILEGED_RO_MEMORY T_mkCallbackManager g_mkPrivilegedCallbackManager;
  *
  */
 
-K_MK_UNPRIVILEGED_MEMORY T_mkCallbackManager g_mkUnPrivilegedCallbackManager;
+K_MK_UNPRIVILEGED_BSS_MEMORY T_mkCallbackManager g_mkUnPrivilegedCallbackManager;
 

@@ -80,16 +80,15 @@ void mk_system_mpu_init ( void )
                    K_MPU_SUBREGION_DEFAULT );
 
    /* DTCM_RAM : */
-   /* Cache L1 utilisé */
+   /* Cache L1 non utilisé */
    /* Mode priviligié : RW */
    /* Mode non priviligié : pas d'accès */
    /* Fetch désactivé */
-   /* Sections : .bss, .data, .mk_privileged_memory */
+   /* Sections : .bss, .data */
    mpu_setRegion ( K_MPU_REGION3, 0x20000000,
                    K_MPU_REGION_SIZE_64KB,
                    K_MPU_TYPE_NORMAL_NOT_SHAREABLE,
                    K_MPU_RW_PRIVILEGED_ACCESS_NO_UNPRIVILEGED_ACCESS | 
-                   K_MPU_TYPE_INNER_WRITEBACK_READ_WRITE_ALLOCATE |
                    K_MPU_FETCH_DISABLED,
                    K_MPU_SUBREGION_DEFAULT );
 
@@ -98,7 +97,7 @@ void mk_system_mpu_init ( void )
    /* Mode priviligié : RW */
    /* Mode non priviligié : RW*/
    /* Fetch désactivé */
-   /* Section : .mk_unprivileged_memory, .process_stack */
+   /* Section : .mk_unprivileged_bss_memory, .mk_unprivileged_data_memory, .process_stack */
    mpu_setRegion ( K_MPU_REGION4, 0x20010000,
                    K_MPU_REGION_SIZE_64KB,
                    K_MPU_TYPE_NORMAL_NOT_SHAREABLE,
@@ -113,7 +112,6 @@ void mk_system_mpu_init ( void )
    /* Mode non priviligié : pas d'accès */
    /* Fetch désactivé */
    /* Section : .main_stack */
-   /* On écrase 4 Ko de REGION3 (DMA privilégiée) sur cette plage */
    mpu_setRegion ( K_MPU_REGION5, ( uint32_t ) g_mkMainStack, /* 0x20020000 */
                    K_MPU_REGION_SIZE_4KB,
                    K_MPU_TYPE_NORMAL_NOT_SHAREABLE,

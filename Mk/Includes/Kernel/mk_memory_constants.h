@@ -29,8 +29,7 @@
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 * @file mk_memory_constants.h
-* @brief Déclaration des constantes permettant d'allouer des données dans les zones mémoire priviligiées et non priviligiées du noyau.
-* @todo Implémenter une section pour la mémoire DTCM (64kB).*
+* @brief Déclaration des constantes permettant d'allouer des données dans les zones mémoire privilégiées et non privilégiées du noyau.
 * @date 17 juin 2018
 *
 */
@@ -39,55 +38,59 @@
 #define MK_MEMORY_CONSTANTS_H
 
 /**
- * @def K_MK_PRIVILEGED_MEMORY
- * @brief Cette constante définit la zone mémoire où les données priviligiées doivent être allouées. \n 
- *        Une tâche non privilégiée ne peut pas accéder cette zone mémoire. \n
+ * @def K_MK_PRIVILEGED_BSS_MEMORY
+ * @brief Cette constante définit la zone mémoire où les données privilégiées non initialisées doivent être allouées. \n 
+ *        Une tâche non privilégiée ne peut pas accéder à cette zone mémoire. \n
+ *        L'adresse de cette section peut être modifiée dans le fichier d'édition de lien.
+ * @warning Ne pas initialiser avec une valeur non nulle car la section n'est pas chargée depuis la FLASH.
+ */
+
+#define K_MK_PRIVILEGED_BSS_MEMORY __attribute__ ((section(".bss"), aligned(4), used))
+
+/**
+ * @def K_MK_PRIVILEGED_DATA_MEMORY
+ * @brief Cette constante définit la zone mémoire où les données privilégiées initialisées doivent être allouées. \n 
+ *        Une tâche non privilégiée ne peut pas accéder à cette zone mémoire. \n
  *        L'adresse de cette section peut être modifiée dans le fichier d'édition de lien.
  */
 
-#define K_MK_PRIVILEGED_MEMORY __attribute__ ((section(".mk_privileged_memory"), aligned(4), used))
+#define K_MK_PRIVILEGED_DATA_MEMORY __attribute__ ((section(".data"), aligned(4), used))
 
 /**
  * @def K_MK_PRIVILEGED_RO_MEMORY
- * @brief Cette constante définit la zone mémoire où les données priviligiées doivent être allouées. \n 
- *        Une tâche non privilégiée peut accéder cette zone mémoire en lecture seulement. \n
+ * @brief Cette constante définit la zone mémoire où les données privilégiées doivent être allouées. \n 
+ *        Une tâche non privilégiée peut accéder à cette zone mémoire en lecture seulement, une tâche privilégiée en lecture/écriture. \n
  *        L'adresse de cette section peut être modifiée dans le fichier d'édition de lien.
+ * @warning Ne pas initialiser avec une valeur non nulle car la section n'est pas chargée depuis la FLASH.
  */
 
 #define K_MK_PRIVILEGED_RO_MEMORY __attribute__ ((section(".mk_privileged_ro_memory"), aligned(4), used))
 
 /**
  * @def K_MK_PRIVILEGED_DMA_MEMORY
- * @brief Cette constante définit la zone mémoire où les données priviligiées DMA doivent être allouées. \n
- *        Une tâche non privilégiée ne peut pas accéder cette zone mémoire. \n
+ * @brief Cette constante définit la zone mémoire où les données privilégiées DMA doivent être allouées. \n
+ *        Une tâche non privilégiée ne peut pas accéder à cette zone mémoire. \n
  *        L'adresse de cette section peut être modifiée dans le fichier d'édition de lien.
+ * @warning Ne pas initialiser avec une valeur non nulle car la section n'est pas chargée depuis la FLASH.
  */
 
 #define K_MK_PRIVILEGED_DMA_MEMORY __attribute__ ((section(".mk_privileged_dma_memory"), aligned(4), used))
 
 /**
- * @def K_MK_PRIVILEGED_MEMORY
- * @brief Cette constante définit la zone mémoire où les données non priviligiées doivent être allouées. \n
- *        Une tâche non privilégiée peut accéder cette zone mémoire en lecture/écriture.. \n
+ * @def K_MK_UNPRIVILEGED_DATA_MEMORY
+ * @brief Cette constante définit la zone mémoire où les données statiques initialisées doivent être allouées. \n
+ *        Une tâche non privilégiée peut accéder à cette zone mémoire en lecture/écriture. \n
  *        L'adresse de cette section peut être modifiée dans le fichier d'édition de lien.
  */
 
-#define K_MK_UNPRIVILEGED_MEMORY __attribute__ ((section(".mk_unprivileged_memory"), aligned(4), used))
-
-/**
- * @def K_MK_UNPRIVILEGED_STATIC_MEMORY
- * @brief Cette constante définit la zone mémoire où les données statiques initialisée doivent être allouées. \n
- *        Une tâche non privilégiée peut accéder cette zone mémoire en lecture/écriture. \n
- *        L'adresse de cette section peut être modifiée dans le fichier d'édition de lien.
- */
-
-#define K_MK_UNPRIVILEGED_STATIC_MEMORY __attribute__ ((section(".mk_unprivileged_data_memory"), aligned(4), used)) static
+#define K_MK_UNPRIVILEGED_DATA_MEMORY __attribute__ ((section(".mk_unprivileged_data_memory"), aligned(4), used))
 
 /**
  * @def K_MK_UNPRIVILEGED_BSS_MEMORY
- * @brief Cette constante définit la zone mémoire où les données statiques non initialisée doivent être allouées. \n
- *        Une tâche non privilégiée peut accéder cette zone mémoire en lecture/écriture. \n
+ * @brief Cette constante définit la zone mémoire où les données statiques non initialisées doivent être allouées. \n
+ *        Une tâche non privilégiée peut accéder à cette zone mémoire en lecture/écriture. \n
  *        L'adresse de cette section peut être modifiée dans le fichier d'édition de lien.
+ * @warning Ne pas initialiser avec une valeur non nullecar la section n'est pas chargée depuis la FLASH.
  */
 
 #define K_MK_UNPRIVILEGED_BSS_MEMORY __attribute__ ((section(".mk_unprivileged_bss_memory"), aligned(4), used))
