@@ -56,8 +56,8 @@
 .global _vector_resetHandler
 _vector_resetHandler:
 
-   /* Récupération de l'adresse de début et de fin de la section BSS */
-   /* non privilégiée */
+   /* Récupération de l'adresse de début et de fin */
+   /*  de la section .bss */
    LDR R0, =K_BSS_START_ADDR
    LDR R1, =K_BSS_END_ADDR
 
@@ -70,15 +70,14 @@ _vector_resetHandler:
 
    1:
    /* Ecriture du pattern dans l'intégralité de la section */
-   /* non privilégiée */
    BEQ 2f
    SUBS R3, R3, #0x04
    STR R2, [ R0, R3 ]
    BNE 1b
 
    2:
-   /* Récupération de l'adresse de début et de fin de la section BSS */
-   /* non privilégiée */
+   /* Récupération de l'adresse de début et de fin */
+   /* de la section mk_unprivileged_bss_memory */
    LDR R0, =K_UNPRIVILEGED_BSS_START_ADDR
    LDR R1, =K_UNPRIVILEGED_BSS_END_ADDR
 
@@ -91,18 +90,58 @@ _vector_resetHandler:
 
    1:
    /* Ecriture du pattern dans l'intégralité de la section */
-   /* non privilégiée */
    BEQ 2f
    SUBS R3, R3, #0x04
    STR R2, [ R0, R3 ]
    BNE 1b
 
    2:
-   /* Récupération de l'adresse de début et de fin des données initialisées */
+   /* Récupération de l'adresse de début et de fin */
+   /* de la section .mk_privileged_ro_memory */
+   LDR R0, =K_PRIVILEGED_RO_MEMORY_START_ADDR
+   LDR R1, =K_PRIVILEGED_RO_MEMORY_END_ADDR
+
+   /* Création du pattern à écrire dans la section */
+   MOV R2, #0x00
+
+   /* Détermination de la taille de la section */
+   /* R3 = R1 - R0 */
+   SUBS  R3, R1, R0
+
+   1:
+   /* Ecriture du pattern dans l'intégralité de la section */
+   BEQ 2f
+   SUBS R3, R3, #0x04
+   STR R2, [ R0, R3 ]
+   BNE 1b
+
+   2:
+   /* Récupération de l'adresse de début et de fin */
+   /* de la section .mk_privileged_dma_memory */
+   LDR R0, =K_PRIVILEGED_DMA_MEMORY_START_ADDR
+   LDR R1, =K_PRIVILEGED_DMA_MEMORY_END_ADDR
+
+   /* Création du pattern à écrire dans la section */
+   MOV R2, #0x00
+
+   /* Détermination de la taille de la section */
+   /* R3 = R1 - R0 */
+   SUBS  R3, R1, R0
+
+   1:
+   /* Ecriture du pattern dans l'intégralité de la section */
+   BEQ 2f
+   SUBS R3, R3, #0x04
+   STR R2, [ R0, R3 ]
+   BNE 1b
+
+   2:
+   /* Récupération de l'adresse de début et de fin */
+   /* de la section .data */
    LDR R0, =K_DATA_START_ADDR
    LDR R1, =K_DATA_END_ADDR
 
-   /* Récupération de l'adresse de début des données initialisée en */
+   /* Récupération de l'adresse de début des données initialisées en */
    /* FLASH */
    LDR R2, =K_DATA_START_FLASH_ADDR
 
@@ -112,7 +151,6 @@ _vector_resetHandler:
 
    1:
    /* Ecriture du pattern dans l'intégralité de la section */
-   /* privilégiée */
    BEQ 2f
    SUBS R3, R3, #0x04
    LDR R4, [ R2, R3 ]
@@ -120,7 +158,8 @@ _vector_resetHandler:
    BNE 1b
 
    2:
-   /* Récupération de l'adresse de début et de fin des données initialisées */
+   /* Récupération de l'adresse de début et de fin */
+   /* de la section .mk_unprivileged_data_memory */
    LDR R0, =K_UNPRIVILEGED_DATA_START_ADDR
    LDR R1, =K_UNPRIVILEGED_DATA_END_ADDR
 
@@ -133,8 +172,7 @@ _vector_resetHandler:
    SUBS  R3, R1, R0
 
    1:
-   /* Ecriture du pattern dans l'intégralité de la section BSS */
-   /* privilégiée */
+   /* Ecriture du pattern dans l'intégralité de la section */
    BEQ 2f
    SUBS R3, R3, #0x04
    LDR R4, [ R2, R3 ]
@@ -142,40 +180,40 @@ _vector_resetHandler:
    BNE 1b
 
    2:
-   /* Récupération de l'adresse de début et de fin de la stack */
-   /* principale */
+   /* Récupération de l'adresse de début et de fin */
+   /* de la section .main_stack */
    LDR R0, =K_MAIN_STACK_END_ADDR
    LDR R1, =K_MAIN_STACK_START_ADDR
 
-   /* Création du pattern à écrire dans la stack principale */
+   /* Création du pattern à écrire dans la section */
    MOVW R2, #0x5555
    MOVT R2, #0x5555
 
-   /* Détermination de la taille de la stack principale */
+   /* Détermination de la taille de la section */
    /* R3 = R1 - R0 */
    SUB  R3, R1, R0
 
    1:
-   /* Ecriture du pattern dans l'intégralité de la stack principale */
+   /* Ecriture du pattern dans l'intégralité de la section */
    SUBS R3, R3, #0x04
    STR R2, [ R0, R3 ]
    BNE 1b
 
-   /* Récupération de l'adresse de début et de fin de la stack */
-   /* secondaire */
+   /* Récupération de l'adresse de début et de fin */
+   /* de la section .process_stack */
    LDR R0, =K_PROCESS_STACK_END_ADDR
    LDR R1, =K_PROCESS_STACK_START_ADDR
 
-   /* Création du pattern à écrire dans la stack secondaire */
+   /* Création du pattern à écrire dans la section */
    MOVW R2, #0xAAAA
    MOVT R2, #0xAAAA
 
-   /* Détermination de la taille de la stack secondaire */
+   /* Détermination de la taille de la section */
    /* R3 = R1 - R0 */
    SUB  R3, R1, R0
 
    1:
-   /* Ecriture du pattern dans l'intégralité de la stack secondaire */
+   /* Ecriture du pattern dans l'intégralité de la section */
    SUBS R3, R3, #0x04
    STR R2, [ R0, R3 ]
    BNE 1b
@@ -185,13 +223,13 @@ _vector_resetHandler:
    MSR PSP, R0
 
    /* Configuration du registre de controle */
-   /* La pointeur MSP sera utilisé pour le mode superviseur, le pointeur */
+   /* Le pointeur MSP sera utilisé pour le mode superviseur, le pointeur */
    /* PSP pour le mode utilisateur */
    MOV R0, #0x2
    MSR CONTROL, R0
    ISB
 
-   /* Lançement de l'initialisation du système */
+   /* Lancement de l'initialisation du système */
    BL mk_system_init
 
    1:

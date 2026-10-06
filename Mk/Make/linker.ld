@@ -133,7 +133,7 @@ SECTIONS
       *( .mk_unprivileged_bss_memory ) 
       . = ALIGN ( 4 ) ;
       
-      /* Création d'un symbole contenant l'adresse de début de la section BSS */
+      /* Création d'un symbole contenant l'adresse de fin de la section BSS */
       K_UNPRIVILEGED_BSS_END_ADDR = .;   
    } > K_SRAM1
     
@@ -201,14 +201,14 @@ SECTIONS
    {
       /* Création d'un symbole contenant l'adresse de début de la mémoire */
       /* DMA privilégiée */
-      K_DMA_PRIVILEGED_MEMORY_START_ADDR = .;
+      K_PRIVILEGED_DMA_MEMORY_START_ADDR = .;
       
       *( .mk_privileged_dma_memory )  
       . = ALIGN ( 4 ) ;
       
       /* Création d'un symbole contenant l'adresse de fin de la mémoire DMA */
       /* privilégiée */
-      K_DMA_PRIVILEGED_MEMORY_END_ADDR = .;
+      K_PRIVILEGED_DMA_MEMORY_END_ADDR = .;
       
    } > K_SRAM1 
 
@@ -256,8 +256,17 @@ SECTIONS
    /* Mapping de la section "mk_privileged_ro_memory" */   
    .mk_privileged_ro_memory K_MK_PRIVILEGED_RO_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 )
    {      
+      /* Création d'un symbole contenant l'adresse de début de la mémoire */
+      /* RO privilégiée */
+      K_PRIVILEGED_RO_MEMORY_START_ADDR = .;
+      
       *( .mk_privileged_ro_memory )
       . = ALIGN ( 4 ) ;
+
+      /* Création d'un symbole contenant l'adresse de fin de la mémoire RO */
+      /* privilégiée */
+      K_PRIVILEGED_RO_MEMORY_END_ADDR = .;
+
    } > K_SRAM2  
 }
 
