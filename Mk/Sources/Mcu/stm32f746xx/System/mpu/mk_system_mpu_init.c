@@ -84,7 +84,7 @@ void mk_system_mpu_init ( void )
    /* Mode priviligié : RW */
    /* Mode non priviligié : pas d'accès */
    /* Fetch désactivé */
-   /* Sections : .bss, .data */
+   /* Sections : .bss, .data, .process_stack */
    mpu_setRegion ( K_MPU_REGION3, 0x20000000,
                    K_MPU_REGION_SIZE_64KB,
                    K_MPU_TYPE_NORMAL_NOT_SHAREABLE,
@@ -97,7 +97,7 @@ void mk_system_mpu_init ( void )
    /* Mode priviligié : RW */
    /* Mode non priviligié : RW*/
    /* Fetch désactivé */
-   /* Section : .mk_unprivileged_bss_memory, .mk_unprivileged_data_memory, .process_stack */
+   /* Section : .mk_unprivileged_bss_memory, .mk_unprivileged_data_memory */
    mpu_setRegion ( K_MPU_REGION4, 0x20010000,
                    K_MPU_REGION_SIZE_64KB,
                    K_MPU_TYPE_NORMAL_NOT_SHAREABLE,
@@ -112,7 +112,7 @@ void mk_system_mpu_init ( void )
    /* Mode non priviligié : pas d'accès */
    /* Fetch désactivé */
    /* Section : .main_stack */
-   mpu_setRegion ( K_MPU_REGION5, ( uint32_t ) g_mkMainStack, /* 0x20020000 */
+   mpu_setRegion ( K_MPU_REGION5, ( uint32_t ) 0x20020000, 
                    K_MPU_REGION_SIZE_4KB,
                    K_MPU_TYPE_NORMAL_NOT_SHAREABLE,
                    K_MPU_RW_PRIVILEGED_ACCESS_NO_UNPRIVILEGED_ACCESS |

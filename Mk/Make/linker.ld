@@ -63,14 +63,12 @@ K_MK_PRIVILEGED_DATA_BASE_ADDR = 0x20000000 ;
 
 /* Définition de l'adresse de base des données non privilégiées */
 /* Mémoire K_SRAM1 */
-/* Taille 64512 octets (0xFC00)*/
+/* Taille 65536 octets */
 K_MK_UNPRIVILEGED_DATA_BASE_ADDR = 0x20010000 ;
 
-/* Définition de l'adresse de la stack secondaire (PSP) et principale (MSP) */
-/* La valeur de cette constante est 0x20020000 - sizeof (.process_stack) */
-/* Mémoire K_SRAM1 */
-/* Taille 1024 octets (PSP) + 4096 (MSP) = 0x1400 */
-K_STACK_BASE_ADDR = 0x2001FC00 ; 
+/* Définition de l'adresse de la stack principale (MSP) */
+/* Taille 4096 octets */
+K_STACK_BASE_ADDR = 0x20020000 ; 
 
 /* Définition de l'adresse de base des données DMA priviligiées */
 /* Mémoire K_SRAM1 */
@@ -114,11 +112,9 @@ SECTIONS
    /* ********************************************************************* */
 
    /* Mapping des sections non privilégiées */ 
-   /* Attention, les sections non privilégiée doivent être juxtaposée et */
-   /* délimité par les constantes K_UNPRIVILEGED_MEMORY_START_ADDR et */
+   /* Attention, les sections non privilégiée doivent être juxtaposées et */
+   /* délimitées par les constantes K_UNPRIVILEGED_MEMORY_START_ADDR et */
    /* K_UNPRIVILEGED_MEMORY_END_ADDR. */   
-   /* La stack utilisateur (process) n'est délibérément pas inclus dans */
-   /* cette section. */    
 
    /* Mapping de la section "mk_unprivileged_bss_memory" */ 
    .mk_unprivileged_bss_memory K_MK_UNPRIVILEGED_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 )
@@ -162,33 +158,21 @@ SECTIONS
       K_UNPRIVILEGED_MEMORY_END_ADDR = .;  
 
    } > K_SRAM1 AT> K_FLASH_ITCM 
-               
+
    /* ********************************************************************* */
+
+   /* Section pour la stack MSP */    
    
-   /* Section pour les stacks MSP et PSP */    
-   /* Mapping de la section "stack" */
-   
-   .stack K_STACK_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 ) 
+   .main_stack K_STACK_BASE_ADDR ( NOLOAD ) : ALIGN ( 8 ) 
    { 
-      /* Création d'un symbole contenant l'adresse de fin de la stack */
-      /* secondaire. */
-      K_PROCESS_STACK_END_ADDR = .;
-      
-      KEEP ( *( .process_stack ) ) *( .process_stack );
-      . = ALIGN ( 4 ) ;
-      
-      /* Création d'un symbole contenant l'adresse de début de la stack */
-      /*  secondaire. */
-      K_PROCESS_STACK_START_ADDR = .; 
-      
       /* Création d'un symbole contenant l'adresse de fin de la stack */
       /* principale. */
       K_MAIN_STACK_END_ADDR = .;
          
       KEEP ( *( .main_stack ) ) *( .main_stack );
-      . = ALIGN ( 4 ) ;
+      . = ALIGN ( 8 ) ;
       
-      /* Création d'un symbole contenant l'adresse de fin de la stack */
+      /* Création d'un symbole contenant l'adresse de début de la stack */
       /* principale. */
       K_MAIN_STACK_START_ADDR = .;
          
@@ -239,17 +223,30 @@ SECTIONS
    .data : ALIGN ( 4 ) 
    { 
       /* Création d'un symbole contenant l'adresse de début de la section */
-      /* DATA. */
       K_DATA_START_ADDR = .;
       
       *( .data ) 
       . = ALIGN ( 4 ) ;
       
-      /* Création d'un symbole contenant l'adresse de fin de la mémoire */
-      /* privilégiée. */
+      /* Création d'un symbole contenant l'adresse de fin de la section */
       K_DATA_END_ADDR = .;   
       
    } > K_DTCM_RAM AT> K_FLASH_ITCM
+
+   .process_stack ( NOLOAD ) : ALIGN ( 8 ) 
+   { 
+      /* Création d'un symbole contenant l'adresse de fin de la stack */
+      /* secondaire. */
+      K_PROCESS_STACK_END_ADDR = .;
+      
+      KEEP ( *( .process_stack ) ) *( .process_stack );
+      . = ALIGN ( 8 ) ;
+      
+      /* Création d'un symbole contenant l'adresse de début de la stack */
+      /*  secondaire. */
+      K_PROCESS_STACK_START_ADDR = .; 
+
+   } > K_DTCM_RAM
 
    /* ********************************************************************* */
 
