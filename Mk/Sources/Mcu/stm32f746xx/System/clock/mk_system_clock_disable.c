@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -45,14 +45,16 @@
 void mk_system_clock_disable ( void )
 {
    /* Désactivation des horloges de tous les périphériques sur chaque domaine ( mode normal ) */
-   clock_disable ( K_CLOCK_AHB1, K_CLOCK_AHB1_ALL );
+   /* L'horloge DTC_RAM doit restée active car la pile est située dans cette mémoire.*/
+   clock_disable ( K_CLOCK_AHB1, K_CLOCK_AHB1_ALL & (~K_CLOCK_DTCMRAM) );
    clock_disable ( K_CLOCK_AHB2, K_CLOCK_AHB2_ALL );
    clock_disable ( K_CLOCK_AHB3, K_CLOCK_AHB3_ALL );
    clock_disable ( K_CLOCK_APB1, K_CLOCK_APB1_ALL );
    clock_disable ( K_CLOCK_APB2, K_CLOCK_APB2_ALL );
 
    /* Désactivation des horloges de tous les périphériques sur chaque domaine ( mode Low-Power ) */
-   clock_disableLP ( K_CLOCK_AHB1, K_CLOCK_AHB1_LP_ALL );
+   /* L'horloge DTC_RAM doit restée active car la pile est située dans cette mémoire.*/
+   clock_disableLP ( K_CLOCK_AHB1, K_CLOCK_AHB1_LP_ALL & (~K_CLOCK_DTCMRAM) );
    clock_disableLP ( K_CLOCK_AHB2, K_CLOCK_AHB2_LP_ALL );
    clock_disableLP ( K_CLOCK_AHB3, K_CLOCK_AHB3_LP_ALL );
    clock_disableLP ( K_CLOCK_APB1, K_CLOCK_APB1_LP_ALL );
