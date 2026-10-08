@@ -155,7 +155,8 @@ SECTIONS
 
       /* Création d'un symbole contenant l'adresse de fin de la mémoire non */
       /* privilégiée. */
-      K_UNPRIVILEGED_MEMORY_END_ADDR = .;  
+      /* On le positionne au début de la prochaine section. */
+      K_UNPRIVILEGED_MEMORY_END_ADDR = K_MAIN_STACK_END_ADDR;  
 
    } > K_SRAM1 AT> K_FLASH_ITCM 
 
