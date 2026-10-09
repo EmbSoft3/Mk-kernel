@@ -131,73 +131,76 @@ uint32_t mk_mail_get ( T_mkTask* p_mkTask, T_mkMailSynchro* p_mkPender, T_mkMail
    /* de synchronisation */
    ( void ) p_mkPender;
 
-   /* Si au moins un élément de la boite de messages est disponible */
-   if ( p_mkMail->pender.item != K_MK_NULL )
+   /* Récupération du niveau de privilège de la zone mémoire */
+   l_area  = _mk_memory_isPrivilegedArea ( ( uint32_t* ) p_mkMessage );
+   l_area |= _mk_memory_isPrivilegedArea ( ( uint32_t* ) p_mkMessage + p_mkMail->size - 1 );
+
+   /* La copie du message ne doit pas être effectuée lorsque les 3 conditions ci-dessous sont réunies : */
+   /* - l'appel système n'a pas été réalisé depuis un vecteur d'interruption. */
+   /* - la copie du message n'est pas exclusivement dans la zone non privilégiée. */
+   /* - la tâche qui a réalisé l'appel système n'est pas privilégiée. */
+
+   if ( ( p_mkStatus == K_MK_ISR_NO ) && ( l_area != K_MK_AREA_UNPROTECTED ) &&
+         ( ( p_mkTask->attribute.type & K_MK_TYPE_PRIVILEGED ) == K_MK_TYPE_DEFAULT ) )
    {
-      /* Enregistrement de l'adresse de l'élément à fournir */
-      l_item = p_mkMail->pender.item;
-
-      /* Récupération du niveau de privilège de la zone mémoire */
-      l_area  = _mk_memory_isPrivilegedArea ( ( uint32_t* ) p_mkMessage );
-      l_area |= _mk_memory_isPrivilegedArea ( ( uint32_t* ) p_mkMessage + p_mkMail->size - 1 );
-
-      /* La copie du message ne doit pas être effectuée lorsque les 3 conditions ci-dessous sont réunies : */
-      /* - l'appel système n'a pas été réalisé depuis un vecteur d'interruption. */
-      /* - la copie n'a pas été réalisée intégralement dans la zone non privilégiée. */
-      /* - la tâche qui a réalisé l'appel système n'est pas privilégiée. */
-
-      if ( ( p_mkStatus == K_MK_ISR_NO ) && ( l_area != K_MK_AREA_UNPROTECTED ) &&
-           ( ( p_mkTask->attribute.type & K_MK_TYPE_PRIVILEGED ) == K_MK_TYPE_DEFAULT ) )
-      {
-         /* Déclenchement de la routine de gestion des droits */
-         mk_handler_rightFault ( );
-      }
-
-      /* Sinon */
-      else
-      {
-         /* Copie du message dans la mémoire fournie par l'utilisateur */
-         _copy ( p_mkMessage, l_item->pnt, p_mkMail->size << 2 );
-
-         /* Enregistrement de l'adresse de la tâche qui a posté le message */
-         mk_mail_setTaskAddr ( p_mkTask, p_mkMail );
-      }
-
-      /* Si la totalité des messages posté ont été récupérés */
-      if ( p_mkMail->pender.item->next == K_MK_NULL )
-      {
-         /* Actualisation du pointeur de liste */
-         p_mkMail->poster.item = K_MK_NULL;
-      }
-
-      /* Sinon */
-      else
-      {
-         /* Ne rien faire */
-      }
-
-      /* Actualisation du pointeur de liste contenant les éléments non lus */
-      p_mkMail->pender.item = l_item->next;
-
-      /* Ajout de l'item dans la liste des item non utilisés */
-      l_item->next = p_mkMail->unused.item;
-
-      /* Actualisation du pointeur de la liste contenant les items */
-      /* non utilisés */
-      p_mkMail->unused.item = l_item;
-
-      /* Actualisation de l'objet de synchronisation */
-      mk_mail_setSynchro ( p_mkTask, p_mkMail );
+      /* Déclenchement de la routine de gestion des droits */
+      mk_handler_rightFault ( );
 
       /* Actualisation de la variable de retour */
-      l_result = K_MK_SYNC_OK;
+      l_result = K_MK_SYNC_RIGHT;
    }
 
    /* Sinon */
    else
    {
-      /* Actualisation du pointeur de synchronisation */
-      mk_mail_clearSynchro ( p_mkTask, p_mkMessage );
+      /* Si au moins un élément de la boite de messages est disponible */
+      if ( p_mkMail->pender.item != K_MK_NULL )
+      {
+         /* Enregistrement de l'adresse de l'élément à fournir */
+         l_item = p_mkMail->pender.item;
+
+         /* Copie du message dans la mémoire fournie par l'utilisateur */
+         _copy ( p_mkMessage, l_item->pnt, p_mkMail->size << 2 );
+
+         /* Enregistrement de l'adresse de la tâche qui a posté le message */
+         mk_mail_setTaskAddr ( p_mkTask, p_mkMail );
+
+         /* Si la totalité des messages posté ont été récupérés */
+         if ( p_mkMail->pender.item->next == K_MK_NULL )
+         {
+            /* Actualisation du pointeur de liste */
+            p_mkMail->poster.item = K_MK_NULL;
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Ne rien faire */
+         }
+
+         /* Actualisation du pointeur de liste contenant les éléments non lus */
+         p_mkMail->pender.item = l_item->next;
+
+         /* Ajout de l'item dans la liste des item non utilisés */
+         l_item->next = p_mkMail->unused.item;
+
+         /* Actualisation du pointeur de la liste contenant les items */
+         /* non utilisés */
+         p_mkMail->unused.item = l_item;
+
+         /* Actualisation de l'objet de synchronisation */
+         mk_mail_setSynchro ( p_mkTask, p_mkMail );
+
+         /* Actualisation de la variable de retour */
+         l_result = K_MK_SYNC_OK;
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Actualisation du pointeur de synchronisation */
+         mk_mail_clearSynchro ( p_mkTask, p_mkMessage );
+      }
    }
 
    /* Retour */

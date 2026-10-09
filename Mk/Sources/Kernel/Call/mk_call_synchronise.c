@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -74,11 +74,14 @@ static void mk_call_swapTask ( T_mkSVCObject* p_mkObject )
  * @endinternal
  */
 
-static void mk_call_executeSynchronise ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
+static T_mkCode mk_call_executeSynchronise ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
 {
+   /* Déclaration de la variable de retour*/
+   T_mkCode l_result = K_MK_OK;
+   
    /* Déclaration des variables stockant le type de l'objet, la fonction de synchronisation, */
    /* le prochain état de la tâche et la variable de retour */
-   uint32_t l_type, l_sync, l_state, l_result;
+   uint32_t l_type, l_sync, l_state, l_localResult;
 
    /* Déclaration d'une variable pointant sur la liste des tâches bloquées */
    T_mkList* l_list = ( T_mkList* ) ( ( T_mkAddr* ) p_mkObject->data [ K_MK_OFFSET_UNSYNC_HANDLE ] + 3 );
@@ -90,10 +93,10 @@ static void mk_call_executeSynchronise ( T_mkSVCObject* p_mkObject, uint32_t p_m
    l_type = mk_call_type ( p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ] );
 
    /* Analyse des droits de la tâche qui a exécutée l'appel système */
-   l_result = mk_call_isProtectedArea ( l_type, p_mkStatus );
+   l_localResult = mk_call_isProtectedArea ( l_type, p_mkStatus );
 
    /* Si l'appel système peut être exécutée */
-   if ( l_result == K_MK_AREA_UNPROTECTED )
+   if ( l_localResult == K_MK_AREA_UNPROTECTED )
    {
       /* Actualisation du type de l'objet de synchronisation */
       l_type = l_type & ( uint32_t ) ( ~K_MK_AREA_PROTECTED );
@@ -131,7 +134,7 @@ static void mk_call_executeSynchronise ( T_mkSVCObject* p_mkObject, uint32_t p_m
       }
 
       /* Sinon, l'objet de synchronisation est vérrouillé */
-      else
+      else if ( l_sync == K_MK_SYNC_OK )
       {
          /* Si l'objet de synchronisation est une boite de messages */
          if ( l_type == K_MK_ID_MAIL )
@@ -189,16 +192,31 @@ static void mk_call_executeSynchronise ( T_mkSVCObject* p_mkObject, uint32_t p_m
             /* Ne rien faire */
          }
       }
+
+      /* Sinon, l'objet de synchronisation n'est pas vérrouillé en raison d'un problème de permissions */
+      /* K_MK_SYNC_RIGHT, code dédié aux boites de messages */
+      else if ( l_sync == K_MK_SYNC_RIGHT )
+      {
+         /* Actualisation de la variable de retour */
+         l_result = K_MK_ERROR_RIGHT;
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }
    }
 
    /* Sinon */
    else
    {
-      /* Ne rien faire */
+      /* Actualisation de la variable de retour */
+      l_result = K_MK_ERROR_RIGHT;
    }
 
    /* Retour */
-   return;
+   return ( l_result );
 }
 
 /**
@@ -238,7 +256,7 @@ static T_mkCode mk_call_handleMail ( T_mkSVCObject* p_mkObject, uint32_t p_mkSta
             p_mkObject->data [ K_MK_OFFSET_UNSYNC_HANDLE ] = ( T_mkAddr ) ( &l_mail->pender );
 
             /* Exécution de la séquence de synchronisation */
-            mk_call_executeSynchronise ( p_mkObject, p_mkStatus );
+            l_result = mk_call_executeSynchronise ( p_mkObject, p_mkStatus );
          }
 
          /* Sinon */
@@ -265,7 +283,7 @@ static T_mkCode mk_call_handleMail ( T_mkSVCObject* p_mkObject, uint32_t p_mkSta
             p_mkObject->data [ K_MK_OFFSET_UNSYNC_HANDLE ] = ( T_mkAddr ) ( &l_mail->poster );
 
             /* Exécution de la séquence de synchronisation */
-            mk_call_executeSynchronise ( p_mkObject, p_mkStatus );
+            l_result = mk_call_executeSynchronise ( p_mkObject, p_mkStatus );
          }
 
          /* Sinon */
@@ -331,7 +349,7 @@ static T_mkCode mk_call_handleEvent ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
             p_mkObject->data [ K_MK_OFFSET_SYNC_FUNCTION ] = ( T_mkAddr ) _mk_call_eventToAddr ( mk_event_modify );
 
             /* Exécution de la séquence de synchronisation */
-            mk_call_executeSynchronise ( p_mkObject, p_mkStatus );
+            l_result = mk_call_executeSynchronise ( p_mkObject, p_mkStatus );
          }
       }
 
@@ -342,7 +360,7 @@ static T_mkCode mk_call_handleEvent ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
          p_mkObject->data [ K_MK_OFFSET_SYNC_FUNCTION ] = ( T_mkAddr ) _mk_call_eventToAddr ( mk_event_raz );
 
          /* Exécution de la séquence de synchronisation */
-         mk_call_executeSynchronise ( p_mkObject, p_mkStatus );
+         l_result =mk_call_executeSynchronise ( p_mkObject, p_mkStatus );
       }
 
       /* Sinon */
@@ -368,7 +386,7 @@ static T_mkCode mk_call_handleEvent ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
  * @endinternal
  */
 
-static void mk_call_handlePool ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
+static T_mkCode mk_call_handlePool ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
 {
    /* Déclaration de la variable de retour */
    T_mkCode l_result;
@@ -390,7 +408,7 @@ static void mk_call_handlePool ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus 
          p_mkObject->data [ K_MK_OFFSET_MESSAGE ] = ( T_mkAddr* ) ( &p_mkObject->handle );
 
          /* Exécution de la séquence de synchronisation */
-         mk_call_executeSynchronise ( p_mkObject, p_mkStatus );
+         l_result = mk_call_executeSynchronise ( p_mkObject, p_mkStatus );
       }
 
       /* Sinon */
@@ -407,7 +425,7 @@ static void mk_call_handlePool ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus 
    }
 
    /* Retour */
-   return;
+   return ( l_result );
 }
 
 /**
@@ -416,7 +434,7 @@ static void mk_call_handlePool ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus 
  * @endinternal
  */
 
-static void mk_call_handleMutex ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
+static T_mkCode mk_call_handleMutex ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
 {
    /* Déclaration de la variable de retour */
    T_mkCode l_result;
@@ -435,7 +453,7 @@ static void mk_call_handleMutex ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus
          p_mkObject->data [ K_MK_OFFSET_SYNC_FUNCTION ] = ( T_mkAddr ) _mk_call_mutexToAddr ( mk_mutex_lock );
 
          /* Exécution de la séquence de synchronisation */
-         mk_call_executeSynchronise ( p_mkObject, p_mkStatus );
+         l_result = mk_call_executeSynchronise ( p_mkObject, p_mkStatus );
       }
 
       /* Sinon */
@@ -452,7 +470,7 @@ static void mk_call_handleMutex ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus
    }
 
    /* Retour */
-   return;
+   return ( l_result );
 }
 
 /**
@@ -461,7 +479,7 @@ static void mk_call_handleMutex ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus
  * @endinternal
  */
 
-static void mk_call_handleSemaphore ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
+static T_mkCode mk_call_handleSemaphore ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
 {
    /* Déclaration de la variable de retour */
    T_mkCode l_result;
@@ -480,7 +498,7 @@ static void mk_call_handleSemaphore ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
          p_mkObject->data [ K_MK_OFFSET_SYNC_FUNCTION ] = ( T_mkAddr ) _mk_call_semaphoreToAddr ( mk_semaphore_lock );
 
          /* Exécution de la séquence de synchronisation */
-         mk_call_executeSynchronise ( p_mkObject, p_mkStatus );
+         l_result = mk_call_executeSynchronise ( p_mkObject, p_mkStatus );
       }
 
       /* Sinon */
@@ -497,7 +515,7 @@ static void mk_call_handleSemaphore ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
    }
 
    /* Retour */
-   return;
+   return ( l_result );
 }
 
 /**
@@ -543,21 +561,21 @@ void mk_call_synchronise ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    else if ( p_mkObject->type == K_MK_SYSCALL_SYNCHRO_POOL_ALLOC_FUNCTION )
    {
       /* Analyse et configuration des attributs de l'appel systèmes */
-      mk_call_handlePool ( p_mkObject, p_mkStatus );
+      p_mkObject->result = mk_call_handlePool ( p_mkObject, p_mkStatus );
    }
 
    /* Sinon si l'appel système a été exécuté par la fonction mk_mutex_take */
    else if ( p_mkObject->type == K_MK_SYSCALL_SYNCHRO_MUTEX_TAKE_FUNCTION )
    {
       /* Analyse et configuration des attributs de l'appel systèmes */
-      mk_call_handleMutex ( p_mkObject, p_mkStatus );
+      p_mkObject->result = mk_call_handleMutex ( p_mkObject, p_mkStatus );
    }
 
    /* Sinon si l'appel système a été exécuté par la fonction mk_mutex_take */
    else if ( p_mkObject->type == K_MK_SYSCALL_SYNCHRO_SEMAPHORE_TAKE_FUNCTION )
    {
       /* Analyse et configuration des attributs de l'appel systèmes */
-      mk_call_handleSemaphore ( p_mkObject, p_mkStatus );
+      p_mkObject->result =mk_call_handleSemaphore ( p_mkObject, p_mkStatus );
    }
 
    /* Sinon */

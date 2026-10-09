@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -227,6 +227,8 @@ static void mk_call_executeUnblock ( T_mkSVCObject* p_mkObject, uint32_t p_mkSta
                /* Sinon */
                else
                {
+                  /* Note : le cas K_MK_SYNC_RIGHT ne peut pas arrivée car le buffer de la boite de messages est vérifié */
+                  /* avant de bloquer la tâche. Si le buffer n'est pas valide, la tâche n'est jamais bloquée et l'appel système est annulé. */
                   /* Appel du gestionnaire d'erreur */
                   mk_handler_kernelFault ( K_MK_ERROR_SYNC3, p_mkObject, p_mkStatus );
                }

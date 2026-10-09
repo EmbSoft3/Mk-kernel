@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -169,7 +169,8 @@ typedef enum T_mkSVCSync
 {
    K_MK_SYNC_KO = 0,                                        /*!< Ce code indique que le résultat de la fonction de synchronisation est KO. */
    K_MK_SYNC_OK = 1,                                        /*!< Ce code indique que le résultat de la fonction de synchronisation est OK. */
-   K_MK_SYNC_INHIB = 2                                      /*!< Ce code indique que le résultat de la fonction de synchronisation n'est pas important (interne au noyau). */
+   K_MK_SYNC_INHIB = 2,                                     /*!< Ce code indique que le résultat de la fonction de synchronisation n'est pas important (interne au noyau). */
+   K_MK_SYNC_RIGHT = 3                                      /*!< Ce code indique que la fonction de synchronisation n'a pas été exécutée en raison d'un problème de permissions. */
 } T_mkSVCSync;
 
 /**

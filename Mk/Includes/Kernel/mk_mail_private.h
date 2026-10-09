@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -50,8 +50,9 @@
  *                            depuis un vecteur d'interruption.
  *
  * @return Cette fonction retourne un des codes suivants :
- *         \li \ref K_MK_SYNC_OK : le message a été posté dans la boite.
- *         \li \ref K_MK_SYNC_KO : le message n'a pas été posté dans la boite.
+ *         \li \ref K_MK_SYNC_OK    : le message a été posté dans la boite.
+ *         \li \ref K_MK_SYNC_KO    : le message n'a pas été posté dans la boite.
+ *         \li \ref K_MK_SYNC_RIGHT : le message n'a pas été posté en raison d'un problème de permissions.
  */
 
 uint32_t mk_mail_set ( T_mkTask* p_mkTask, T_mkMailSynchro* p_mkPoster, T_mkMail* p_mkMail, T_mkAddr p_mkMessage, uint32_t p_mkStatus );
@@ -68,8 +69,9 @@ uint32_t mk_mail_set ( T_mkTask* p_mkTask, T_mkMailSynchro* p_mkPoster, T_mkMail
  *                            depuis un vecteur d'interruption ou non.
  *
  * @return Cette fonction retourne un des codes suivants :
- *         \li \ref K_MK_SYNC_OK : le message a été lu.
- *         \li \ref K_MK_SYNC_KO : le message n'a pas été lu.
+ *         \li \ref K_MK_SYNC_OK    : le message a été lu.
+ *         \li \ref K_MK_SYNC_KO    : le message n'a pas été lu.
+ *         \li \ref K_MK_SYNC_RIGHT : le message n'a pas été lu en raison d'un problème de permissions.
  */
 
 uint32_t mk_mail_get ( T_mkTask* p_mkTask, T_mkMailSynchro* p_mkPender, T_mkMail* p_mkMail, T_mkAddr p_mkMessage, uint32_t p_mkStatus );
