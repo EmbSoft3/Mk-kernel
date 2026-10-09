@@ -194,11 +194,9 @@ set_source_files_properties(
     Mk/Sources/Kernel/Handler/mk_handler_callbackFault.c
     Mk/Sources/Kernel/Handler/mk_handler_busFault.c
     Mk/Sources/Kernel/Handler/mk_handler_hardFault.c
-    Mk/Sources/Kernel/Handler/mk_handler_handleFault.c
     Mk/Sources/Kernel/Handler/mk_handler_memFault.c
     Mk/Sources/Kernel/Handler/mk_handler_fpuFault.c
     Mk/Sources/Kernel/Handler/mk_handler_nmiFault.c
-    Mk/Sources/Kernel/Handler/mk_handler_rightFault.c
     Mk/Sources/Kernel/Handler/mk_handler_kernelFault.c
     Mk/Sources/Kernel/Handler/mk_handler_stackFault.c
     Mk/Sources/Kernel/Handler/mk_handler_usageFault.c

@@ -54,11 +54,7 @@ void mk_handler_rightFault ( void )
    /* Sinon */
    else
    {
-      /* Boucle pour toujours */
-      for ( ;; )
-      {
-
-      }
+      /* Ne rien faire */
    }
 
    /* Retour */
