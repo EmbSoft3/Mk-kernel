@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -72,8 +72,8 @@ T_mkCode mk_pool_init ( T_mkPoolArea* p_mkArea, T_mkPool* p_mkPool, uint32_t p_m
  * @param[in]     p_mkUnused2 Ce paramètre n'est pas utilisé mais existe en raison de l'uniformité des objets de synchronisation.
  *
  * @return Cette fonction retourne un des codes suivants :
- *         \li \ref K_MK_SYNC_OK : le message a été posté dans la boite.
- *         \li \ref K_MK_SYNC_KO : le message n'a pas été posté dans la boite.
+ *         \li \ref K_MK_SYNC_OK : le bloc mémoire a été alloué.
+ *         \li \ref K_MK_SYNC_KO : le bloc mémoire n'a pas été alloué car le gestionnaire de taille fixe est vide.
  */
 
 uint32_t mk_pool_take ( T_mkTask* p_mkTask, T_mkPool* p_mkPool, T_mkAddr p_mkUnused1, T_mkAddr* p_mkResult, uint32_t p_mkUnused2 );
@@ -88,7 +88,9 @@ uint32_t mk_pool_take ( T_mkTask* p_mkTask, T_mkPool* p_mkPool, T_mkAddr p_mkUnu
  * @param[in,out] p_mkAddr    Ce paramètre contient l'adresse du bloc de taille fixe à désallouer.
  * @param[in]     p_mkUnused3 Ce paramètre n'est pas utilisé mais existe en raison de l'uniformité des objets de synchronisation.
  *
- * @return Cette fonction retourne le code \ref K_MK_SYNC_OK.
+ * @return Cette fonction retourne un des codes suivants :
+ *         \li \ref K_MK_SYNC_OK    : le bloc mémoire a été désalloué.
+ *         \li \ref K_MK_SYNC_RIGHT : le bloc mémoire n'a pas été désalloué en raison d'un problème de permission.
  *
  */
 

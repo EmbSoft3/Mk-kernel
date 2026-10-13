@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -44,6 +44,12 @@
 
 uint32_t mk_pool_release ( T_mkTask* p_mkUnused1, T_mkPool* p_mkPool, T_mkAddr p_mkUnused2, T_mkAddr p_mkAddr, uint32_t p_mkUnused3 )
 {
+   /* Déclaration de la variable de retour */
+   uint32_t l_result = K_MK_SYNC_OK;
+   
+   /* Déclaration des variables de travail */
+   uint32_t l_right, l_area;
+   
    /* Enregistrement de l'adresse du bloc mémoire à désallouer */
    uint32_t* l_next = ( uint32_t* ) p_mkAddr;
 
@@ -53,13 +59,33 @@ uint32_t mk_pool_release ( T_mkTask* p_mkUnused1, T_mkPool* p_mkPool, T_mkAddr p
    ( void ) p_mkUnused2;
    ( void ) p_mkUnused3;
 
-   /* Ajout de l'élément libéré en tête de liste */
-   *l_next = ( uint32_t ) ( p_mkPool->current );
-   p_mkPool->current = p_mkAddr;
+   /* Récupération du niveau d'exécution du processeur */
+   l_right = _mk_scheduler_privileged ( );
 
-   /* Actualisation du nombre de blocs mémoires disponibles dans le pool */
-   p_mkPool->count = ( uint32_t ) ( p_mkPool->count + 1 );
+   /* Récupération du niveau de privilège de la zone mémoire */
+   l_area = _mk_memory_isPrivilegedArea ( ( uint8_t* ) l_next );
+
+   /* Si une tâche non privilégiée tente d'écrire dans de la mémoire privilégiée */
+   if ( ( l_right == K_MK_MODE_THREAD ) && ( l_area != K_MK_AREA_UNPROTECTED ) )
+   {
+      /* Déclenchement de la routine de gestion des droits */
+      mk_handler_rightFault ( );
+
+      /* Actualisation de la variable de retour */
+      l_result = K_MK_SYNC_RIGHT;
+   }
+
+   /* Sinon */
+   else
+   {
+      /* Ajout de l'élément libéré en tête de liste */
+      *l_next = ( uint32_t ) ( p_mkPool->current );
+      p_mkPool->current = p_mkAddr;
+
+      /* Actualisation du nombre de blocs mémoires disponibles dans le pool */
+      p_mkPool->count = ( uint32_t ) ( p_mkPool->count + 1 );
+   }
 
    /* Retour */
-   return ( K_MK_SYNC_OK );
+   return ( l_result );
 }

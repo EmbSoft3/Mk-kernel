@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -78,7 +78,7 @@ T_mkCode mk_pool_freeSafe ( T_mkPool* p_mkPool, T_mkAddr p_mkAddr )
    T_mkCode l_result = K_MK_OK;
 
    /* Déclaration des variables de travail */
-   uint32_t l_isr, l_right;
+   uint32_t l_isr, l_right, l_area;
 
    /* Si le paramètre est valide */
    if ( ( p_mkPool != K_MK_NULL ) && ( p_mkAddr != K_MK_NULL ) )
@@ -92,9 +92,12 @@ T_mkCode mk_pool_freeSafe ( T_mkPool* p_mkPool, T_mkAddr p_mkAddr )
          /* Récupération des droits d'exécution */
          l_right = _mk_scheduler_privileged ( );
 
+         /* Récupération du niveau de privilège de la zone mémoire à désallouer */
+         l_area = _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkAddr );
+
          /* Si la tâche possède les droits suffisants pour réaliser l'appel système */
          if ( ( l_right == K_MK_MODE_HANDLER ) || ( ( l_right == K_MK_MODE_THREAD ) &&
-            ( ( p_mkPool->type & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) ) )
+            ( ( p_mkPool->type & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) && ( l_area == K_MK_AREA_UNPROTECTED ) ) )
          {
             /* Déclenchement d'une requête SVC */
             mk_pool_call ( p_mkPool, p_mkAddr );

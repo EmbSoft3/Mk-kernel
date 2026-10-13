@@ -98,11 +98,24 @@ void mk_call_createPool ( T_mkSVCObject* p_mkObject )
    if ( ( l_area != K_MK_NULL ) && ( l_count != 0 ) && ( l_size != 0 ) )
    {
       /* Récupération du type de la zone où la pool sera créée*/
-      l_privilegedArea = _mk_memory_isPrivilegedArea ( ( uint32_t* ) l_area->currentAddr );
-      l_privilegedArea |= _mk_memory_isPrivilegedArea ( ( uint32_t* ) l_area->lastAddr );
+      l_privilegedArea  = _mk_memory_isPrivilegedArea ( ( uint8_t* ) l_area );
+      l_privilegedArea |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) l_area + sizeof ( T_mkPoolArea ) - 1 );
+      
+      /* Si l'argument fourni par l'utilisateur est en zone non privilégiée */
+      if ( l_privilegedArea != K_MK_AREA_PROTECTED )
+      {
+         l_privilegedArea |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) l_area->currentAddr );
+         l_privilegedArea |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) l_area->lastAddr );
+      }
+      
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }  
       
       /* Si la pool est dans une zone privilégiée et si l'appel système a été réalisé par une tâche non privilégiée */
-      if ( ( l_right == K_MK_MODE_THREAD ) && ( l_privilegedArea == K_MK_AREA_PROTECTED ) )
+      if ( ( l_right == K_MK_MODE_THREAD ) && ( l_privilegedArea != K_MK_AREA_UNPROTECTED ) )
       {
          /* Déclenchement de la routine gérant les conflits */
          mk_handler_rightFault ( );

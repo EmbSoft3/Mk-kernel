@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -56,6 +56,7 @@ uint32_t mk_pool_take ( T_mkTask* p_mkTask, T_mkPool* p_mkPool, T_mkAddr p_mkUnu
    if ( p_mkPool->current != K_MK_NULL )
    {
       /* Actualisation de la variable de retour */
+      /* Le résultat n'est pas écrit dans la variable utilisateur mais dans p_mkObject->handle */
       *p_mkResult = p_mkPool->current;
 
       /* Actualisation du pointeur de blocs avec l'adresse du prochain bloc disponible */
@@ -75,6 +76,7 @@ uint32_t mk_pool_take ( T_mkTask* p_mkTask, T_mkPool* p_mkPool, T_mkAddr p_mkUnu
    else
    {
       /* Actualisation de la variable de retour */
+      /* Le résultat n'est pas écrit dans la variable utilisateur mais dans p_mkObject->handle */
       *p_mkResult = K_MK_NULL;
 
       /* Actualisation du pointeur de synchronisation */
