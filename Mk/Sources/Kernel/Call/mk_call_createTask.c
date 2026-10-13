@@ -180,8 +180,8 @@ static T_mkCode mk_call_createStack ( T_mkTask* p_mkTask, uint32_t p_mkType, uin
          if ( l_lastAddr < 0x100000000 )
          {
             /* Récupération du type de la zone où la stack sera créée */
-            l_privilegedArea  = _mk_memory_isPrivilegedArea ( p_mkStackAddr );
-            l_privilegedArea |= _mk_memory_isPrivilegedArea ( ( uint32_t* ) p_mkStackAddr + p_mkStackSize - 1 );
+            l_privilegedArea  = _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkStackAddr );
+            l_privilegedArea |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkStackAddr + ( p_mkStackSize << 2 ) - 1 );
             
             /* Si une tâche non privilégiée tente d'accéder à une zone privilégiée */
             if ( ( p_mkStatus == K_MK_ISR_NO ) && ( l_right == K_MK_MODE_THREAD ) && ( l_privilegedArea == K_MK_AREA_PROTECTED ) )
