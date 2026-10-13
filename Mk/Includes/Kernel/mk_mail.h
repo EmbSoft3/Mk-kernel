@@ -40,8 +40,6 @@
 /**
  * @fn T_mkCode mk_mail_create ( T_mkMail* p_mkMail, T_mkPoolArea* p_mkMsgArea, uint32_t p_mkMsgSize, uint32_t p_mkMsgNumber );
  * @brief Cette fonction alloue puis initialise une boite de messages de type \ref T_mkMail. Elle alloue "p_mkMsgNumber" messages de taille "p_mkMsgSize".\n
- *        Pour chaque message, une zone mémoire additionnelle de taille \ref MK_MAIL_ITEM_SIZE est nécessaire.
- *        La taille mémoire des "n" messages alloués dans la boite est : \n Taille = ( p_mkMsgSize + \ref MK_MAIL_ITEM_SIZE ) * p_mkMsgNumber.
  *
  * @param[out] p_mkMail      Ce paramètre contient l'adresse d'une boite de messages de type \ref T_mkMail.
  * @param[in]  p_mkAreaType  Ce paramètre contient le type de la zone mémoire \ref T_mkMail. Les constantes suivantes peuvent être utilisées :

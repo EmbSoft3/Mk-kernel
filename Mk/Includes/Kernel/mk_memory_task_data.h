@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -60,6 +60,14 @@ extern T_mkAreaPool g_mkAreaPool ;
  */
 
 extern T_mkMailPool g_mkMailPool ;
+
+/**
+ * @fn T_mkMailItemPool g_mkMailItemPool;
+ * @brief Déclaration du gestionnaire mémoire contenant les items d'une boites de messages.
+ *
+ */
+
+extern T_mkMailItemPool g_mkMailItemPool ;
 
 /**
  * @fn T_mkEventPool g_mkEventPool;

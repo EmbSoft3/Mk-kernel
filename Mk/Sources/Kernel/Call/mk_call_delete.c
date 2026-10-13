@@ -42,6 +42,89 @@
  * @endinternal
  */
 
+static T_mkCode mk_call_deleteMail ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, uint32_t p_mkNumberOfObject, uint32_t p_mkObjectSize, T_mkMail* p_mkMail, uint32_t p_mkStatus )
+{
+   /* Déclaration de la variable de retour */
+   T_mkCode l_result;
+
+   /* Déclaration de variables stockant le type de l'objet de synchronisation */
+   uint32_t l_type;
+
+   /* Déclaration des pointeurs d'items */
+   T_mkMailItem* l_previousItem = K_MK_NULL, *l_currentItem = K_MK_NULL;
+
+   /* Vérification de la validité de l'instance */
+   l_result = mk_call_isValidHandle ( p_mkArea, p_mkNumberOfObject, p_mkObjectSize, ( T_mkAddr ) p_mkMail );
+
+   /* Si le sémaphore est valide */
+   if ( l_result == K_MK_OK )
+   {
+      /* Récupération du type de l'objet de synchronisation */
+      l_type = mk_call_type ( ( T_mkAddr ) p_mkMail );
+
+      /* Analyse des droits de la tâche qui a exécutée l'appel système */
+      l_type = mk_call_isProtectedArea ( l_type, p_mkStatus );
+
+      /* Si l'appel système peut être exécutée */
+      if ( l_type == K_MK_AREA_UNPROTECTED )
+      {
+         /* Désallocation de la chaine d'items non utilisés */
+         l_previousItem = p_mkMail->unused.item;
+         
+         while ( l_previousItem != K_MK_NULL )
+         {
+            l_currentItem = l_previousItem->next;
+            ( void ) mk_pool_free ( &g_mkMailItemPool.pool, ( T_mkAddr ) l_previousItem );
+            l_previousItem = l_currentItem;
+         } 
+
+         /* Désallocation de la chaine d'items du poster */
+         l_previousItem = p_mkMail->poster.item;
+         
+         while ( l_previousItem != K_MK_NULL )
+         {
+            l_currentItem = l_previousItem->next;
+            ( void ) mk_pool_free ( &g_mkMailItemPool.pool, ( T_mkAddr ) l_previousItem );
+            l_previousItem = l_currentItem;
+         } 
+
+         /* Désallocation de la chaine d'items du pender */
+         l_previousItem = p_mkMail->pender.item;
+         
+         while ( l_previousItem != K_MK_NULL )
+         {
+            l_currentItem = l_previousItem->next;
+            ( void ) mk_pool_free ( &g_mkMailItemPool.pool, ( T_mkAddr ) l_previousItem );
+            l_previousItem = l_currentItem;
+         } 
+         
+         /* Désallocation de l'objet de synchronisation */
+         l_result = mk_pool_free ( p_mkPool, ( T_mkAddr ) p_mkMail );
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }
+   }
+
+   /* Sinon */
+   else
+   {
+      /* Ne rien faire */
+   }
+
+   /* Retour */
+   return ( l_result );
+}
+
+/**
+ * @internal
+ * @brief
+ * @endinternal
+ */
+
 static T_mkCode mk_call_deleteObject ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, uint32_t p_mkNumberOfObject, uint32_t p_mkObjectSize, T_mkAddr p_mkHandle, uint32_t p_mkStatus )
 {
    /* Déclaration de la variable de retour */
@@ -114,7 +197,7 @@ void mk_call_delete ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    else if ( p_mkObject->type == K_MK_SYSCALL_DELETE_MAIL_FUNCTION )
    {
       /* Destruction de la boite de messages */
-      p_mkObject->result = mk_call_deleteObject ( &g_mkMailPool.pool, ( T_mkAddr ) &g_mkMailPool.mail [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_MAILS,
+      p_mkObject->result = mk_call_deleteMail ( &g_mkMailPool.pool, ( T_mkAddr ) &g_mkMailPool.mail [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_MAILS,
                            sizeof ( T_mkMail ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ], p_mkStatus );
    }
 

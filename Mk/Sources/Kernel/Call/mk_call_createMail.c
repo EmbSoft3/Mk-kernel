@@ -42,8 +42,17 @@
  * @endinternal
  */
 
-static void mk_call_initMail ( T_mkMail* p_mkMail, uint32_t p_mkAreaType, uint32_t p_mkItemSize )
+static T_mkCode mk_call_initMail ( T_mkMail* p_mkMail, uint32_t p_mkAreaType, uint32_t p_mkItemNumber, uint32_t p_mkItemSize, T_mkAddr p_mkAddr )
 {
+   /* Déclaration de la variable de retour */
+   T_mkCode l_result = K_MK_OK;
+
+   /* Déclaration des pointeurs d'items */
+   T_mkMailItem* l_previousItem = K_MK_NULL, *l_newItem = K_MK_NULL;
+
+   /* Déclaration d'un compteur */
+   uint32_t l_counter;
+   
    /* Initialisation des attributs de communication de la boite de messages */
    p_mkMail->unused.item = K_MK_NULL;
 
@@ -55,11 +64,89 @@ static void mk_call_initMail ( T_mkMail* p_mkMail, uint32_t p_mkAreaType, uint32
    p_mkMail->poster.pendingList.current = K_MK_NULL;
    p_mkMail->pender.pendingList.current = K_MK_NULL;
 
-   /* Initialisation de la taille des messages de la boite de messages */
-   p_mkMail->size = p_mkItemSize;
+   /* Initialisation du nombre et de la taille des messages de la boite */
+   p_mkMail->msgSize = p_mkItemSize;
+   p_mkMail->msgNumber = p_mkItemNumber;
+
+   /* Initialisation de l'adresse de base de la zone de messages */
+   p_mkMail->msgAddr = p_mkAddr;
+
+   /* Vérification du nombre de messages disponibles dans la pool */
+   if ( g_mkMailItemPool.pool.count >= p_mkItemNumber)
+   {
+      /* Pour le nombre d'items devant être alloués */
+      for ( l_counter = 0 ; ( l_counter < p_mkItemNumber ) && ( l_result == K_MK_OK ) ; l_counter++ )
+      {
+         /* Allocation d'un item */
+         l_newItem = mk_pool_alloc ( &g_mkMailItemPool.pool, K_MK_POOL_NO_CLEAR ); 
+         
+         /* Si l'allocation a réussie */
+         if ( l_newItem != K_MK_NULL )
+         {
+            /* Configuration des attributs de l'item */
+            l_newItem->task = K_MK_NULL;
+            l_newItem->next = K_MK_NULL;
+            l_newItem->pnt = ( uint32_t* ) p_mkAddr;
+                     
+            /* Si le premier item vient d'être créé */
+            if ( l_previousItem == K_MK_NULL )
+            {
+               /* Le premier item doit être enregistré dans la structure de la boite de messages */
+               p_mkMail->unused.item = l_newItem;
+            }
+
+            /* Sinon */
+            else
+            {
+               /* On configure l'élément suivant du pointeur précédent */
+               l_previousItem->next = l_newItem;
+            }
+
+            /* Enregistrement de l'adresse de l'item */
+            l_previousItem = l_newItem;
+
+            /* Actualisation de l'adresse du prochain message */
+            p_mkAddr = ( uint32_t* ) ( ( uint32_t* ) p_mkAddr + p_mkItemSize );
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Actualisation de la variable de retour */
+            l_result = K_MK_ERROR_MALLOC;
+         }
+      }
+
+      /* Si une erreur s'est produite */
+      if ( l_result != K_MK_OK )
+      {
+         /* Désallocation de la chaine d'items */
+         l_previousItem = p_mkMail->unused.item;
+         
+         while ( l_previousItem != K_MK_NULL )
+         {
+            l_newItem = l_previousItem->next;
+            ( void ) mk_pool_free ( &g_mkMailItemPool.pool, ( T_mkAddr ) l_previousItem );
+            l_previousItem = l_newItem;
+         } 
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }
+   }
+
+   /* Sinon */
+   else
+   {
+      /* Actualisation de la variable de retour */
+      l_result = K_MK_ERROR_MALLOC;
+   }
 
    /* Retour */
-   return;
+   return ( l_result );
 }
 
 /**
@@ -97,11 +184,24 @@ void mk_call_createMail ( T_mkSVCObject* p_mkObject )
    if ( ( l_area != K_MK_NULL ) && ( l_msgSize != 0 ) && ( l_msgNumber != 0 ) )
    {
       /* Récupération du type de la zone où la pool sera créée*/
-      l_privilegedArea = _mk_memory_isPrivilegedArea ( ( uint32_t* ) l_area->currentAddr );
-      l_privilegedArea |= _mk_memory_isPrivilegedArea ( ( uint32_t* ) l_area->lastAddr );
+      l_privilegedArea  = _mk_memory_isPrivilegedArea ( ( uint8_t* ) l_area );
+      l_privilegedArea |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) l_area + sizeof ( T_mkPoolArea ) - 1 );
+
+      /* Si l'argument fourni par l'utilisateur est en zone non privilégiée */
+      if ( l_privilegedArea != K_MK_AREA_PROTECTED )
+      {
+         l_privilegedArea |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) l_area->currentAddr );
+         l_privilegedArea |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) l_area->lastAddr );
+      }
+      
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }      
       
       /* Si la pool est dans une zone privilégiée et si l'appel système a été réalisé par une tâche non privilégiée */
-      if ( ( l_right == K_MK_MODE_THREAD ) && ( l_privilegedArea == K_MK_AREA_PROTECTED ) )
+      if ( ( l_right == K_MK_MODE_THREAD ) && ( l_privilegedArea != K_MK_AREA_UNPROTECTED ) )
       {
          /* Déclenchement de la routine gérant les conflits */
          mk_handler_rightFault ( );
@@ -130,10 +230,21 @@ void mk_call_createMail ( T_mkSVCObject* p_mkObject )
                if ( l_mail != K_MK_NULL )
                {
                   /* Initialisation de la boite de messages */
-                  mk_call_initMail ( l_mail, l_type, l_msgSize );
+                  p_mkObject->result = mk_call_initMail ( l_mail, l_type, l_msgNumber, l_msgSize, l_area->currentAddr );
+                  
+                  /* Si une erreur s'est produite */
+                  if ( p_mkObject->result != K_MK_OK )
+                  {
+                     /* Libération de la mémoire allouée*/
+                     ( void ) mk_pool_free ( &g_mkMailPool.pool, ( T_mkAddr ) l_mail );
+                     l_mail = K_MK_NULL;
+                  }
 
-                  /* Initialisation des éléments et des sous-éléments de la boite de messages */
-                  l_mail->unused.item = l_area->currentAddr;
+                  /* Sinon */
+                  else
+                  {
+                     /* Ne rien faire */
+                  }               
                }
 
                /* Sinon */

@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -117,71 +117,6 @@ T_mkCode mk_memory_init ( void )
       {
          /* Initialisation des boites de messages du noyau */
          l_result = mk_memory_initPool ( &g_mkMailPool.area, &g_mkMailPool.pool, ( T_mkAddr ) &g_mkMailPool.mail [ 0 ], ( sizeof ( T_mkMail ) >> 2 ), K_MK_SCHEDULER_MAX_NUMBER_OF_MAILS );
-
-         /* Si aucune erreur ne s'est produite */
-         if ( l_result == K_MK_OK )
-         {
-            /* Initialisation des champs d'événements du noyau */
-            l_result = mk_memory_initPool ( &g_mkEventPool.area, &g_mkEventPool.pool, ( T_mkAddr ) &g_mkEventPool.event [ 0 ], ( sizeof ( T_mkEvent ) >> 2 ), K_MK_SCHEDULER_MAX_NUMBER_OF_EVENTS );
-
-            /* Si aucune erreur ne s'est produite */
-            if ( l_result == K_MK_OK )
-            {
-               /* Initialisation des mutex du noyau */
-               l_result = mk_memory_initPool ( &g_mkMutexPool.area, &g_mkMutexPool.pool, ( T_mkAddr ) &g_mkMutexPool.mutex [ 0 ], ( sizeof ( T_mkMutex ) >> 2 ), K_MK_SCHEDULER_MAX_NUMBER_OF_MUTEX );
-
-               /* Si aucune erreur ne s'est produite */
-               if ( l_result == K_MK_OK )
-               {
-                  /* Initialisation des sémaphores du noyau */
-                  l_result = mk_memory_initPool ( &g_mkSemaphorePool.area, &g_mkSemaphorePool.pool, ( T_mkAddr ) &g_mkSemaphorePool.semaphore [ 0 ], ( sizeof ( T_mkSemaphore ) >> 2 ), K_MK_SCHEDULER_MAX_NUMBER_OF_SEMAPHORES );
-
-                  /* Si aucune erreur ne s'est produite */
-                  if ( l_result == K_MK_OK )
-                  {
-                     /* Initialisation des fonctions de rappel du noyau */
-                     l_result = mk_memory_initPool ( &g_mkCallbackFunctionPool.area, &g_mkCallbackFunctionPool.pool, ( T_mkAddr ) &g_mkCallbackFunctionPool.callback [ 0 ], ( sizeof ( T_mkCallback ) >> 2 ), K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTION );
-
-                     /* Si aucune erreur ne s'est produite */
-                     if ( l_result == K_MK_OK )
-                     {
-                        /* Initialisation des gestionnaire de rappel du noyau */
-                        l_result = mk_memory_initPool ( &g_mkCallbackHandlerPool.area, &g_mkCallbackHandlerPool.pool, ( T_mkAddr ) &g_mkCallbackHandlerPool.handler [ 0 ], ( sizeof ( T_mkCallbackHandler ) >> 2 ), K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLER );
-                     }
-
-                     /* Sinon */
-                     else
-                     {
-                        /* Ne rien faire */
-                     }
-                  }
-
-                  /* Sinon */
-                  else
-                  {
-                     /* Ne rien faire */
-                  }
-               }
-
-               /* Sinon */
-               else
-               {
-                  /* Ne rien faire */
-               }
-            }
-
-            /* Sinon */
-            else
-            {
-               /* Ne rien faire */
-            }
-         }
-
-         /* Sinon */
-         else
-         {
-            /* Ne rien faire */
-         }
       }
 
       /* Sinon */
@@ -189,6 +124,85 @@ T_mkCode mk_memory_init ( void )
       {
          /* Ne rien faire */
       }
+
+      /* Si aucune erreur ne s'est produite */
+      if ( l_result == K_MK_OK )
+      {
+         /* Initialisation des boites de messages du noyau */
+         l_result = mk_memory_initPool ( &g_mkMailItemPool.area, &g_mkMailItemPool.pool, ( T_mkAddr ) &g_mkMailItemPool.item [ 0 ], ( sizeof ( T_mkMailItem ) >> 2 ), K_MK_SCHEDULER_MAX_NUMBER_OF_ITEMS );
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }
+
+      /* Si aucune erreur ne s'est produite */
+      if ( l_result == K_MK_OK )
+      {
+         /* Initialisation des champs d'événements du noyau */
+         l_result = mk_memory_initPool ( &g_mkEventPool.area, &g_mkEventPool.pool, ( T_mkAddr ) &g_mkEventPool.event [ 0 ], ( sizeof ( T_mkEvent ) >> 2 ), K_MK_SCHEDULER_MAX_NUMBER_OF_EVENTS );
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }
+            
+      /* Si aucune erreur ne s'est produite */
+      if ( l_result == K_MK_OK )
+      {
+         /* Initialisation des mutex du noyau */
+         l_result = mk_memory_initPool ( &g_mkMutexPool.area, &g_mkMutexPool.pool, ( T_mkAddr ) &g_mkMutexPool.mutex [ 0 ], ( sizeof ( T_mkMutex ) >> 2 ), K_MK_SCHEDULER_MAX_NUMBER_OF_MUTEX );
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }
+
+      /* Si aucune erreur ne s'est produite */
+      if ( l_result == K_MK_OK )
+      {
+         /* Initialisation des sémaphores du noyau */
+         l_result = mk_memory_initPool ( &g_mkSemaphorePool.area, &g_mkSemaphorePool.pool, ( T_mkAddr ) &g_mkSemaphorePool.semaphore [ 0 ], ( sizeof ( T_mkSemaphore ) >> 2 ), K_MK_SCHEDULER_MAX_NUMBER_OF_SEMAPHORES );
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }
+
+      /* Si aucune erreur ne s'est produite */
+      if ( l_result == K_MK_OK )
+      {
+         /* Initialisation des fonctions de rappel du noyau */
+         l_result = mk_memory_initPool ( &g_mkCallbackFunctionPool.area, &g_mkCallbackFunctionPool.pool, ( T_mkAddr ) &g_mkCallbackFunctionPool.callback [ 0 ], ( sizeof ( T_mkCallback ) >> 2 ), K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTION );
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }
+
+      /* Si aucune erreur ne s'est produite */
+      if ( l_result == K_MK_OK )
+      {
+         /* Initialisation des gestionnaire de rappel du noyau */
+         l_result = mk_memory_initPool ( &g_mkCallbackHandlerPool.area, &g_mkCallbackHandlerPool.pool, ( T_mkAddr ) &g_mkCallbackHandlerPool.handler [ 0 ], ( sizeof ( T_mkCallbackHandler ) >> 2 ), K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLER );
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }
+
    }
 
    /* Sinon */

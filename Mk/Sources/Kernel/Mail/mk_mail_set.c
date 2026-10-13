@@ -112,9 +112,13 @@ uint32_t mk_mail_set ( T_mkTask* p_mkTask, T_mkMailSynchro* p_mkPoster, T_mkMail
    /* Récupération du niveau d'exécution du processeur */
    l_right = _mk_scheduler_privileged ( );
 
-   /* Récupération du niveau de privilège de la zone mémoire */
-   l_area  = _mk_memory_isPrivilegedArea ( ( uint32_t* ) p_mkMail->unused.item->pnt );
-   l_area |= _mk_memory_isPrivilegedArea ( ( uint32_t* ) p_mkMail->unused.item->pnt + p_mkMail->size - 1 );
+   /* Récupération du niveau de privilège de la zone mémoire de la boite de messages */
+   l_area  = _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkMail->msgAddr );
+   l_area |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkMail->msgAddr + ( p_mkMail->msgNumber * ( p_mkMail->msgSize << 2 ) ) - 1 );
+   
+   /* On teste aussi le buffer utilisateur pour qu'une tâche non privilégiée ne lise pas de la mémoire privilégiée */
+   l_area |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkMessage );
+   l_area |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkMessage + ( p_mkMail->msgSize << 2 ) - 1 );
 
    /* La copie du message ne doit pas être effectuée lorsque les conditions ci-dessous sont réunies : */
    /* - l'appel système n'a pas été réalisé depuis un vecteur d'interruption. */
@@ -140,7 +144,7 @@ uint32_t mk_mail_set ( T_mkTask* p_mkTask, T_mkMailSynchro* p_mkPoster, T_mkMail
          p_mkMail->unused.item->task = p_mkTask;
 
          /* Copie du message utilisateur dans le nouvel item */
-         _copy ( p_mkMail->unused.item->pnt, p_mkMessage, p_mkMail->size << 2 );
+         _copy ( p_mkMail->unused.item->pnt, p_mkMessage, p_mkMail->msgSize << 2 );
 
          /* Si un item est déjà présent dans la liste */
          if ( p_mkMail->poster.item != K_MK_NULL )

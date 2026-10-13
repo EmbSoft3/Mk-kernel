@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -86,7 +86,9 @@ struct T_mkMail
    T_mkMailSynchro poster;             /*!< Ce membre contient l'objet de synchronisation gérant les écritures dans la boite de messages. */
    T_mkMailSynchro pender;             /*!< Ce membre contient l'objet de synchronisation gérant les lectures dans la boite de messages. */
    T_mkMailList unused;                /*!< Ce membre contient les éléments de la boite de messages qui sont disponibles pour écriture. */
-   uint32_t size;                      /*!< Ce membre contient la taille des messages de la boite. */
+   T_mkAddr msgAddr;                   /*!< Ce membre contient l'adresse de base de la zone contenant les messages. */
+   uint32_t msgNumber;                 /*!< Ce membre contient le nombre total de messages dans la boite. */
+   uint32_t msgSize;                   /*!< Ce membre contient la taille des messages de la boite. */
 };
 
 /**

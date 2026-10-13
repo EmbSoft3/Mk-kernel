@@ -132,8 +132,8 @@ uint32_t mk_mail_get ( T_mkTask* p_mkTask, T_mkMailSynchro* p_mkPender, T_mkMail
    ( void ) p_mkPender;
 
    /* Récupération du niveau de privilège de la zone mémoire */
-   l_area  = _mk_memory_isPrivilegedArea ( ( uint32_t* ) p_mkMessage );
-   l_area |= _mk_memory_isPrivilegedArea ( ( uint32_t* ) p_mkMessage + p_mkMail->size - 1 );
+   l_area  = _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkMessage );
+   l_area |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkMessage + ( p_mkMail->msgSize << 2 ) - 1 );
 
    /* La copie du message ne doit pas être effectuée lorsque les 3 conditions ci-dessous sont réunies : */
    /* - l'appel système n'a pas été réalisé depuis un vecteur d'interruption. */
@@ -160,7 +160,7 @@ uint32_t mk_mail_get ( T_mkTask* p_mkTask, T_mkMailSynchro* p_mkPender, T_mkMail
          l_item = p_mkMail->pender.item;
 
          /* Copie du message dans la mémoire fournie par l'utilisateur */
-         _copy ( p_mkMessage, l_item->pnt, p_mkMail->size << 2 );
+         _copy ( p_mkMessage, l_item->pnt, p_mkMail->msgSize << 2 );
 
          /* Enregistrement de l'adresse de la tâche qui a posté le message */
          mk_mail_setTaskAddr ( p_mkTask, p_mkMail );

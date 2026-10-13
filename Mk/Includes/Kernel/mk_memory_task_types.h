@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -74,6 +74,19 @@ struct T_mkMailPool
    T_mkPoolArea area;                                                                           /*!< Ce membre contient les caractéristiques mémoire du gestionnaire d'allocation dynamique des boites de messages. */
    T_mkPool pool;                                                                               /*!< Ce membre contient le gestionnaire mémoire utilisé pour allouer dynamiquement les boites de messages. */
    T_mkMail mail [ K_MK_SCHEDULER_MAX_NUMBER_OF_MAILS ];                                        /*!< Ce membre contient la mémoire dédiée aux boites de messages. */
+};
+
+/**
+ * @struct T_mkMailItemPool
+ * @brief Déclaration de la structure T_mkMailItemPool.
+ */
+
+typedef struct T_mkMailItemPool T_mkMailItemPool;
+struct T_mkMailItemPool
+{
+   T_mkPoolArea area;                                                                           /*!< Ce membre contient les caractéristiques mémoire du gestionnaire d'allocation dynamique des items des boites de messages. */
+   T_mkPool pool;                                                                               /*!< Ce membre contient le gestionnaire mémoire utilisé pour allouer dynamiquement les items des boites de messages. */
+   T_mkMailItem item [ K_MK_SCHEDULER_MAX_NUMBER_OF_ITEMS ];                                    /*!< Ce membre contient la mémoire dédiée aux items des boites de messages. */
 };
 
 /**

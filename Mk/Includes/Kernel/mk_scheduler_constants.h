@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -89,7 +89,7 @@
  *        valeur 0.
  */
 
-#define K_MK_SCHEDULER_MAX_NUMBER_OF_POOLS 48
+#define K_MK_SCHEDULER_MAX_NUMBER_OF_POOLS 32
 
 /**
  * @def K_MK_SCHEDULER_MAX_NUMBER_OF_POOLS
@@ -98,7 +98,16 @@
  *        valeur 0.
  */
 
-#define K_MK_SCHEDULER_MAX_NUMBER_OF_MAILS 48
+#define K_MK_SCHEDULER_MAX_NUMBER_OF_MAILS 32
+
+/**
+ * @def K_MK_SCHEDULER_MAX_NUMBER_OF_ITEMS
+ * @brief Cette constante définit le nombre total d'items de boites de messages pouvant être allouées.
+ *        Cette constante peut être modifiée par l'utilisateur. Elle doit être différente de la
+ *        valeur 0 et supérieure à \ref K_MK_SCHEDULER_MAX_NUMBER_OF_MAILS.
+ */
+
+#define K_MK_SCHEDULER_MAX_NUMBER_OF_ITEMS 128
 
 /**
  * @def K_MK_SCHEDULER_MAX_NUMBER_OF_EVENTS
@@ -107,7 +116,7 @@
  *        valeur 0.
  */
 
-#define K_MK_SCHEDULER_MAX_NUMBER_OF_EVENTS 128
+#define K_MK_SCHEDULER_MAX_NUMBER_OF_EVENTS 32
 
 /**
  * @def K_MK_SCHEDULER_MAX_NUMBER_OF_MUTEX
@@ -116,7 +125,7 @@
  *        valeur 0.
  */
 
-#define K_MK_SCHEDULER_MAX_NUMBER_OF_MUTEX 48
+#define K_MK_SCHEDULER_MAX_NUMBER_OF_MUTEX 32
 
 /**
  * @def K_MK_SCHEDULER_MAX_NUMBER_OF_SEMAPHORES
@@ -134,7 +143,7 @@
  *        valeur 0.
  */
 
-#define K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLER 48
+#define K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLER 32
 
 /**
  * @def K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTION
@@ -143,7 +152,7 @@
  *        valeur 0.
  */
 
-#define K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTION 48
+#define K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTION 32
 
 /**
  * @def K_MK_SCHEDULER_PRIORITY_NUMBER

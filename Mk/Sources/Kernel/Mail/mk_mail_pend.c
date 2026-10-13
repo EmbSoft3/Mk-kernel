@@ -119,8 +119,8 @@ T_mkCode mk_mail_pend ( T_mkTask** p_mkTask, T_mkMail* p_mkMail, T_mkAddr p_mkMe
          l_right = _mk_scheduler_privileged ( );
 
          /* Récupération du niveau de privilège de la zone mémoire */
-         l_area  = _mk_memory_isPrivilegedArea ( ( uint32_t* ) p_mkMessage );
-         l_area |= _mk_memory_isPrivilegedArea ( ( uint32_t* ) p_mkMessage + p_mkMail->size - 1 );
+         l_area  = _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkMessage );
+         l_area |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkMessage + ( p_mkMail->msgSize << 2 ) - 1 );
 
          /* Si la tâche possède les droits suffisants pour réaliser l'appel système */
          if ( ( l_right == K_MK_MODE_HANDLER ) || ( ( l_right == K_MK_MODE_THREAD ) &&

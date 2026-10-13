@@ -61,6 +61,14 @@ K_MK_PRIVILEGED_RO_MEMORY T_mkAreaPool g_mkAreaPool ;
 K_MK_PRIVILEGED_RO_MEMORY T_mkMailPool g_mkMailPool ;
 
 /**
+ * @fn T_mkMailItemPool g_mkMailItemPool;
+ * @brief Déclaration du gestionnaire mémoire contenant les items d'une boites de messages.
+ *
+ */
+
+K_MK_PRIVILEGED_RO_MEMORY T_mkMailItemPool g_mkMailItemPool ;
+
+/**
  * @fn T_mkEventPool g_mkEventPool;
  * @brief Déclaration du gestionnaire mémoire contenant les champs d'événements du noyau.
  *

@@ -66,21 +66,12 @@
 #include "mk_semaphore.h"
 #include "mk_mutex_types.h"
 #include "mk_mutex.h"
-#include "mk_mail_constants.h"
 #include "mk_mail_types.h"
 #include "mk_mail.h"
 #include "mk_callback_constants.h"
 #include "mk_callback_types.h"
 #include "mk_callback.h"
 #include "mk_kernel.h"
-
-/**
- *
- */
-
-#include "mk_utils_string.h"
-#include "mk_utils_utf.h"
-#include "mk_utils.h"
 
 /**
  *

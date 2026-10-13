@@ -79,7 +79,6 @@
 #include "mk_semaphore_types.h"
 #include "mk_semaphore_private.h"
 #include "mk_semaphore.h"
-#include "mk_mail_constants.h"
 #include "mk_mail_types.h"
 #include "mk_mail_private.h"
 #include "mk_mail.h"

@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -88,7 +88,7 @@
  *        de messages gérant l'exécution des fonctions de rappel.
  */
 
-#define K_MK_CALLBACK_MESSAGE_AREA_SIZE ( ( MK_MAIL_ITEM_SIZE + K_MK_CALLBACK_MESSAGE_SIZE ) * K_MK_CALLBACK_MESSAGE_NUMBER )
+#define K_MK_CALLBACK_MESSAGE_AREA_SIZE ( K_MK_CALLBACK_MESSAGE_SIZE * K_MK_CALLBACK_MESSAGE_NUMBER )
 
 /**
  *

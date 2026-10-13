@@ -89,16 +89,6 @@ T_mkCode mk_mail_create ( T_mkMail** p_mkMail, uint32_t p_mkAreaType, T_mkPoolAr
    /* Déclaration d'un pointeur SVC */
    T_mkSVCObject* l_svcPnt;
 
-   /* Déclaration d'un pointeur d'item */
-   T_mkMailItem* l_firstItem, *l_lastItem;
-
-   /* Déclaration d'un compteur */
-   uint32_t l_counter;
-
-   /* Configuration des pointeurs de travails */
-   uint32_t* l_itemArea = 0;
-   uint32_t* l_dataArea = 0;
-
    /* Déclaration d'une variable stockant le statut d'interruption */
    uint32_t l_isr = mk_scheduler_isr ( );
 
@@ -109,10 +99,6 @@ T_mkCode mk_mail_create ( T_mkMail** p_mkMail, uint32_t p_mkAreaType, T_mkPoolAr
       if ( ( p_mkMail != K_MK_NULL ) && ( p_mkMsgArea != K_MK_NULL ) &&
            ( p_mkMsgSize != 0 ) && ( p_mkMsgNumber != 0 ) )
       {
-         /* Configuration des pointeurs de travails */
-         l_itemArea = ( uint32_t* ) ( ( uint32_t* ) p_mkMsgArea->currentAddr ) + ( MK_MAIL_ITEM_SIZE );
-         l_dataArea = ( uint32_t* ) ( ( uint32_t* ) p_mkMsgArea->currentAddr ) + ( p_mkMsgNumber * MK_MAIL_ITEM_SIZE );
-         
          /* Déclenchement d'une requête SVC */
          l_svcPnt = mk_mail_call ( p_mkMsgArea, p_mkAreaType, p_mkMsgSize, p_mkMsgNumber );
 
@@ -122,38 +108,9 @@ T_mkCode mk_mail_create ( T_mkMail** p_mkMail, uint32_t p_mkAreaType, T_mkPoolAr
             /* Récupération de l'adresse de la boite de messages */
             *p_mkMail = l_svcPnt->handle;
 
-            /* Il est nécessaire de réaliser le chainage de tous les items de la boite */
-            /* La chaine est réalisée directement dans les items non disponible */
-            /* Configuration des pointeurs d'item */
-            l_firstItem = ( *p_mkMail )->unused.item;
-            l_lastItem = ( T_mkMailItem* ) ( l_firstItem + ( p_mkMsgNumber - 1 ) );
-
-            /* Pour le nombre de message devant être alloués */
-            for ( l_counter = 0 ; l_counter < p_mkMsgNumber ; l_counter++ )
-            {
-               /* Enregistrement de l'adresse du message */
-               l_firstItem->pnt = ( uint32_t* ) l_dataArea;
-
-               /* Enregistrement de l'adresse du prochain item */
-               l_firstItem->next = ( T_mkMailItem* ) l_itemArea;
-
-               /* Configuration du pointeur de tâche */
-               l_firstItem->task = K_MK_NULL;
-
-               /* Passage au prochain item */
-               l_firstItem = ( T_mkMailItem* ) ( l_firstItem + 1 );
-
-               /* Configuration des pointeurs de travails */
-               l_itemArea = ( uint32_t* ) ( l_itemArea + MK_MAIL_ITEM_SIZE );
-               l_dataArea = ( uint32_t* ) ( l_dataArea + p_mkMsgSize );
-            }
-
-            /* Signalisation de la fin de la chaine d'item */
-            l_lastItem->next = K_MK_NULL;
-
             /* Actualisation du pointeur du gestionnaire mémoire */
             p_mkMsgArea->currentAddr = ( uint32_t* ) ( ( uint32_t* ) p_mkMsgArea->currentAddr ) +
-                                       ( p_mkMsgSize * p_mkMsgNumber ) + ( MK_MAIL_ITEM_SIZE * p_mkMsgNumber );
+                                       ( p_mkMsgSize * p_mkMsgNumber );
          }
 
          /* Sinon */
