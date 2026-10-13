@@ -50,6 +50,9 @@ static void mk_setPriority ( void )
    /* Configuration de la priorité du gestionnaire pendsv */
    nvic_setExceptionPriority ( K_NVIC_PRIORITY_PENDSV, K_MK_SCHEDULER_BASE_PRIORITY );
 
+   /* Configuration de la priorité du gestionnaire memFault */
+   nvic_setExceptionPriority ( K_NVIC_PRIORITY_MEMFAULT, K_MK_SCHEDULER_MASK_PRIORITY );
+
    /* Configuration de la priorité du gestionnaire svcall */
    nvic_setExceptionPriority ( K_NVIC_PRIORITY_SVCALL, K_MK_SCHEDULER_SVC_PRIORITY );
 
