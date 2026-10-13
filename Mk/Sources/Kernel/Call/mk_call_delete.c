@@ -78,18 +78,8 @@ static T_mkCode mk_call_deleteMail ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, uint
             l_previousItem = l_currentItem;
          } 
 
-         /* Désallocation de la chaine d'items du poster */
+         /* Désallocation de la chaine d'items utilisés */
          l_previousItem = p_mkMail->poster.item;
-         
-         while ( l_previousItem != K_MK_NULL )
-         {
-            l_currentItem = l_previousItem->next;
-            ( void ) mk_pool_free ( &g_mkMailItemPool.pool, ( T_mkAddr ) l_previousItem );
-            l_previousItem = l_currentItem;
-         } 
-
-         /* Désallocation de la chaine d'items du pender */
-         l_previousItem = p_mkMail->pender.item;
          
          while ( l_previousItem != K_MK_NULL )
          {
