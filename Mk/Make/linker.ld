@@ -117,7 +117,7 @@ SECTIONS
    /* K_UNPRIVILEGED_MEMORY_END_ADDR. */   
 
    /* Mapping de la section "mk_unprivileged_bss_memory" */ 
-   .mk_unprivileged_bss_memory K_MK_UNPRIVILEGED_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 )
+   .mk_unprivileged_bss_memory K_MK_UNPRIVILEGED_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 8 )
    {
       /* Création d'un symbole contenant l'adresse de début de la mémoire */
       /* non privilégiée. */
@@ -127,7 +127,7 @@ SECTIONS
       K_UNPRIVILEGED_BSS_START_ADDR = .;
       
       *( .mk_unprivileged_bss_memory ) 
-      . = ALIGN ( 4 ) ;
+      . = ALIGN ( 8 ) ;
       
       /* Création d'un symbole contenant l'adresse de fin de la section BSS */
       K_UNPRIVILEGED_BSS_END_ADDR = .;   
@@ -140,14 +140,14 @@ SECTIONS
    /* LMA : adresse de la section quand le programme est chargé */
    
    K_UNPRIVILEGED_DATA_START_FLASH_ADDR = LOADADDR (.mk_unprivileged_data_memory);
-   .mk_unprivileged_data_memory : ALIGN ( 4 ) 
+   .mk_unprivileged_data_memory : ALIGN ( 8 ) 
    { 
       /* Création d'un symbole contenant l'adresse de début de la section */
       /* DATA non privilégiée. */
       K_UNPRIVILEGED_DATA_START_ADDR = .;
       
       *( .mk_unprivileged_data_memory ) 
-      . = ALIGN ( 4 ) ;
+      . = ALIGN ( 8 ) ;
       
       /* Création d'un symbole contenant l'adresse de fin de section DATA */
       /* non privilégiée. */
@@ -182,14 +182,14 @@ SECTIONS
    /* ********************************************************************* */
         
    /* Mapping de la section "mk_privileged_dma_memory" */   
-   .mk_privileged_dma_memory K_MK_PRIVILEGED_DMA_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 )
+   .mk_privileged_dma_memory K_MK_PRIVILEGED_DMA_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 8 )
    {
       /* Création d'un symbole contenant l'adresse de début de la mémoire */
       /* DMA privilégiée */
       K_PRIVILEGED_DMA_MEMORY_START_ADDR = .;
       
       *( .mk_privileged_dma_memory )  
-      . = ALIGN ( 4 ) ;
+      . = ALIGN ( 8 ) ;
       
       /* Création d'un symbole contenant l'adresse de fin de la mémoire DMA */
       /* privilégiée */
@@ -201,14 +201,14 @@ SECTIONS
    /* Par défaut toutes les variables globales et statiques non initialisées */
    /* sont privilégiées */
    
-   .bss K_MK_PRIVILEGED_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 )
+   .bss K_MK_PRIVILEGED_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 8 )
    {
       /* Création d'un symbole contenant l'adresse de début de la section */
       /* BSS. */
       K_BSS_START_ADDR = .;
       
       *( .bss )  
-      . = ALIGN ( 4 ) ;
+      . = ALIGN ( 8 ) ;
       
       /* Création d'un symbole contenant l'adresse de fin de la section BSS. */
       K_BSS_END_ADDR = .; 
@@ -221,13 +221,13 @@ SECTIONS
    /* LMA : adresse de la section quand le programme est chargé */
    
    K_DATA_START_FLASH_ADDR = LOADADDR (.data);
-   .data : ALIGN ( 4 ) 
+   .data : ALIGN ( 8 ) 
    { 
       /* Création d'un symbole contenant l'adresse de début de la section */
       K_DATA_START_ADDR = .;
       
       *( .data ) 
-      . = ALIGN ( 4 ) ;
+      . = ALIGN ( 8 ) ;
       
       /* Création d'un symbole contenant l'adresse de fin de la section */
       K_DATA_END_ADDR = .;   
@@ -252,14 +252,14 @@ SECTIONS
    /* ********************************************************************* */
 
    /* Mapping de la section "mk_privileged_ro_memory" */   
-   .mk_privileged_ro_memory K_MK_PRIVILEGED_RO_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 4 )
+   .mk_privileged_ro_memory K_MK_PRIVILEGED_RO_DATA_BASE_ADDR ( NOLOAD ) : ALIGN ( 8 )
    {      
       /* Création d'un symbole contenant l'adresse de début de la mémoire */
       /* RO privilégiée */
       K_PRIVILEGED_RO_MEMORY_START_ADDR = .;
       
       *( .mk_privileged_ro_memory )
-      . = ALIGN ( 4 ) ;
+      . = ALIGN ( 8 ) ;
 
       /* Création d'un symbole contenant l'adresse de fin de la mémoire RO */
       /* privilégiée */
