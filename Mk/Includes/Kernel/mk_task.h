@@ -226,6 +226,15 @@ T_mkCode mk_task_priority ( T_mkTask* p_mkTask, uint32_t p_mkPriority );
 T_mkCode mk_task_getHandle ( T_mkTask** p_mkTask, uint32_t p_mkIdentifier );
 
 /**
+ * @fn T_mkTask* mk_task_getCurrent ( void );
+ * @brief Cette fonction retourne l'adresse de la tâche en cours d'exécution.
+ * @return Cette fonction retourne l'adresse d'une tâche de type \ref T_mkTask.
+ *
+ */
+
+T_mkTask* mk_task_getCurrent ( void );
+
+/**
  * @fn T_mkCode mk_task_get ( T_mkTask* p_mkTask, uint32_t* p_mkAttribute, uint32_t p_mkOffset );
  * @brief Cette fonction récupére l'identifiant, le type, l'état ou la priorité d'une tâche à partir de son adresse.
 
