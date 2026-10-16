@@ -62,40 +62,65 @@ static T_mkCode mk_call_deleteMail ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, uint
       /* Récupération du type de l'objet de synchronisation */
       l_type = mk_call_type ( ( T_mkAddr ) p_mkMail );
 
-      /* Analyse des droits de la tâche qui a exécutée l'appel système */
-      l_type = mk_call_isProtectedArea ( l_type, p_mkStatus );
-
-      /* Si l'appel système peut être exécutée */
-      if ( l_type == K_MK_AREA_UNPROTECTED )
+      /* Si l'objet de synchronisation n'a pas été détruit */
+      if ( l_type != K_MK_ID_NO )
       {
-         /* Désallocation de la chaine d'items non utilisés */
-         l_previousItem = p_mkMail->unused.item;
-         
-         while ( l_previousItem != K_MK_NULL )
-         {
-            l_currentItem = l_previousItem->next;
-            ( void ) mk_pool_free ( &g_mkMailItemPool.pool, ( T_mkAddr ) l_previousItem );
-            l_previousItem = l_currentItem;
-         } 
+         /* Analyse des droits de la tâche qui a exécutée l'appel système */
+         l_type = mk_call_isProtectedArea ( l_type, p_mkStatus );
 
-         /* Désallocation de la chaine d'items utilisés */
-         l_previousItem = p_mkMail->poster.item;
-         
-         while ( l_previousItem != K_MK_NULL )
+         /* Si l'appel système peut être exécutée */
+         if ( l_type == K_MK_AREA_UNPROTECTED )
          {
-            l_currentItem = l_previousItem->next;
-            ( void ) mk_pool_free ( &g_mkMailItemPool.pool, ( T_mkAddr ) l_previousItem );
-            l_previousItem = l_currentItem;
-         } 
-         
-         /* Désallocation de l'objet de synchronisation */
-         l_result = mk_pool_free ( p_mkPool, ( T_mkAddr ) p_mkMail );
+            /* Désallocation de la chaine d'items non utilisés */
+            l_previousItem = p_mkMail->unused.item;
+            
+            while ( l_previousItem != K_MK_NULL )
+            {
+               l_currentItem = l_previousItem->next;
+               ( void ) mk_pool_free ( &g_mkMailItemPool.pool, ( T_mkAddr ) l_previousItem );
+               l_previousItem = l_currentItem;
+            } 
+
+            /* Désallocation de la chaine d'items utilisés */
+            l_previousItem = p_mkMail->poster.item;
+            
+            while ( l_previousItem != K_MK_NULL )
+            {
+               l_currentItem = l_previousItem->next;
+               ( void ) mk_pool_free ( &g_mkMailItemPool.pool, ( T_mkAddr ) l_previousItem );
+               l_previousItem = l_currentItem;
+            } 
+            
+            /* Désallocation de l'objet de synchronisation */
+            l_result = mk_pool_free ( p_mkPool, ( T_mkAddr ) p_mkMail );
+
+            /* Si aucune erreur ne s'est produite */
+            if ( l_result == K_MK_OK )
+            {
+               /* Réinitialisation de la boite de messages */
+               _writeBytes ( ( T_mkAddr ) p_mkMail, 0, p_mkObjectSize );
+            }
+
+            /* Sinon */
+            else
+            {
+               /* Ne rien faire */
+            }
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Actualisation de la variable de retour */
+            l_result = K_MK_ERROR_RIGHT;
+         }
       }
 
       /* Sinon */
       else
       {
-         /* Ne rien faire */
+         /* Actualisation de la variable de retour */
+         l_result = K_MK_ERROR_PARAM;
       }
    }
 
@@ -132,20 +157,45 @@ static T_mkCode mk_call_deleteObject ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, ui
       /* Récupération du type de l'objet de synchronisation */
       l_type = mk_call_type ( p_mkHandle );
 
-      /* Analyse des droits de la tâche qui a exécutée l'appel système */
-      l_type = mk_call_isProtectedArea ( l_type, p_mkStatus );
-
-      /* Si l'appel système peut être exécutée */
-      if ( l_type == K_MK_AREA_UNPROTECTED )
+      /* Si l'objet de synchronisation n'a pas été détruit */
+      if ( l_type != K_MK_ID_NO )
       {
-         /* Désallocation de l'objet de synchronisation */
-         l_result = mk_pool_free ( p_mkPool, p_mkHandle );
+         /* Analyse des droits de la tâche qui a exécutée l'appel système */
+         l_type = mk_call_isProtectedArea ( l_type, p_mkStatus );
+
+         /* Si l'appel système peut être exécutée */
+         if ( l_type == K_MK_AREA_UNPROTECTED )
+         {
+            /* Désallocation de l'objet de synchronisation */
+            l_result = mk_pool_free ( p_mkPool, p_mkHandle );
+
+            /* Si aucune erreur ne s'est produite */
+            if ( l_result == K_MK_OK )
+            {
+               /* Réinitialisation de l'objet */
+               _writeBytes ( p_mkHandle, 0, p_mkObjectSize );
+            }
+
+            /* Sinon */
+            else
+            {
+               /* Ne rien faire */
+            }
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Actualisation de la variable de retour */
+            l_result = K_MK_ERROR_RIGHT;
+         }
       }
 
       /* Sinon */
       else
       {
-         /* Ne rien faire */
+         /* Actualisation de la variable de retour */
+         l_result = K_MK_ERROR_PARAM;
       }
    }
 

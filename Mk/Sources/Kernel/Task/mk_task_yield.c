@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -42,22 +42,25 @@
  * @endinternal
  */
 
-static void mk_task_call ( void )
+static T_mkSVCObject* mk_task_call ( void )
 {
    /* Déclaration d'un gestionnaire SVC */
    T_mkSVCObject l_svc;
+
+   /* Déclaration de la variable de retour */
+   T_mkSVCObject* l_result;
 
    /* Ecriture du type de l'appel système dans le gestionnaire SVC */
    l_svc.type = K_MK_SYSCALL_YIELD_FUNCTION;
 
    /* Référencement de l'appel système dans le gestionnaire SVC */
-   ( void ) mk_svc_set ( &l_svc );
+   l_result = mk_svc_set ( &l_svc );
 
    /* Déclenchement d'un appel système */
    _mk_svc_call ( );
 
    /* Retour */
-   return;
+   return ( l_result );
 }
 
 /**
@@ -71,6 +74,9 @@ T_mkCode mk_task_yield ( void )
    /* Déclaration de la variable de retour */
    T_mkCode l_result = K_MK_OK;
 
+   /* Déclaration d'un pointeur SVC */
+   T_mkSVCObject* l_svcPnt;
+
    /* Déclaration d'une variable stockant le statut d'interruption  */
    uint32_t l_isr = mk_scheduler_isr ( );
 
@@ -78,7 +84,10 @@ T_mkCode mk_task_yield ( void )
    if ( l_isr == K_MK_ISR_NO )
    {
       /* Déclenchement d'une requête SVC */
-      mk_task_call ( );
+      l_svcPnt = mk_task_call ( );
+
+      /* Actualisation de la variable de retour */
+      l_result = l_svcPnt->result;
    }
 
    /* Sinon */

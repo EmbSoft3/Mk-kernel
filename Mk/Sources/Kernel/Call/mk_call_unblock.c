@@ -300,7 +300,7 @@ static T_mkCode mk_call_handleSemaphore ( T_mkSVCObject* p_mkObject, uint32_t p_
                                       sizeof ( T_mkSemaphore ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ] );
 
    /* Si le sémaphore est valide */
-   if ( l_result == K_MK_OK )
+   if ( ( l_result == K_MK_OK ) && ( l_semaphore->type != K_MK_ID_NO ) )
    {
       /* Si un jeton peut-être libéré */
       if ( ( l_semaphore != K_MK_NULL ) && ( l_semaphore->token != 0 ) )
@@ -324,7 +324,8 @@ static T_mkCode mk_call_handleSemaphore ( T_mkSVCObject* p_mkObject, uint32_t p_
    /* Sinon */
    else
    {
-      /* Ne rien faire */
+      /* Actualisation de la variable de retour */
+      l_result = K_MK_ERROR_PARAM;
    }
 
    /* Retour */
@@ -350,7 +351,7 @@ static T_mkCode mk_call_handleMutex ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
                                       sizeof ( T_mkMutex ), ( T_mkAddr ) l_mutex );
 
    /* Si le mutex est valide */
-   if ( l_result == K_MK_OK )
+   if ( ( l_result == K_MK_OK ) && ( l_mutex->type != K_MK_ID_NO ) )
    {
       /* Si la tâche est propriétaire du mutex et si le mutex est vérrouillé */
       if ( ( l_mutex->owner == g_mkScheduler.currentTask ) && ( l_mutex->lock == 1 ) )
@@ -374,7 +375,8 @@ static T_mkCode mk_call_handleMutex ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
    /* Sinon */
    else
    {
-      /* Ne rien faire */
+      /* Actualisation de la variable de retour */
+      l_result = K_MK_ERROR_PARAM;
    }
 
    /* Retour */
@@ -392,12 +394,15 @@ static T_mkCode mk_call_handlePool ( T_mkSVCObject* p_mkObject, uint32_t p_mkSta
    /* Déclaration d'une variable de retour */
    T_mkCode l_result;
 
+   /* Déclaration d'un pointeur d'événements */
+   T_mkPool* l_pool = ( T_mkPool* ) p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ];
+
    /* Vérification de l'alignement de l'adresse */
    l_result = mk_call_isValidHandle ( ( T_mkAddr ) &g_mkAreaPool.poolArea [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_POOLS,
                                       sizeof ( T_mkPool ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ] );
 
    /* Si la pool est valide */
-   if ( l_result == K_MK_OK )
+   if ( ( l_result == K_MK_OK ) && ( l_pool->type != K_MK_ID_NO ) )
    {
       /* Configuration des pointeurs de fonction */
       p_mkObject->data [ K_MK_OFFSET_SYNC_FUNCTION ] = ( T_mkAddr ) _mk_call_poolTakeToAddr ( mk_pool_take );
@@ -410,7 +415,8 @@ static T_mkCode mk_call_handlePool ( T_mkSVCObject* p_mkObject, uint32_t p_mkSta
    /* Sinon */
    else
    {
-      /* Ne rien faire */
+      /* Actualisation de la variable de retour */
+      l_result = K_MK_ERROR_PARAM;
    }
 
    /* Retour */
@@ -428,12 +434,15 @@ static T_mkCode mk_call_handleEvent ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
    /* Déclaration d'une variable de retour */
    T_mkCode l_result;
 
+   /* Déclaration d'un pointeur d'événements */
+   T_mkEvent* l_event = ( T_mkEvent* ) p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ];
+
    /* Vérification de l'alignement de l'adresse */
    l_result = mk_call_isValidHandle ( ( T_mkAddr ) &g_mkEventPool.event [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_EVENTS,
                                       sizeof ( T_mkEvent ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ] );
 
    /* Si le champ d'événements est valide */
-   if ( l_result == K_MK_OK )
+   if ( ( l_result == K_MK_OK ) && ( l_event->type != K_MK_ID_NO ) )
    {
       /* Configuration des pointeurs de fonction */
       p_mkObject->data [ K_MK_OFFSET_SYNC_FUNCTION ] =  ( T_mkAddr ) _mk_call_eventToAddr ( mk_event_check );
@@ -449,7 +458,8 @@ static T_mkCode mk_call_handleEvent ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
    /* Sinon */
    else
    {
-      /* Ne rien faire */
+      /* Actualisation de la variable de retour */
+      l_result = K_MK_ERROR_PARAM;
    }
 
    /* Retour */

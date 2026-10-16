@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -146,7 +146,7 @@ void mk_call_priority ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
                                                 sizeof ( T_mkTask ), ( T_mkAddr ) l_task );
 
    /* Si la tâche est valide */
-   if ( p_mkObject->result == K_MK_OK )
+   if ( ( p_mkObject->result == K_MK_OK ) && ( l_task->attribute.state != K_MK_STATE_DELETED ) )
    {
       /* Si la tâche dont la priorité doit être modifiée n'est pas en possession d'un mutex (permet de ne pas gérer */
       /* le mécanisme d'héritage de priorité) et si l'état de la tâche dont la priorité doit être modifiée est */
@@ -169,7 +169,8 @@ void mk_call_priority ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    /* Sinon */
    else
    {
-      /* Ne rien fiare */
+      /* Actualisation de la variable de retour */
+      p_mkObject->result = K_MK_ERROR_PARAM;
    }
 
    /* Retour */

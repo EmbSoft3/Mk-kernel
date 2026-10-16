@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -47,11 +47,26 @@ void mk_call_yield ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    /* Déclaration d'une variable stockant l'adresse de la tâche courante */
    T_mkTask* l_task = p_mkObject->data[ K_MK_OFFSET_TASK_CURRENT ];
 
-   /* Actualisation de la valeur du pointeur courant */
-   mk_list_switch ( &g_mkScheduler.readyList [ l_task->attribute.currentPriority ], l_task );
+   /* Vérification de l'alignement de l'adresse */
+   p_mkObject->result = mk_call_isValidHandle ( ( T_mkAddr ) &g_mkTaskPool.task [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_TASKS,
+                                                sizeof ( T_mkTask ), ( T_mkAddr ) l_task );
 
-   /* Déclenchement d'un changement de contexte */
-   mk_scheduler_pend ( p_mkStatus );
+   /* Si la tâche est valide */
+   if ( ( p_mkObject->result == K_MK_OK ) && ( l_task->attribute.state != K_MK_STATE_DELETED ) )
+   {
+      /* Actualisation de la valeur du pointeur courant */
+      mk_list_switch ( &g_mkScheduler.readyList [ l_task->attribute.currentPriority ], l_task );
+
+      /* Déclenchement d'un changement de contexte */
+      mk_scheduler_pend ( p_mkStatus );
+   }
+   
+   /* Sinon */
+   else
+   {
+      /* Actualisation de la variable de retour */
+      p_mkObject->result = K_MK_ERROR_PARAM;
+   }
 
    /* Retour */
    return;

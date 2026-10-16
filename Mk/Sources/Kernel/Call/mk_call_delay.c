@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -82,47 +82,59 @@ void mk_call_delay ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    /* Déclaration d'une variable stockant le tick de réveil de la tâche */
    uint32_t l_wakeTime = g_mkScheduler.currentTask->tick.refTime + ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_TICK ];
 
-   /* Actualisation de la variable de retour */
-   p_mkObject->result = K_MK_OK;
+      /* Vérification de l'alignement de l'adresse */
+   p_mkObject->result = mk_call_isValidHandle ( ( T_mkAddr ) &g_mkTaskPool.task [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_TASKS,
+                                                sizeof ( T_mkTask ), ( T_mkAddr ) l_task );
 
-   /* Si la valeur du timeout ne se situe pas dans un autre espace borné */
-   if ( ( l_wakeTime > g_mkScheduler.currentTask->tick.refTime ) )
+   /* Si la tâche est valide */
+   if ( ( p_mkObject->result == K_MK_OK ) && ( l_task->attribute.state != K_MK_STATE_DELETED ) )
    {
-      /* Si le timeout demandé est dépassé */
-      if ( ( g_mkScheduler.tickRegister < g_mkScheduler.currentTask->tick.refTime ) || ( g_mkScheduler.tickRegister >= l_wakeTime ) )
+      /* Si la valeur du timeout ne se situe pas dans un autre espace borné */
+      if ( ( l_wakeTime > g_mkScheduler.currentTask->tick.refTime ) )
       {
-         /* La tâche ne doit pas être temporisée */
-         /* Actualisation du tick de référence */
-         l_task->tick.refTime = g_mkScheduler.tickRegister;
+         /* Si le timeout demandé est dépassé */
+         if ( ( g_mkScheduler.tickRegister < g_mkScheduler.currentTask->tick.refTime ) || ( g_mkScheduler.tickRegister >= l_wakeTime ) )
+         {
+            /* La tâche ne doit pas être temporisée */
+            /* Actualisation du tick de référence */
+            l_task->tick.refTime = g_mkScheduler.tickRegister;
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Exécution de la séquence de temporisation */
+            mk_call_executeDelay ( p_mkObject->data [ K_MK_OFFSET_TASK_CURRENT ], ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_TICK ],
+                                 l_wakeTime, p_mkStatus );
+         }
       }
 
       /* Sinon */
       else
       {
-         /* Exécution de la séquence de temporisation */
-         mk_call_executeDelay ( p_mkObject->data [ K_MK_OFFSET_TASK_CURRENT ], ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_TICK ],
-                                l_wakeTime, p_mkStatus );
+         /* Si le timeout demandé est dépassé */
+         if ( ( g_mkScheduler.tickRegister < g_mkScheduler.currentTask->tick.refTime ) && ( g_mkScheduler.tickRegister >= l_wakeTime ) )
+         {
+            /* La tâche ne doit pas être temporisée */
+            /* Actualisation du tick de référence */
+            l_task->tick.refTime = g_mkScheduler.tickRegister;
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Exécution de la séquence de temporisation */
+            mk_call_executeDelay ( p_mkObject->data [ K_MK_OFFSET_TASK_CURRENT ], ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_TICK ],
+                                 l_wakeTime, p_mkStatus );
+         }
       }
    }
 
    /* Sinon */
    else
    {
-      /* Si le timeout demandé est dépassé */
-      if ( ( g_mkScheduler.tickRegister < g_mkScheduler.currentTask->tick.refTime ) && ( g_mkScheduler.tickRegister >= l_wakeTime ) )
-      {
-         /* La tâche ne doit pas être temporisée */
-         /* Actualisation du tick de référence */
-         l_task->tick.refTime = g_mkScheduler.tickRegister;
-      }
-
-      /* Sinon */
-      else
-      {
-         /* Exécution de la séquence de temporisation */
-         mk_call_executeDelay ( p_mkObject->data [ K_MK_OFFSET_TASK_CURRENT ], ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_TICK ],
-                                l_wakeTime, p_mkStatus );
-      }
+      /* Actualisation de la variable de retour */
+      p_mkObject->result = K_MK_ERROR_PARAM;
    }
 
    /* Retour */

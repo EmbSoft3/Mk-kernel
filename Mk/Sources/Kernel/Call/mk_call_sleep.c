@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -47,24 +47,39 @@ void mk_call_sleep ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    /* Déclaration d'une tâche */
    T_mkTask* l_task = ( T_mkTask* ) p_mkObject->data [ K_MK_OFFSET_TASK_CURRENT ];
 
-   /* Configuration des attributs de la temporisation */
-   l_task->tick.count = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_TICK ];
-   l_task->tick.timeout = ( uint32_t ) ( g_mkScheduler.tickRegister + l_task->tick.count );
+   /* Vérification de l'alignement de l'adresse */
+   p_mkObject->result = mk_call_isValidHandle ( ( T_mkAddr ) &g_mkTaskPool.task [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_TASKS,
+                                                sizeof ( T_mkTask ), ( T_mkAddr ) l_task );
 
-   /* Configuration des attributs de la tâche */
-   l_task->attribute.state = K_MK_STATE_DELAYED;
+   /* Si la tâche est valide */
+   if ( ( p_mkObject->result == K_MK_OK ) && ( l_task->attribute.state != K_MK_STATE_DELETED ) )
+   {
+      /* Configuration des attributs de la temporisation */
+      l_task->tick.count = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_TICK ];
+      l_task->tick.timeout = ( uint32_t ) ( g_mkScheduler.tickRegister + l_task->tick.count );
 
-   /* Suppression de la tâche courante de la liste des tâches prêtes à être exécutées */
-   mk_list_remove ( &g_mkScheduler.readyList [ l_task->attribute.priority ], l_task, K_MK_LIST_TASK );
+      /* Configuration des attributs de la tâche */
+      l_task->attribute.state = K_MK_STATE_DELAYED;
 
-   /* Modification du niveau de priorité si nécessaire */
-   mk_call_decreasePriority ( &g_mkScheduler.readyList [ l_task->attribute.priority ], l_task->attribute.priority );
+      /* Suppression de la tâche courante de la liste des tâches prêtes à être exécutées */
+      mk_list_remove ( &g_mkScheduler.readyList [ l_task->attribute.priority ], l_task, K_MK_LIST_TASK );
 
-   /* Ajout de la tâche courante dans la liste des tâches temporisées */
-   mk_list_addTimeout ( &g_mkScheduler.delayList, l_task );
+      /* Modification du niveau de priorité si nécessaire */
+      mk_call_decreasePriority ( &g_mkScheduler.readyList [ l_task->attribute.priority ], l_task->attribute.priority );
 
-   /* Déclenchement d'un changement de contexte */
-   mk_scheduler_pend ( p_mkStatus );
+      /* Ajout de la tâche courante dans la liste des tâches temporisées */
+      mk_list_addTimeout ( &g_mkScheduler.delayList, l_task );
+
+      /* Déclenchement d'un changement de contexte */
+      mk_scheduler_pend ( p_mkStatus );
+   }
+
+   /* Sinon */
+   else
+   {
+      /* Actualisation de la variable de retour */
+      p_mkObject->result = K_MK_ERROR_PARAM;
+   }
 
    /* Retour */
    return;

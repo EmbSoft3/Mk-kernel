@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -55,7 +55,7 @@ void mk_call_getTaskAttribute ( T_mkSVCObject* p_mkObject )
                                                 sizeof ( T_mkTask ), ( T_mkAddr ) l_task );
 
    /* Si la tâche est valide */
-   if ( p_mkObject->result == K_MK_OK )
+   if ( ( p_mkObject->result == K_MK_OK ) && ( l_task->attribute.state != K_MK_STATE_DELETED ) )
    {
       /* Si l'offset est valide */
       if ( ( l_offset <= K_MK_CURRENT_PRIORITY ) )
@@ -75,7 +75,8 @@ void mk_call_getTaskAttribute ( T_mkSVCObject* p_mkObject )
    /* Sinon */
    else
    {
-      /* Ne rien fiare */
+      /* Actualisation de la variable de retour */
+      p_mkObject->result = K_MK_ERROR_PARAM;
    }
 
    /* Retour */
