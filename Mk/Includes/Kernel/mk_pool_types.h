@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -62,6 +62,8 @@ struct T_mkPool
    T_mkAddr  current;      /*!< Ce membre contient l'adresse du prochain bloc de taille fixe disponible. */
    uint32_t  size;         /*!< Ce membre contient la taille des blocs de taille fixe. */
    T_mkAddr  pendingList;  /*!< Ce membre contient l'adresse des tâches en attente d'un bloc de taille fixe. */
+   T_mkAddr  baseAddr;     /*!< Ce membre stocke l'adresse de base du buffer contenant les bloc de taille fixe. */
+   uint32_t  number;       /*!< Ce membre stocke le nombre total de blocs de taille fixe dans la pool. */
    uint32_t  count;        /*!< Ce membre stocke le nombre de blocs de taille fixe disponibles dans la pool. */
 };
 

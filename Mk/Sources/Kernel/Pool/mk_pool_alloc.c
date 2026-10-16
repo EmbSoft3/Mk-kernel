@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -47,6 +47,9 @@ T_mkAddr mk_pool_alloc ( T_mkPool* p_mkPool, uint32_t p_mkClear )
    /* Déclaration de la variable de retour */
    T_mkAddr l_result = K_MK_NULL;
 
+   /* Déclaration d'une variable de retour local */
+   T_mkCode l_localResult = K_MK_OK;
+
    /* Déclaration d'une variable temporaire */
    T_mkAddr l_tmp = K_MK_NULL;
 
@@ -56,24 +59,50 @@ T_mkAddr mk_pool_alloc ( T_mkPool* p_mkPool, uint32_t p_mkClear )
    /* Si au moins un élément est disponible */
    if ( ( p_mkPool != K_MK_NULL ) && ( p_mkPool->current != K_MK_NULL ) && ( p_mkPool->count != 0 ) )
    {
-      /* Enregistrement de l'adresse du prochain élément */
-      l_tmp = ( uint32_t* ) ( * ( uint32_t* ) p_mkPool->current );
+      /* Le buffer des pools pouvant être non privilégié, il est nécessaire de vérifier que l'adresse du prochain */
+      /* bloc est toujours dans le buffer */
+      /* Récupération de l'adresse du prochain emplacement */
+      l_tmp = ( uint32_t* ) ( * ( ( uint32_t* ) p_mkPool->current ) );
 
-      /* Réinitialisation du morceau de mémoire alloué */
-      for ( l_counter = 0 ; ( l_counter < p_mkPool->size ) && ( p_mkClear == K_MK_POOL_CLEAR ) ; l_counter++ )
+      /* Si le bloc était le dernier disponible, l'adresse pointe sur K_MK_NULL */
+      /* On ne vérifie donc pas la validité de l'adresse */
+      if ( l_tmp != K_MK_NULL )
       {
-         /* Remise à zéro du mot courant */
-         *( ( uint32_t* ) p_mkPool->current + l_counter ) = 0;
+         /* Test de la validité de l'adresse */
+         l_localResult = mk_call_isValidHandle ( p_mkPool->baseAddr, p_mkPool->number, ( p_mkPool->size << 2 ), l_tmp );
       }
 
-      /* Actualisation de la variable de retour */
-      l_result = ( uint32_t* ) p_mkPool->current;
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }
 
-      /* Actualisation du pointeur d'éléments */
-      p_mkPool->current = l_tmp;
+      /* Si l'adresse du prochain bloc est valide */
+      if ( l_localResult == K_MK_OK )
+      {
+         /* Réinitialisation du morceau de mémoire alloué */
+         for ( l_counter = 0 ; ( l_counter < p_mkPool->size ) && ( p_mkClear == K_MK_POOL_CLEAR ) ; l_counter++ )
+         {
+            /* Remise à zéro du mot courant */
+            *( ( uint32_t* ) p_mkPool->current + l_counter ) = 0;
+         }
 
-      /* Actualisation du nombre de blocs mémoires disponibles dans le pool */
-      p_mkPool->count = ( uint32_t ) ( p_mkPool->count - 1 );
+         /* Actualisation de la variable de retour */
+         l_result = ( uint32_t* ) p_mkPool->current;
+
+         /* Actualisation du pointeur d'éléments */
+         p_mkPool->current = l_tmp;
+
+         /* Actualisation du nombre de blocs mémoires disponibles dans le pool */
+         p_mkPool->count = ( uint32_t ) ( p_mkPool->count - 1 );
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }       
    }
 
    /* Sinon */

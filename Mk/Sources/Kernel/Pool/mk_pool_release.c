@@ -47,9 +47,9 @@ uint32_t mk_pool_release ( T_mkTask* p_mkUnused1, T_mkPool* p_mkPool, T_mkAddr p
    /* Déclaration de la variable de retour */
    uint32_t l_result = K_MK_SYNC_OK;
    
-   /* Déclaration des variables de travail */
-   uint32_t l_right, l_area;
-   
+   /* Déclaration d'une variable de retour local */
+   T_mkCode l_localResult = K_MK_OK;
+
    /* Enregistrement de l'adresse du bloc mémoire à désallouer */
    uint32_t* l_next = ( uint32_t* ) p_mkAddr;
 
@@ -59,20 +59,17 @@ uint32_t mk_pool_release ( T_mkTask* p_mkUnused1, T_mkPool* p_mkPool, T_mkAddr p
    ( void ) p_mkUnused2;
    ( void ) p_mkUnused3;
 
-   /* Récupération du niveau d'exécution du processeur */
-   l_right = _mk_scheduler_privileged ( );
+   /* Test de la validité de l'adresse */
+   /* On réinitialise le bit 0 car on ne souhaite pas retourner une erreur de droit si */
+   /* la mémoire a déjà été désallouée */
+   l_localResult = mk_call_isValidHandle ( p_mkPool->baseAddr, p_mkPool->number, 
+      ( p_mkPool->size << 2 ), p_mkAddr );
 
-   /* Récupération du niveau de privilège de la zone mémoire */
-   l_area = _mk_memory_isPrivilegedArea ( ( uint8_t* ) l_next );
-
-   /* Si une tâche non privilégiée tente d'écrire dans de la mémoire privilégiée */
-   if ( ( l_right == K_MK_MODE_THREAD ) && ( l_area != K_MK_AREA_UNPROTECTED ) )
+   /* Si la mémoire à désallouer n'est pas dans le buffer de la pool ou si l'alignement est mauvais */
+   if ( l_localResult != K_MK_OK )
    {
-      /* Déclenchement de la routine de gestion des droits */
-      mk_handler_rightFault ( );
-
       /* Actualisation de la variable de retour */
-      l_result = K_MK_SYNC_RIGHT;
+      l_result = K_MK_SYNC_PARAM;
    }
 
    /* Sinon */
@@ -84,7 +81,7 @@ uint32_t mk_pool_release ( T_mkTask* p_mkUnused1, T_mkPool* p_mkPool, T_mkAddr p
 
       /* Actualisation du nombre de blocs mémoires disponibles dans le pool */
       p_mkPool->count = ( uint32_t ) ( p_mkPool->count + 1 );
-   }
+   }     
 
    /* Retour */
    return ( l_result );

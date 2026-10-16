@@ -42,10 +42,13 @@
  * @endinternal
  */
 
-static void mk_pool_call ( T_mkPool* p_mkPool, T_mkAddr p_mkAddr )
+static T_mkSVCObject* mk_pool_call ( T_mkPool* p_mkPool, T_mkAddr p_mkAddr )
 {
    /* Déclaration d'un gestionnaire SVC */
    T_mkSVCObject l_svc;
+
+   /* Déclaration de la variable de retour */
+   T_mkSVCObject* l_result;
 
    /* Ecriture du type de l'appel système dans le gestionnaire SVC */
    l_svc.type = K_MK_SYSCALL_UNBLOCK_POOL_DELETE_FUNCTION;
@@ -57,13 +60,13 @@ static void mk_pool_call ( T_mkPool* p_mkPool, T_mkAddr p_mkAddr )
    l_svc.data [ K_MK_OFFSET_MESSAGE ] = ( T_mkAddr* ) ( p_mkAddr );
 
    /* Référencement de l'appel système dans le gestionnaire SVC */
-   ( void ) mk_svc_set ( &l_svc );
+   l_result = mk_svc_set ( &l_svc );
 
    /* Déclenchement d'un appel système */
    _mk_svc_call ( );
 
    /* Retour */
-   return;
+   return ( l_result );
 }
 
 /**
@@ -78,7 +81,10 @@ T_mkCode mk_pool_freeSafe ( T_mkPool* p_mkPool, T_mkAddr p_mkAddr )
    T_mkCode l_result = K_MK_OK;
 
    /* Déclaration des variables de travail */
-   uint32_t l_isr, l_right, l_area;
+   uint32_t l_isr, l_right;
+
+   /* Déclaration d'un pointeur SVC */
+   T_mkSVCObject* l_svcPnt;
 
    /* Si le paramètre est valide */
    if ( ( p_mkPool != K_MK_NULL ) && ( p_mkAddr != K_MK_NULL ) )
@@ -92,15 +98,15 @@ T_mkCode mk_pool_freeSafe ( T_mkPool* p_mkPool, T_mkAddr p_mkAddr )
          /* Récupération des droits d'exécution */
          l_right = _mk_scheduler_privileged ( );
 
-         /* Récupération du niveau de privilège de la zone mémoire à désallouer */
-         l_area = _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkAddr );
-
          /* Si la tâche possède les droits suffisants pour réaliser l'appel système */
          if ( ( l_right == K_MK_MODE_HANDLER ) || ( ( l_right == K_MK_MODE_THREAD ) &&
-            ( ( p_mkPool->type & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) && ( l_area == K_MK_AREA_UNPROTECTED ) ) )
+            ( ( p_mkPool->type & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) ) )
          {
             /* Déclenchement d'une requête SVC */
-            mk_pool_call ( p_mkPool, p_mkAddr );
+            l_svcPnt = mk_pool_call ( p_mkPool, p_mkAddr );
+
+            /* Actualisation de la variable de retour */
+            l_result = l_svcPnt->result;
          }
 
          /* Sinon */

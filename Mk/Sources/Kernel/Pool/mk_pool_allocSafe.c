@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -126,29 +126,40 @@ T_mkCode mk_pool_allocSafe ( T_mkPool* p_mkPool, T_mkAddr* p_mkAddr, uint32_t p_
             /* - la tâche a obtenu un bloc de mémoire, le pointeur "handle" est non nul. */
             /* - la tâche n'a pas obtenu un bloc de mémoire, le pointeur "handle" est nul */
 
-            /* Si l'allocation dynamique a échoué */
-            if ( l_svcPnt->handle == K_MK_NULL )
+            /* Si l'appel système s'est correctement déroulé */
+            if ( l_svcPnt->result == K_MK_OK )
             {
-               /* Actualisation de la variable de retour */
-               l_result = K_MK_ERROR_MALLOC;
+               /* Si l'allocation dynamique a échoué */
+               if ( l_svcPnt->handle == K_MK_NULL )
+               {
+                  /* Actualisation de la variable de retour */
+                  l_result = K_MK_ERROR_MALLOC;
+               }
+
+               /* Sinon */
+               else
+               {
+                  /* Récupération de l'instance du bloc de mémoire allouée */
+                  l_addr = ( uint32_t* ) l_svcPnt->handle;
+
+                  /* Réinitialisation du morceau de mémoire alloué */
+                  for ( l_counter = 0 ; ( l_counter < p_mkPool->size ) &&  ( p_mkClear == K_MK_POOL_CLEAR ) ; l_counter++ )
+                  {
+                     /* Remise à zéro du mot courant */
+                     *( l_addr + l_counter ) = 0;
+                  }
+
+                  /* Actualisation du résultat */
+                  *p_mkAddr = l_addr;
+               }
             }
 
             /* Sinon */
             else
             {
-               /* Récupération de l'instance du bloc de mémoire allouée */
-               l_addr = ( uint32_t* ) l_svcPnt->handle;
-
-               /* Réinitialisation du morceau de mémoire alloué */
-               for ( l_counter = 0 ; ( l_counter < p_mkPool->size ) &&  ( p_mkClear == K_MK_POOL_CLEAR ) ; l_counter++ )
-               {
-                  /* Remise à zéro du mot courant */
-                  *( l_addr + l_counter ) = 0;
-               }
-
-               /* Actualisation du résultat */
-               *p_mkAddr = l_addr;
-            }
+               /* Actualisation de la variable de retour */
+               l_result = l_svcPnt->result;
+            }            
          }
 
          /* Sinon */

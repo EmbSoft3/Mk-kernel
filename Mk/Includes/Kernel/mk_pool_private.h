@@ -72,8 +72,9 @@ T_mkCode mk_pool_init ( T_mkPoolArea* p_mkArea, T_mkPool* p_mkPool, uint32_t p_m
  * @param[in]     p_mkUnused2 Ce paramètre n'est pas utilisé mais existe en raison de l'uniformité des objets de synchronisation.
  *
  * @return Cette fonction retourne un des codes suivants :
- *         \li \ref K_MK_SYNC_OK : le bloc mémoire a été alloué.
- *         \li \ref K_MK_SYNC_KO : le bloc mémoire n'a pas été alloué car le gestionnaire de taille fixe est vide.
+ *         \li \ref K_MK_SYNC_OK    : le bloc mémoire a été alloué.
+ *         \li \ref K_MK_SYNC_KO    : le bloc mémoire n'a pas été alloué car le gestionnaire de taille fixe est vide.
+ *         \li \ref K_MK_SYNC_PARAM : le bloc mémoire n'a pas été alloué car le gestionnaire de taille fixe est corrompu.
  */
 
 uint32_t mk_pool_take ( T_mkTask* p_mkTask, T_mkPool* p_mkPool, T_mkAddr p_mkUnused1, T_mkAddr* p_mkResult, uint32_t p_mkUnused2 );
@@ -90,7 +91,7 @@ uint32_t mk_pool_take ( T_mkTask* p_mkTask, T_mkPool* p_mkPool, T_mkAddr p_mkUnu
  *
  * @return Cette fonction retourne un des codes suivants :
  *         \li \ref K_MK_SYNC_OK    : le bloc mémoire a été désalloué.
- *         \li \ref K_MK_SYNC_RIGHT : le bloc mémoire n'a pas été désalloué en raison d'un problème de permission.
+ *         \li \ref K_MK_SYNC_PARAM : le bloc mémoire n'a pas été désalloué son adresse est invalide.
  *
  */
 

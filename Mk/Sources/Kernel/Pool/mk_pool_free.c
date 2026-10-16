@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -53,14 +53,29 @@ T_mkCode mk_pool_free ( T_mkPool* p_mkPool, T_mkAddr p_mkAddr )
    /* Si les paramètres sont valides */
    if ( ( p_mkPool != K_MK_NULL ) && ( p_mkAddr != K_MK_NULL ) )
    {
-      /* Ajout du bloc mémoire en tête de chaine */
-      *l_next = ( uint32_t ) ( p_mkPool->current );
+      /* Test de la validité de l'adresse */
+      l_result = mk_call_isValidHandle ( p_mkPool->baseAddr, p_mkPool->number, 
+         ( p_mkPool->size << 2 ), p_mkAddr );
+      
+      /* Si la mémoire à désallouer est dans le buffer de la pool avec le bon alignement */
+      if ( l_result == K_MK_OK )
+      {
+         /* Ajout du bloc mémoire en tête de chaine */
+         *l_next = ( uint32_t ) ( p_mkPool->current );
 
-      /* Mise à jour de l'élément de tête */
-      p_mkPool->current = p_mkAddr;
+         /* Mise à jour de l'élément de tête */
+         p_mkPool->current = p_mkAddr;
 
-      /* Actualisation du nombre de blocs mémoires disponibles dans la pool */
-      p_mkPool->count = ( uint32_t ) ( p_mkPool->count + 1 );
+         /* Actualisation du nombre de blocs mémoires disponibles dans la pool */
+         p_mkPool->count = ( uint32_t ) ( p_mkPool->count + 1 );
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Actualisation de la variable de retour */
+         l_result = K_MK_ERROR_PARAM;
+      }
    }
 
    /* Sinon */

@@ -170,7 +170,8 @@ typedef enum T_mkSVCSync
    K_MK_SYNC_KO = 0,                                        /*!< Ce code indique que le résultat de la fonction de synchronisation est KO. */
    K_MK_SYNC_OK = 1,                                        /*!< Ce code indique que le résultat de la fonction de synchronisation est OK. */
    K_MK_SYNC_INHIB = 2,                                     /*!< Ce code indique que le résultat de la fonction de synchronisation n'est pas important (interne au noyau). */
-   K_MK_SYNC_RIGHT = 3                                      /*!< Ce code indique que la fonction de synchronisation n'a pas été exécutée en raison d'un problème de permissions. */
+   K_MK_SYNC_RIGHT = 3,                                     /*!< Ce code indique que la fonction de synchronisation n'a pas été exécutée en raison d'un problème de permissions. */
+   K_MK_SYNC_PARAM = 4                                      /*!< Ce code indique que la fonction de synchronisation n'a pas été exécutée en raison d'un problème de paramètres. */
 } T_mkSVCSync;
 
 /**

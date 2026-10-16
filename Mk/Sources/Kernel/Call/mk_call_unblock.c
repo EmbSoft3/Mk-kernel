@@ -247,12 +247,20 @@ static T_mkCode mk_call_executeUnblock ( T_mkSVCObject* p_mkObject, uint32_t p_m
          }
       }
 
-      /* Sinon, l'objet de synchronisation n'est pas vérrouillé en raison d'un problème de permissions */
+      /* Sinon, l'objet de synchronisation n'est pas libéré en raison d'un problème de permissions */
       /* K_MK_SYNC_RIGHT, code dédié aux pools */
       else if ( l_localResult == K_MK_SYNC_RIGHT )
       {
          /* Actualisation de la variable de retour */
          l_result = K_MK_ERROR_RIGHT;
+      }
+
+      /* Sinon, l'objet de synchronisation n'est pas libéré en raison d'un problème de paramètre */
+      /* K_MK_SYNC_RIGHT, code dédié aux pools */
+      else if ( l_localResult == K_MK_SYNC_PARAM )
+      {
+         /* Actualisation de la variable de retour */
+         l_result = K_MK_ERROR_PARAM;
       }
 
       /* Sinon */

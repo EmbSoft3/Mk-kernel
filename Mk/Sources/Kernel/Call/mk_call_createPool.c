@@ -53,6 +53,12 @@ static void mk_call_initPool ( T_mkPool* p_mkPool, T_mkPoolArea* p_mkArea, uint3
    /* Configuration du nombre de blocs pouvant être alloué dans le gestionnaire d'allocation */
    p_mkPool->count = p_mkCount;
 
+   /* Configuration du nombre total de blocs pouvant être alloué dans le gestionnaire d'allocation */
+   p_mkPool->number = p_mkCount;
+
+   /* Configuration de l'adresse de base du du gestionnaire d'allocation */
+   p_mkPool->baseAddr = p_mkArea->currentAddr;
+
    /* Configuration de la liste d'attente du gestionnaire d'allocation */
    p_mkPool->pendingList = K_MK_NULL;
 

@@ -42,7 +42,7 @@
  * @endinternal
  */
 
-static void mk_pool_setAttribute ( T_mkPool* p_mkPool, uint32_t p_mkAreaType, uint32_t p_mkSize, uint32_t p_mkCount )
+static void mk_pool_setAttribute ( T_mkPool* p_mkPool, uint32_t p_mkAreaType, T_mkAddr p_mkAddr, uint32_t p_mkSize, uint32_t p_mkCount )
 {
    /* Configuration du type du gestionnaire d'allocation */
    p_mkPool->type = K_MK_ID_POOL | p_mkAreaType;
@@ -52,6 +52,12 @@ static void mk_pool_setAttribute ( T_mkPool* p_mkPool, uint32_t p_mkAreaType, ui
 
    /* Configuration du nombre de blocs de taille fixe pouvant être alloués */
    p_mkPool->count = p_mkCount;
+
+   /* Configuration du nombre total de blocs de taille fixe pouvant être alloués */
+   p_mkPool->number = p_mkCount;
+
+   /* Configuration de l'adresse de base du du gestionnaire d'allocation */
+   p_mkPool->baseAddr = p_mkAddr;
 
    /* Configuration de la liste d'attente du gestionnaire d'allocation */
    p_mkPool->pendingList = K_MK_NULL;
@@ -92,7 +98,7 @@ T_mkCode mk_pool_init ( T_mkPoolArea* p_mkArea, T_mkPool* p_mkPool, uint32_t p_m
          if ( l_bytesAvailable >= l_bytesNeeded )
          {
             /* Initialisation des attributs du gestionnaire d'allocation */
-            mk_pool_setAttribute ( p_mkPool, p_mkAreaType, p_mkSize, p_mkCount );
+            mk_pool_setAttribute ( p_mkPool, p_mkAreaType, p_mkArea->currentAddr, p_mkSize, p_mkCount );
 
             /* Détermination de l'adresse du prochain bloc disponible dans la zone mémoire */
             p_mkArea->currentAddr = ( uint32_t* ) ( p_mkArea->currentAddr ) + ( p_mkSize * p_mkCount );

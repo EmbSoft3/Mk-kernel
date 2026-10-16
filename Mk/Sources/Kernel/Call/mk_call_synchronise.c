@@ -201,6 +201,14 @@ static T_mkCode mk_call_executeSynchronise ( T_mkSVCObject* p_mkObject, uint32_t
          l_result = K_MK_ERROR_RIGHT;
       }
 
+      /* Sinon, l'objet de synchronisation n'est pas vérrouillé en raison d'un problème de paramètre */
+      /* K_MK_SYNC_PARAM, code dédié aux pools (corruption de celle-ci) */
+      else if ( l_sync == K_MK_SYNC_PARAM )
+      {
+         /* Actualisation de la variable de retour */
+         l_result = K_MK_ERROR_PARAM;
+      }
+
       /* Sinon */
       else
       {
@@ -575,7 +583,7 @@ void mk_call_synchronise ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    else if ( p_mkObject->type == K_MK_SYSCALL_SYNCHRO_SEMAPHORE_TAKE_FUNCTION )
    {
       /* Analyse et configuration des attributs de l'appel systèmes */
-      p_mkObject->result =mk_call_handleSemaphore ( p_mkObject, p_mkStatus );
+      p_mkObject->result = mk_call_handleSemaphore ( p_mkObject, p_mkStatus );
    }
 
    /* Sinon */

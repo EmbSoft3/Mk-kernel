@@ -47,6 +47,12 @@ uint32_t mk_pool_take ( T_mkTask* p_mkTask, T_mkPool* p_mkPool, T_mkAddr p_mkUnu
    /* Déclaration de la variable de retour */
    uint32_t l_result = K_MK_SYNC_KO;
 
+   /* Déclaration d'une variable de retour local */
+   T_mkCode l_localResult = K_MK_OK;
+
+   /* Déclaration d'une variable de travail */
+   T_mkAddr l_nextBlocAddr = K_MK_NULL;
+
    /* Ce paramètre est présent en raison de la compatibilité des fonctions */
    /* de synchronisation */
    ( void ) p_mkUnused1;
@@ -55,21 +61,51 @@ uint32_t mk_pool_take ( T_mkTask* p_mkTask, T_mkPool* p_mkPool, T_mkAddr p_mkUnu
    /* Si au moins un élément est disponible */
    if ( p_mkPool->current != K_MK_NULL )
    {
-      /* Actualisation de la variable de retour */
-      /* Le résultat n'est pas écrit dans la variable utilisateur mais dans p_mkObject->handle */
-      *p_mkResult = p_mkPool->current;
+      /* Le buffer des pools pouvant être non privilégié, il est nécessaire de vérifier que l'adresse du prochain */
+      /* bloc est toujours dans le buffer */
+      /* Récupération de l'adresse du prochain emplacement */
+      l_nextBlocAddr = ( T_mkAddr ) ( ( * ( uint32_t* ) p_mkPool->current ) );
+      
+      /* Si le bloc était le dernier disponible, l'adresse pointe sur K_MK_NULL */
+      /* On ne vérifie donc pas la validité de l'adresse */
+      if ( l_nextBlocAddr != K_MK_NULL )
+      {
+         /* Test de la validité de l'adresse */
+         l_localResult = mk_call_isValidHandle ( p_mkPool->baseAddr, p_mkPool->number, ( p_mkPool->size << 2 ), l_nextBlocAddr );
+      }
 
-      /* Actualisation du pointeur de blocs avec l'adresse du prochain bloc disponible */
-      p_mkPool->current = ( T_mkAddr ) ( * ( uint32_t* ) p_mkPool->current );
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }
 
-      /* Actualisation du nombre de blocs mémoires disponibles dans la pool */
-      p_mkPool->count = ( uint32_t ) ( p_mkPool->count - 1 );
+      /* Si l'adresse du prochain bloc est valide */
+      if ( l_localResult == K_MK_OK )
+      {
+         /* Actualisation de la variable de retour */
+         /* Le résultat n'est pas écrit dans la variable utilisateur mais dans p_mkObject->handle */
+         *p_mkResult = p_mkPool->current;
+         
+         /* Actualisation du pointeur de blocs avec l'adresse du prochain bloc disponible */
+         p_mkPool->current = l_nextBlocAddr;
 
-      /* Actualisation du pointeur de synchronisation */
-      p_mkTask->synchro.object = ( T_mkAddr ) p_mkPool;
+         /* Actualisation du nombre de blocs mémoires disponibles dans la pool */
+         p_mkPool->count = ( uint32_t ) ( p_mkPool->count - 1 );
 
-      /* Actualisation de la variable de retour */
-      l_result = K_MK_SYNC_OK;
+         /* Actualisation du pointeur de synchronisation */
+         p_mkTask->synchro.object = ( T_mkAddr ) p_mkPool;
+
+         /* Actualisation de la variable de retour */
+         l_result = K_MK_SYNC_OK;
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Actualisation de la variable de retour */
+         l_result = K_MK_SYNC_PARAM;
+      }      
    }
 
    /* Sinon */
