@@ -53,6 +53,9 @@ struct T_mkPoolArea
 /**
  * @struct T_mkPool
  * @brief Déclaration de la structure T_mkPool.
+ * @warning Attention à bien reconfigurer la taille de la constante \ref K_MK_SCHEDULER_TASK_POOL_OFFSET, lorsque
+ *          la taille de cette structure évolue.
+ * @warning La position des 4 premiers champs ne peut pas être modifiée.
  */
 
 typedef volatile struct T_mkPool T_mkPool;

@@ -40,6 +40,7 @@
 /**
  * @struct T_mkSemaphore
  * @brief Déclaration de la structure T_mkSemaphore.
+ * @warning La position des 4 premiers champs ne peut pas être modifiée.
  */
 
 typedef volatile struct T_mkSemaphore T_mkSemaphore;

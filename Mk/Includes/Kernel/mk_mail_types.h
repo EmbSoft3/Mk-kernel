@@ -64,6 +64,7 @@ struct T_mkMailList
 /**
  * @struct T_mkMailSynchro
  * @brief Déclaration de la structure T_mkMailSynchro.
+ * @warning La position des 4 premiers champs ne peut pas être modifiée.
  */
 
 typedef struct T_mkMailSynchro T_mkMailSynchro;

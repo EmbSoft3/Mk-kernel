@@ -200,6 +200,9 @@ struct T_mkTaskLoad
  * @brief Déclaration de la structure T_mkTask.
  * @warning La valeur de la constante \ref K_MK_TASK_SIZE doit être
  *          modifiée si des attributs sont ajoutés.
+ * @warning La valeur des constantes \ref K_MK_SCHEDULER_TASK_LOAD_OFFSET et
+ *          \ref K_MK_SCHEDULER_TASK_LAST_LOAD_OFFSET doit être adaptée
+ *          si la position du champ 'load' est modifiée.
  *
  */
 

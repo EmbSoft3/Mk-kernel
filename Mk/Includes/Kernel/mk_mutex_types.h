@@ -40,6 +40,7 @@
 /**
  * @struct T_mkMutex
  * @brief Déclaration de la structure T_mkMutex.
+ * @warning La position des 4 premiers champs ne peut pas être modifiée.
  */
 
 typedef volatile struct T_mkMutex T_mkMutex;

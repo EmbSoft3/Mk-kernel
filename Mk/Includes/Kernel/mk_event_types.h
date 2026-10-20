@@ -40,6 +40,7 @@
 /**
  * @struct T_mkEvent
  * @brief Déclaration de la structure T_mkEvent.
+ * @warning La position des 4 premiers champs ne peut pas être modifiée.
  */
 
 typedef volatile struct T_mkEvent T_mkEvent;
