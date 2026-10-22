@@ -103,7 +103,7 @@ uint32_t mk_mail_set ( T_mkTask* p_mkTask, T_mkMailSynchro* p_mkPoster, T_mkMail
    uint32_t l_result = K_MK_SYNC_KO;
 
    /* Déclaration des variables de travail */
-   uint32_t l_right, l_area;
+   uint32_t l_right, l_area = K_MK_AREA_UNPROTECTED;
 
    /* Ce paramètre est présent en raison de la compatibilité des fonctions */
    /* de synchronisation */
@@ -112,10 +112,22 @@ uint32_t mk_mail_set ( T_mkTask* p_mkTask, T_mkMailSynchro* p_mkPoster, T_mkMail
    /* Récupération du niveau d'exécution du processeur */
    l_right = _mk_scheduler_privileged ( );
 
-   /* Récupération du niveau de privilège de la zone mémoire de la boite de messages */
-   l_area  = _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkMail->msgAddr );
-   l_area |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkMail->msgAddr + ( p_mkMail->msgNumber * ( p_mkMail->msgSize << 2 ) ) - 1 );
-   
+   /* Si la boite de messages est protégée, il faut récupérer le type de la zone mémoire */
+   if ( ( p_mkMail->poster.type & K_MK_AREA_PROTECTED ) == K_MK_AREA_PROTECTED )
+   {
+      /* Récupération du niveau de privilège de la zone mémoire de la boite de messages */
+      l_area |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkMail->msgAddr );
+      l_area |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkMail->msgAddr + ( p_mkMail->msgNumber * ( p_mkMail->msgSize << 2 ) ) - 1 );
+   }
+
+   /* Sinon */
+   else
+   {
+      /* Ne rien faire */
+      /* Si la boite n'est pas protégée, une tâche non privilégiée peut poster dedans peu importe le type */
+      /* de mémoire de la boite */
+   }
+  
    /* On teste aussi le buffer utilisateur pour qu'une tâche non privilégiée ne lise pas de la mémoire privilégiée */
    l_area |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkMessage );
    l_area |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) p_mkMessage + ( p_mkMail->msgSize << 2 ) - 1 );
