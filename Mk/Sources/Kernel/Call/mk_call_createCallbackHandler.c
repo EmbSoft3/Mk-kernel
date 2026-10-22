@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -77,6 +77,7 @@ void mk_call_createCallbackHandler ( T_mkSVCObject* p_mkObject )
          l_handler->type = K_MK_ID_CALLBACK_HANDLER | l_areaType;
          l_handler->identifier = 0;
          l_handler->event = ( T_mkEvent* ) p_mkObject->handle;
+         l_handler->createByAddr = g_mkScheduler.currentTask->owner;
 
          /* Si l'appel système a été déclenché dans un contexte privilégié */
          if ( ( l_right != K_MK_MODE_THREAD ) && ( l_areaType == K_MK_AREA_PROTECTED ) )

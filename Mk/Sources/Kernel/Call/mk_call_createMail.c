@@ -71,6 +71,9 @@ static T_mkCode mk_call_initMail ( T_mkMail* p_mkMail, uint32_t p_mkAreaType, ui
    /* Initialisation de l'adresse de base de la zone de messages */
    p_mkMail->msgAddr = p_mkAddr;
 
+   /* Initialisation de l'adresse du propriétaire de la boite */
+   p_mkMail->createByAddr = g_mkScheduler.currentTask->owner;
+   
    /* Vérification du nombre de messages disponibles dans la pool */
    if ( g_mkMailItemPool.pool.count >= p_mkItemNumber)
    {

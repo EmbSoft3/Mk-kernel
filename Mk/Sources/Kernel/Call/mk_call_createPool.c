@@ -47,6 +47,9 @@ static void mk_call_initPool ( T_mkPool* p_mkPool, T_mkPoolArea* p_mkArea, uint3
    /* Configuration du type du gestionnaire d'allocation */
    p_mkPool->type = K_MK_ID_POOL | p_mkAreaType;
 
+   /* Configuration de l'adresse du propriétaire du gestionnaire d'allocation */
+   p_mkPool->createByAddr = g_mkScheduler.currentTask->owner;
+
    /* Configuration de la taille des blocs du gestionnaire d'allocation */
    p_mkPool->size = p_mkSize;
 

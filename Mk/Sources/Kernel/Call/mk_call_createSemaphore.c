@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -69,6 +69,7 @@ void mk_call_createSemaphore ( T_mkSVCObject* p_mkObject )
          l_semaphore->token = l_initialToken;
          l_semaphore->tokenNumber = l_currentToken;
          l_semaphore->pendingList.current = K_MK_NULL;
+         l_semaphore->createByAddr = g_mkScheduler.currentTask->owner;
       }
 
       /* Sinon */

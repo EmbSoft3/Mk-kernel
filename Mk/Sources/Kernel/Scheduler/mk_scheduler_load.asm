@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020-2024 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -74,7 +74,7 @@
 .equ K_MK_SCHEDULER_CYCLE_REGISTER, K_MK_SCHEDULER_OFFSET_LOAD_REGISTER + 20
 .equ K_MK_SCHEDULER_TASK_LOAD_OFFSET, 0x40
 .equ K_MK_SCHEDULER_TASK_LAST_LOAD_OFFSET, 0x3C
-.equ K_MK_SCHEDULER_TASK_POOL_OFFSET, 0x28
+.equ K_MK_SCHEDULER_TASK_POOL_OFFSET, 0x2C
 .equ K_MK_SCHEDULER_CURRENT_TICK_REGISTER, K_MK_SCHEDULER_OFFSET_TICK_REGISTER
 
 /**

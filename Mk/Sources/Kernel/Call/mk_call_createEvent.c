@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -66,6 +66,7 @@ void mk_call_createEvent ( T_mkSVCObject* p_mkObject )
       l_event->bypass = K_MK_EVENT_BYPASS;
       l_event->flag = l_flag;
       l_event->pendingList.current = K_MK_NULL;
+      l_event->createByAddr = g_mkScheduler.currentTask->owner;
    }
 
    /* Sinon */

@@ -89,19 +89,6 @@ static void mk_call_checkRight ( T_mkSVCObject* p_mkObject, T_mkTask* p_mkTask, 
       /* Ne rien faire */
    }
 
-   /* Si l'appel système a été déclenché par une tâche applicative */
-   if ( ( p_mkStatus == K_MK_ISR_NO ) && ( g_mkScheduler.currentTask->owner != K_MK_NULL ) )
-   {
-      /* Configuration du propriétaire de la tâche */
-      p_mkTask->owner = ( T_mkAddr ) g_mkScheduler.currentTask->owner;
-   }
-
-   /* Sinon */
-   else
-   {
-      /* Ne rien faire */
-   }
-
    /* Retour */
    return;
 }
@@ -275,7 +262,7 @@ static void mk_call_executeCreate ( T_mkSVCObject* p_mkObject, uint32_t p_mkStat
 
       /* Si la tâche courante possède un propriétaire et si l'appel système n'a pas été réalisé */
       /* depuis un vecteur d'interruption */
-      if ( ( g_mkScheduler.currentTask->owner != K_MK_NULL ) && ( p_mkStatus == 0 ) )
+      if ( ( g_mkScheduler.currentTask->owner != K_MK_NULL ) && ( p_mkStatus == K_MK_ISR_NO ) )
       {
          /* La nouvelle tâche doit possèder le même propriétaire que la tâche créatrice */
          l_task->owner = ( T_mkAddr ) g_mkScheduler.currentTask->owner;

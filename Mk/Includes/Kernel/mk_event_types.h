@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -48,8 +48,9 @@ struct T_mkEvent
 {
    uint32_t type;          /*!< Ce membre stocke le type de l'objet de synchronisation (\ref K_MK_ID_EVENT_FLAG et \ref K_MK_ID_EVENT_SIGNAL). */
    uint32_t bypass;        /*!< Ce membre n'est pas utilisé. Il doit avoir une valeur supérieur à 0 pour la compatibilité des objets de synchronisation. */
-   uint32_t flag;          /*!< Ce membre stocke la valeur du champ d'événement. */
+   uint32_t flag;          /*!< Ce membre stocke la valeur du champ d'événements. */
    T_mkList pendingList;   /*!< Ce membre stocke l'adresse de la tâche en attente d'un événement. */
+   T_mkAddr createByAddr;  /*!< Ce membre contient l'adresse du créateur du champ d'événements. */
 };
 
 /**

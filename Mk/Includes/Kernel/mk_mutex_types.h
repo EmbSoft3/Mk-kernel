@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -50,6 +50,7 @@ struct T_mkMutex
    uint32_t  lock;         /*!< Ce membre contient le jeton du mutex. */
    T_mkTask* owner;        /*!< Ce membre contient l'adresse de la tâche propriétaire du mutex. */
    T_mkList  pendingList;  /*!< Ce membre contient l'adresse des tâches en attente du mutex. */
+   T_mkAddr  createByAddr; /*!< Ce membre contient l'adresse du créateur du mutex. */
 };
 
 /**

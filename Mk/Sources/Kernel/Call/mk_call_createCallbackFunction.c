@@ -88,6 +88,9 @@ void mk_call_createCallbackFunction ( T_mkSVCObject* p_mkObject )
                /* Configuration du type de la fonction de rappel */
                l_callback->type = K_MK_ID_CALLBACK_FUNCTION | l_areaType;
 
+               /* Ecriture de l'adresse du propriétaire de l'objet */
+               l_callback->createByAddr = g_mkScheduler.currentTask->owner;
+
                /* Ecriture de l'adresse de la fonction de rappel */
                l_callback->addr = _mk_call_callbackToAddr ( l_function );
 

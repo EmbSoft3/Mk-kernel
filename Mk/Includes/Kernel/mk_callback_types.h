@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -56,6 +56,7 @@ struct T_mkCallbackHandler
    uint32_t identifier;                                                    /*!< Ce membre contient l'identifiant du gestionnaire de rappel. */
    T_mkEvent* event;                                                       /*!< Ce membre contient le champ d'événements du gestionnaire de rappel. */
    T_mkMail* mail;                                                         /*!< Ce membre contient la boite de messages du gestionnaire de rappel. */
+   T_mkAddr createByAddr;                                                  /*!< Ce membre contient l'adresse du créateur du gestionnaire de rappels. */
 };
 
 /**
@@ -70,6 +71,7 @@ struct T_mkCallback
    uint32_t identifier;                                                    /*!< Ce membre contient l'identifiant de la fonction de rappel. */
    T_mkAddr addr;                                                          /*!< Ce membre contient l'adresse de la fonction de rappel à exécuter. */
    T_mkCallbackHandler* handler;                                           /*!< Ce membre contient l'adresse du gestionnaire de rappel de la fonction. */
+   T_mkAddr createByAddr;                                                  /*!< Ce membre contient l'adresse du créateur de la fonction de rappels. */
 };
 
 /**
