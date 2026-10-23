@@ -47,34 +47,49 @@ T_mkCode mk_pool_free ( T_mkPool* p_mkPool, T_mkAddr p_mkAddr )
    /* Déclaration de la variable de retour */
    T_mkCode l_result = K_MK_OK;
 
-   /* Déclaration d'une variable de travail */
-   uint32_t* l_next = ( uint32_t* ) p_mkAddr;
+   /* Déclaration des variables de travail */
+   uint32_t* l_next = ( uint32_t* ) p_mkAddr, l_right;
 
    /* Si les paramètres sont valides */
    if ( ( p_mkPool != K_MK_NULL ) && ( p_mkAddr != K_MK_NULL ) )
    {
-      /* Test de la validité de l'adresse */
-      l_result = mk_call_isValidHandle ( p_mkPool->baseAddr, p_mkPool->number, 
-         ( p_mkPool->size << 2 ), p_mkAddr );
-      
-      /* Si la mémoire à désallouer est dans le buffer de la pool avec le bon alignement */
-      if ( l_result == K_MK_OK )
+      /* Récupération des droits d'exécution */
+      l_right = _mk_scheduler_privileged ( );
+
+      /* Si la tâche possède les droits suffisants pour réaliser l'appel système */
+      if ( ( l_right == K_MK_MODE_HANDLER ) || ( ( l_right == K_MK_MODE_THREAD ) &&
+         ( ( p_mkPool->type & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) ) )
       {
-         /* Ajout du bloc mémoire en tête de chaine */
-         *l_next = ( uint32_t ) ( p_mkPool->current );
+         /* Test de la validité de l'adresse */
+         l_result = mk_call_isValidHandle ( p_mkPool->baseAddr, p_mkPool->number, 
+            ( p_mkPool->size << 2 ), p_mkAddr );
+         
+         /* Si la mémoire à désallouer est dans le buffer de la pool avec le bon alignement */
+         if ( l_result == K_MK_OK )
+         {
+            /* Ajout du bloc mémoire en tête de chaine */
+            *l_next = ( uint32_t ) ( p_mkPool->current );
 
-         /* Mise à jour de l'élément de tête */
-         p_mkPool->current = p_mkAddr;
+            /* Mise à jour de l'élément de tête */
+            p_mkPool->current = p_mkAddr;
 
-         /* Actualisation du nombre de blocs mémoires disponibles dans la pool */
-         p_mkPool->count = ( uint32_t ) ( p_mkPool->count + 1 );
+            /* Actualisation du nombre de blocs mémoires disponibles dans la pool */
+            p_mkPool->count = ( uint32_t ) ( p_mkPool->count + 1 );
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Actualisation de la variable de retour */
+            l_result = K_MK_ERROR_PARAM;
+         }
       }
 
       /* Sinon */
       else
       {
          /* Actualisation de la variable de retour */
-         l_result = K_MK_ERROR_PARAM;
+         l_result = K_MK_ERROR_RIGHT;
       }
    }
 

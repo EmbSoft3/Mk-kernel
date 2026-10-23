@@ -53,56 +53,70 @@ T_mkAddr mk_pool_alloc ( T_mkPool* p_mkPool, uint32_t p_mkClear )
    /* Déclaration d'une variable temporaire */
    T_mkAddr l_tmp = K_MK_NULL;
 
-   /* Déclaration d'une variable de comptage */
-   uint32_t l_counter;
+   /* Déclaration des variables de travail */
+   uint32_t l_counter, l_right;
 
    /* Si au moins un élément est disponible */
    if ( ( p_mkPool != K_MK_NULL ) && ( p_mkPool->current != K_MK_NULL ) && ( p_mkPool->count != 0 ) )
    {
-      /* Le buffer des pools pouvant être non privilégié, il est nécessaire de vérifier que l'adresse du prochain */
-      /* bloc est toujours dans le buffer */
-      /* Récupération de l'adresse du prochain emplacement */
-      l_tmp = ( uint32_t* ) ( * ( ( uint32_t* ) p_mkPool->current ) );
+      /* Récupération des droits d'exécution */
+      l_right = _mk_scheduler_privileged ( );
 
-      /* Si le bloc était le dernier disponible, l'adresse pointe sur K_MK_NULL */
-      /* On ne vérifie donc pas la validité de l'adresse */
-      if ( l_tmp != K_MK_NULL )
+      /* Si la tâche possède les droits suffisants pour réaliser l'appel système */
+      if ( ( l_right == K_MK_MODE_HANDLER ) || ( ( l_right == K_MK_MODE_THREAD ) &&
+         ( ( p_mkPool->type & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) ) )
       {
-         /* Test de la validité de l'adresse */
-         l_localResult = mk_call_isValidHandle ( p_mkPool->baseAddr, p_mkPool->number, ( p_mkPool->size << 2 ), l_tmp );
-      }
+         /* Le buffer des pools pouvant être non privilégié, il est nécessaire de vérifier que l'adresse du prochain */
+         /* bloc est toujours dans le buffer */
+         /* Récupération de l'adresse du prochain emplacement */
+         l_tmp = ( uint32_t* ) ( * ( ( uint32_t* ) p_mkPool->current ) );
 
-      /* Sinon */
-      else
-      {
-         /* Ne rien faire */
-      }
-
-      /* Si l'adresse du prochain bloc est valide */
-      if ( l_localResult == K_MK_OK )
-      {
-         /* Réinitialisation du morceau de mémoire alloué */
-         for ( l_counter = 0 ; ( l_counter < p_mkPool->size ) && ( p_mkClear == K_MK_POOL_CLEAR ) ; l_counter++ )
+         /* Si le bloc était le dernier disponible, l'adresse pointe sur K_MK_NULL */
+         /* On ne vérifie donc pas la validité de l'adresse */
+         if ( l_tmp != K_MK_NULL )
          {
-            /* Remise à zéro du mot courant */
-            *( ( uint32_t* ) p_mkPool->current + l_counter ) = 0;
+            /* Test de la validité de l'adresse */
+            l_localResult = mk_call_isValidHandle ( p_mkPool->baseAddr, p_mkPool->number, ( p_mkPool->size << 2 ), l_tmp );
          }
 
-         /* Actualisation de la variable de retour */
-         l_result = ( uint32_t* ) p_mkPool->current;
+         /* Sinon */
+         else
+         {
+            /* Ne rien faire */
+         }
 
-         /* Actualisation du pointeur d'éléments */
-         p_mkPool->current = l_tmp;
+         /* Si l'adresse du prochain bloc est valide */
+         if ( l_localResult == K_MK_OK )
+         {
+            /* Réinitialisation du morceau de mémoire alloué */
+            for ( l_counter = 0 ; ( l_counter < p_mkPool->size ) && ( p_mkClear == K_MK_POOL_CLEAR ) ; l_counter++ )
+            {
+               /* Remise à zéro du mot courant */
+               *( ( uint32_t* ) p_mkPool->current + l_counter ) = 0;
+            }
 
-         /* Actualisation du nombre de blocs mémoires disponibles dans le pool */
-         p_mkPool->count = ( uint32_t ) ( p_mkPool->count - 1 );
+            /* Actualisation de la variable de retour */
+            l_result = ( uint32_t* ) p_mkPool->current;
+
+            /* Actualisation du pointeur d'éléments */
+            p_mkPool->current = l_tmp;
+
+            /* Actualisation du nombre de blocs mémoires disponibles dans le pool */
+            p_mkPool->count = ( uint32_t ) ( p_mkPool->count - 1 );
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Ne rien faire */
+         }
       }
 
       /* Sinon */
       else
       {
          /* Ne rien faire */
-      }       
+      }   
    }
 
    /* Sinon */
