@@ -123,8 +123,9 @@ void mk_call_createPool ( T_mkSVCObject* p_mkObject )
          /* Ne rien faire */
       }  
       
-      /* Si la pool est dans une zone privilégiée et si l'appel système a été réalisé par une tâche non privilégiée */
-      if ( ( l_right == K_MK_MODE_THREAD ) && ( l_privilegedArea != K_MK_AREA_UNPROTECTED ) )
+      /* Si l'appel système a été réalisé par une tâche non privilégiée et si la pool est protégée ou son buffer en mémoire privilégiée */
+      if ( ( l_right == K_MK_MODE_THREAD ) && 
+         ( ( l_privilegedArea != K_MK_AREA_UNPROTECTED ) || ( ( l_type & K_MK_AREA_PROTECTED ) == K_MK_AREA_PROTECTED ) ) )
       {
          /* Déclenchement de la routine gérant les conflits */
          mk_handler_rightFault ( );
@@ -168,7 +169,7 @@ void mk_call_createPool ( T_mkSVCObject* p_mkObject )
             else
             {
                /* Actualisation de la variable de retour */
-               p_mkObject->result = K_MK_ERROR_MALLOC;
+               p_mkObject->result = K_MK_ERROR_PARAM;
             }
          }
 
@@ -176,7 +177,7 @@ void mk_call_createPool ( T_mkSVCObject* p_mkObject )
          else
          {
             /* Actualisation de la variable de retour */
-            p_mkObject->result = K_MK_ERROR_MALLOC;
+            p_mkObject->result = K_MK_ERROR_PARAM;
          }
       }
   }

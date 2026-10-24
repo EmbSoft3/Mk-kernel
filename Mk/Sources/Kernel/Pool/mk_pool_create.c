@@ -90,10 +90,10 @@ T_mkCode mk_pool_create ( T_mkPoolArea* p_mkArea, T_mkPool** p_mkPool, uint32_t 
    T_mkSVCObject* l_svcPnt;
 
    /* Déclaration des variables de travail */
-   uint32_t* l_base = 0, *l_next = 0;
+   uint32_t* l_base = 0, *l_next = 0, l_isr = 0, l_right = 0;
 
-   /* Déclaration d'une variable stockant le statut d'interruption */
-   uint32_t l_isr = mk_scheduler_isr ( );
+   /* Récupération du statut d'interruption */
+   l_isr = mk_scheduler_isr ( );
 
    /* Si cette fonction n'est pas exécutée depuis un vecteur d'interruption */
    if ( l_isr == K_MK_ISR_NO )
@@ -101,37 +101,52 @@ T_mkCode mk_pool_create ( T_mkPoolArea* p_mkArea, T_mkPool** p_mkPool, uint32_t 
       /* Si les paramètres d'entrées sont valides */
       if ( ( p_mkArea != K_MK_NULL ) && ( p_mkPool != K_MK_NULL ) && ( p_mkCount != 0 ) )
       {
-         /* Initialisation de la variable contenant l'adresse de base de la pool */
-         l_base = ( uint32_t* ) ( p_mkArea->currentAddr );
+         /* Récupération des droits d'exécution */
+         l_right = _mk_scheduler_privileged ( );
          
-         /* Déclenchement d'une requête SVC */
-         l_svcPnt = mk_pool_call ( p_mkArea, p_mkAreaType, p_mkSize, p_mkCount );
-
-         /* Si la pool a été allouée */
-         if ( ( l_svcPnt->result == K_MK_OK ) && ( l_svcPnt->handle != K_MK_NULL ) )
+         /* La pool peut être créé par une tâche non privilégiée que si elle n'est pas protégée */
+         if ( ( l_right == K_MK_MODE_HANDLER ) || 
+            ( ( l_right == K_MK_MODE_THREAD ) && ( ( p_mkAreaType & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) ) )
          {
-            /* Récupération de l'instance de la pool */
-            *p_mkPool = l_svcPnt->handle;
+            /* Initialisation de la variable contenant l'adresse de base de la pool */
+            l_base = ( uint32_t* ) ( p_mkArea->currentAddr );
+            
+            /* Déclenchement d'une requête SVC */
+            l_svcPnt = mk_pool_call ( p_mkArea, p_mkAreaType, p_mkSize, p_mkCount );
 
-            /* Détermination de l'adresse du prochain bloc disponible dans la zone mémoire */
-            p_mkArea->currentAddr = ( uint32_t* ) ( p_mkArea->currentAddr ) + ( p_mkSize * p_mkCount );
-
-            /* Réalisation du chainage des blocs de taille fixe */
-            /* La chaine est réalisée directement dans les blocs mémoire non alloués */
-            /* Pour le nombre d'objets pouvant être alloué */
-            while ( p_mkCount != 0 )
+            /* Si la pool a été allouée */
+            if ( ( l_svcPnt->result == K_MK_OK ) && ( l_svcPnt->handle != K_MK_NULL ) )
             {
-               /* Ecriture de l'adresse où se situe le prochain élément */
-               *l_base = ( uint32_t ) l_next;
+               /* Récupération de l'instance de la pool */
+               *p_mkPool = l_svcPnt->handle;
 
-               /* Actualisation de la valeur du prochain élément */
-               l_next = l_base;
+               /* Détermination de l'adresse du prochain bloc disponible dans la zone mémoire */
+               p_mkArea->currentAddr = ( uint32_t* ) ( p_mkArea->currentAddr ) + ( p_mkSize * p_mkCount );
 
-               /* Passage à l'élément suivant */
-               l_base = l_base + p_mkSize;
+               /* Réalisation du chainage des blocs de taille fixe */
+               /* La chaine est réalisée directement dans les blocs mémoire non alloués */
+               /* Pour le nombre d'objets pouvant être alloué */
+               while ( p_mkCount != 0 )
+               {
+                  /* Ecriture de l'adresse où se situe le prochain élément */
+                  *l_base = ( uint32_t ) l_next;
 
-               /* Décrémentation du nombre d'objet */
-               p_mkCount--;
+                  /* Actualisation de la valeur du prochain élément */
+                  l_next = l_base;
+
+                  /* Passage à l'élément suivant */
+                  l_base = l_base + p_mkSize;
+
+                  /* Décrémentation du nombre d'objet */
+                  p_mkCount--;
+               }
+            }
+
+            /* Sinon */
+            else
+            {
+               /* Actualisation de la variable de retour */
+               l_result = l_svcPnt->result;
             }
          }
 
@@ -139,7 +154,7 @@ T_mkCode mk_pool_create ( T_mkPoolArea* p_mkArea, T_mkPool** p_mkPool, uint32_t 
          else
          {
             /* Actualisation de la variable de retour */
-            l_result = l_svcPnt->result;
+            l_result = K_MK_ERROR_RIGHT;
          }
       }
 
