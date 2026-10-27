@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2019 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2019-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -42,43 +42,22 @@
  * @endinternal
  */
 
-T_mkCode mk_pool_count ( T_mkPool* p_mkPool, uint32_t* p_mkCount )
+uint32_t mk_pool_count ( T_mkPool* p_mkPool )
 {
    /* Déclaration de la variable de retour */
-   T_mkCode l_result = K_MK_OK;
+   uint32_t l_result = 0;
 
-   /* Déclaration d'une variable de travail */
-   uint32_t l_isr;
-
-   /* Si les paramètres sont valides */
-   if ( ( p_mkPool != K_MK_NULL ) && ( p_mkCount != K_MK_NULL ) )
+   /* Si le paramètre est valide */
+   if ( p_mkPool != K_MK_NULL )
    {
-      /* Réinitialisation du résultat */
-      *p_mkCount = 0;
-
-      /* Récupération du statut d'interruption */
-      l_isr = mk_scheduler_isr ( );
-
-      /* Si cette fonction n'est pas exécutée depuis un vecteur d'interruption */
-      if ( l_isr == K_MK_ISR_NO )
-      {
-         /* Récupération du résultat */
-         *p_mkCount = p_mkPool->count;
-      }
-
-      /* Sinon */
-      else
-      {
-         /* Actualisation de la variable de retour */
-         l_result = K_MK_ERROR_ISR;
-      }
+      /* Actualisation du résultat */
+      l_result = p_mkPool->count;
    }
 
    /* Sinon */
    else
    {
-      /* Acutalisation de la variable de retour */
-      l_result = K_MK_ERROR_PARAM;
+      /* Ne rien faire */
    }
 
    /* Retour */

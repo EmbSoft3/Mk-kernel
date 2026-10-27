@@ -88,20 +88,16 @@ T_mkCode mk_pool_create ( T_mkPoolArea* p_mkArea, T_mkPool** p_mkPool, uint32_t 
 T_mkAddr mk_pool_available ( T_mkPool* p_mkPool );
 
 /**
- * @fn T_mkCode mk_pool_count ( T_mkPool* p_mkPool, uint32_t* p_mkCount );
+ * @fn uint32_t mk_pool_count ( T_mkPool* p_mkPool )
  * @brief Cette fonction retourne le nombre de blocs de taille fixe disponible dans une gestionnaire d'allocation dynamique.
  *
  * @param[in]  p_mkPool  Ce paramètre contient l'adresse d'une structure de type \ref T_mkPool.
- * @param[out] p_mkCount Ce paramètre contient le nombre de blocs mémoire disponibles.
  *
- * @return Cette fonction retourne un des codes suivants :
- *         \li \ref K_MK_OK           : le nombre de blocs de taille fixe est disponible en paramètre.
- *         \li \ref K_MK_ERROR_PARAM  : le nombre de blocs de taille fixe n'est pas été disponible car au moins un paramètre est invalide.
- *         \li \ref K_MK_ERROR_ISR    : le nombre de blocs de taille fixe n'eset pas été disponible car la fonction ne peut pas être exécutée dans un vecteur d'interruption.
- *
+ * @return Cette fonction retourne le nombre de blocs mémoire disponibles.
+ * 
  */
 
-T_mkCode mk_pool_count ( T_mkPool* p_mkPool, uint32_t* p_mkCount );
+uint32_t mk_pool_count ( T_mkPool* p_mkPool );
 
 /**
  * @fn T_mkAddr mk_pool_alloc ( T_mkPool* p_mkPool, uint32_t p_mkClear );
