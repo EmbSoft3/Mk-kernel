@@ -44,6 +44,22 @@
 
 T_mkAddr mk_pool_available ( T_mkPool* p_mkPool )
 {
-   /* Retourne l'adresse du prochain bloc disponible */
-   return ( p_mkPool->current );
+   /* Déclaration de la variable de retour */
+   T_mkAddr l_result = K_MK_NULL;
+   
+   /* Si le paramètre est valide */
+   if ( p_mkPool != K_MK_NULL )
+   {
+      /* Actualisation du résultat */
+      l_result = p_mkPool->current;
+   }
+
+   /* Sinon */
+   else
+   {
+      /* Ne rien faire */
+   }
+   
+   /* Retour */
+   return ( l_result );
 }
