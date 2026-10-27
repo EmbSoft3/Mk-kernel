@@ -106,6 +106,9 @@ T_mkCode mk_pool_allocSafe ( T_mkPool* p_mkPool, T_mkAddr* p_mkAddr, uint32_t p_
    /* Si les paramètres sont valides */
    if ( ( p_mkPool != K_MK_NULL ) && ( p_mkAddr != K_MK_NULL ) )
    {
+      /* Réinitialisation de la variable de retour */
+      *p_mkAddr = K_MK_NULL;
+      
       /* Récupération du statut d'interruption */
       l_isr = mk_scheduler_isr ( );
 
