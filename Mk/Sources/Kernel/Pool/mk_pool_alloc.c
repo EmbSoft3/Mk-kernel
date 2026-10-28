@@ -54,16 +54,20 @@ T_mkAddr mk_pool_alloc ( T_mkPool* p_mkPool, uint32_t p_mkClear )
    T_mkAddr l_tmp = K_MK_NULL;
 
    /* Déclaration des variables de travail */
-   uint32_t l_counter, l_right;
+   uint32_t l_counter, l_right, l_isr;
 
    /* Si au moins un élément est disponible */
    if ( ( p_mkPool != K_MK_NULL ) && ( p_mkPool->current != K_MK_NULL ) && ( p_mkPool->count != 0 ) )
    {
+      /* Récupération du statut d'interruption */
+      l_isr = mk_scheduler_isr ( ); 
+      
       /* Récupération des droits d'exécution */
       l_right = _mk_scheduler_privileged ( );
 
       /* Si la tâche possède les droits suffisants pour réaliser l'appel système */
-      if ( ( l_right == K_MK_MODE_HANDLER ) || ( ( l_right == K_MK_MODE_THREAD ) &&
+      /* ou si cette fonction est exécutée depuis un vecteur d'interruption */
+      if ( ( l_isr != K_MK_ISR_NO ) || ( l_right == K_MK_MODE_HANDLER ) || ( ( l_right == K_MK_MODE_THREAD ) &&
          ( ( p_mkPool->type & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) ) )
       {
          /* Le buffer des pools pouvant être non privilégié, il est nécessaire de vérifier que l'adresse du prochain */

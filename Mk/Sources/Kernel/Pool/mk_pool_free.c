@@ -48,16 +48,20 @@ T_mkCode mk_pool_free ( T_mkPool* p_mkPool, T_mkAddr p_mkAddr )
    T_mkCode l_result = K_MK_OK;
 
    /* Déclaration des variables de travail */
-   uint32_t* l_next = ( uint32_t* ) p_mkAddr, l_right;
+   uint32_t* l_next = ( uint32_t* ) p_mkAddr, l_right, l_isr;
 
    /* Si les paramètres sont valides */
    if ( ( p_mkPool != K_MK_NULL ) && ( p_mkAddr != K_MK_NULL ) )
    {
+      /* Récupération du statut d'interruption */
+      l_isr = mk_scheduler_isr ( ); 
+
       /* Récupération des droits d'exécution */
       l_right = _mk_scheduler_privileged ( );
 
       /* Si la tâche possède les droits suffisants pour réaliser l'appel système */
-      if ( ( l_right == K_MK_MODE_HANDLER ) || ( ( l_right == K_MK_MODE_THREAD ) &&
+      /* ou si cette fonction est exécutée depuis un vecteur d'interruption */
+      if ( ( l_isr != K_MK_ISR_NO ) || ( l_right == K_MK_MODE_HANDLER ) || ( ( l_right == K_MK_MODE_THREAD ) &&
          ( ( p_mkPool->type & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) ) )
       {
          /* Test de la validité de l'adresse */
