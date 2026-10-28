@@ -100,9 +100,13 @@ T_mkCode mk_pool_init ( T_mkPoolArea* p_mkArea, T_mkPool* p_mkPool, uint32_t p_m
             /* Initialisation des attributs du gestionnaire d'allocation */
             mk_pool_setAttribute ( p_mkPool, p_mkAreaType, p_mkArea->currentAddr, p_mkSize, p_mkCount );
 
+            /* Réinitialisation du buffer de la pool */
+            /* On écrit la valeur 0xFFFFFFFF pour indiquer que les objets de synchronisation n'ont pas été créé */
+            _writeWords ( p_mkArea->currentAddr, 0xFFFFFFFF, p_mkSize * p_mkCount );
+
             /* Détermination de l'adresse du prochain bloc disponible dans la zone mémoire */
             p_mkArea->currentAddr = ( uint32_t* ) ( p_mkArea->currentAddr ) + ( p_mkSize * p_mkCount );
-
+            
             /* Réalisation du chainage des blocs de taille fixe */
             /* La chaine est réalisée directement dans les blocs mémoire non alloués */
             /* Pour le nombre d'objets devant être alloués */

@@ -59,12 +59,12 @@ static T_mkCode mk_call_deleteMail ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, uint
    /* Si le sémaphore est valide */
    if ( l_result == K_MK_OK )
    {
-      /* Récupération du type de l'objet de synchronisation */
-      l_type = mk_call_type ( ( T_mkAddr ) p_mkMail );
-
       /* Si l'objet de synchronisation n'a pas été détruit */
-      if ( l_type != K_MK_ID_NO )
+      if ( p_mkMail->createByAddr != K_MK_INVALID_HANDLE )
       {
+         /* Récupération du type de l'objet de synchronisation */
+         l_type = mk_call_type ( ( T_mkAddr ) p_mkMail );
+         
          /* Analyse des droits de la tâche qui a exécutée l'appel système */
          l_type = mk_call_isProtectedArea ( l_type, p_mkStatus );
 
@@ -97,8 +97,10 @@ static T_mkCode mk_call_deleteMail ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, uint
             /* Si aucune erreur ne s'est produite */
             if ( l_result == K_MK_OK )
             {
-               /* Réinitialisation de la boite de messages */
-               _writeBytes ( ( T_mkAddr ) p_mkMail, 0, p_mkObjectSize );
+               /* Réinitialisation de l'objet */
+               /* Le premier mot ne doit pas être effacé car la pool a écrit */
+               /* l'adresse du prochain bloc à l'intérieur */
+               _writeBytes ( ( void_t ) ( ( uint32_t* ) p_mkMail + 1 ), 0xFF, p_mkObjectSize - 4 );
             }
 
             /* Sinon */
@@ -158,7 +160,7 @@ static T_mkCode mk_call_deleteObject ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, ui
       l_type = mk_call_type ( p_mkHandle );
 
       /* Si l'objet de synchronisation n'a pas été détruit */
-      if ( l_type != K_MK_ID_NO )
+      if ( ( T_mkAddr ) ( * ( ( uint32_t* ) p_mkHandle + 1 ) ) != K_MK_INVALID_HANDLE )
       {
          /* Analyse des droits de la tâche qui a exécutée l'appel système */
          l_type = mk_call_isProtectedArea ( l_type, p_mkStatus );
@@ -173,7 +175,9 @@ static T_mkCode mk_call_deleteObject ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, ui
             if ( l_result == K_MK_OK )
             {
                /* Réinitialisation de l'objet */
-               _writeBytes ( p_mkHandle, 0, p_mkObjectSize );
+               /* Le premier mot ne doit pas être effacé car la pool a écrit */
+               /* l'adresse du prochain bloc à l'intérieur */
+               _writeBytes ( ( void_t ) ( ( uint32_t* ) p_mkHandle + 1 ), 0xFF, p_mkObjectSize - 4 );
             }
 
             /* Sinon */

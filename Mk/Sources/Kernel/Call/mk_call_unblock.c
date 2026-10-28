@@ -300,7 +300,7 @@ static T_mkCode mk_call_handleSemaphore ( T_mkSVCObject* p_mkObject, uint32_t p_
                                       sizeof ( T_mkSemaphore ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ] );
 
    /* Si le sémaphore est valide */
-   if ( ( l_result == K_MK_OK ) && ( l_semaphore->type != K_MK_ID_NO ) )
+   if ( ( l_result == K_MK_OK ) && ( l_semaphore->createByAddr != K_MK_INVALID_HANDLE ) )
    {
       /* Si un jeton peut-être libéré */
       if ( ( l_semaphore != K_MK_NULL ) && ( l_semaphore->token != 0 ) )
@@ -351,7 +351,7 @@ static T_mkCode mk_call_handleMutex ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
                                       sizeof ( T_mkMutex ), ( T_mkAddr ) l_mutex );
 
    /* Si le mutex est valide */
-   if ( ( l_result == K_MK_OK ) && ( l_mutex->type != K_MK_ID_NO ) )
+   if ( ( l_result == K_MK_OK ) && ( l_mutex->createByAddr != K_MK_INVALID_HANDLE ) )
    {
       /* Si la tâche est propriétaire du mutex et si le mutex est vérrouillé */
       if ( ( l_mutex->owner == g_mkScheduler.currentTask ) && ( l_mutex->lock == 1 ) )
@@ -402,7 +402,7 @@ static T_mkCode mk_call_handlePool ( T_mkSVCObject* p_mkObject, uint32_t p_mkSta
                                       sizeof ( T_mkPool ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ] );
 
    /* Si la pool est valide */
-   if ( ( l_result == K_MK_OK ) && ( l_pool->type != K_MK_ID_NO ) )
+   if ( ( l_result == K_MK_OK ) && ( l_pool->createByAddr != K_MK_INVALID_HANDLE ) )
    {
       /* Configuration des pointeurs de fonction */
       p_mkObject->data [ K_MK_OFFSET_SYNC_FUNCTION ] = ( T_mkAddr ) _mk_call_poolTakeToAddr ( mk_pool_take );
@@ -442,7 +442,7 @@ static T_mkCode mk_call_handleEvent ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
                                       sizeof ( T_mkEvent ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ] );
 
    /* Si le champ d'événements est valide */
-   if ( ( l_result == K_MK_OK ) && ( l_event->type != K_MK_ID_NO ) )
+   if ( ( l_result == K_MK_OK ) && ( l_event->createByAddr != K_MK_INVALID_HANDLE ) )
    {
       /* Configuration des pointeurs de fonction */
       p_mkObject->data [ K_MK_OFFSET_SYNC_FUNCTION ] =  ( T_mkAddr ) _mk_call_eventToAddr ( mk_event_check );

@@ -246,7 +246,7 @@ static T_mkCode mk_call_handleMail ( T_mkSVCObject* p_mkObject, uint32_t p_mkSta
                                       sizeof ( T_mkMail ), ( T_mkAddr ) l_mail );
 
    /* Si la boite de messages est valide */
-   if ( ( l_result == K_MK_OK ) && ( l_mail->poster.type != K_MK_ID_NO ) && ( l_mail->pender.type != K_MK_ID_NO ) )
+   if ( ( l_result == K_MK_OK ) && ( l_mail->createByAddr != K_MK_INVALID_HANDLE ) )
    {
       /* Si l'appel système a été exécuté par la fonction mk_mail_post */
       if ( p_mkObject->type == K_MK_SYSCALL_SYNCHRO_MAILBOX_POST_FUNCTION )
@@ -339,7 +339,7 @@ static T_mkCode mk_call_handleEvent ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
                                       sizeof ( T_mkEvent ), ( T_mkAddr ) l_event );
 
    /* Si le champ d'événements est valide */
-   if ( ( l_result == K_MK_OK ) && ( l_event->type != K_MK_ID_NO ) )
+   if ( ( l_result == K_MK_OK ) && ( l_event->createByAddr != K_MK_INVALID_HANDLE ) )
    {
       /* Si l'appel système a été exécuté par la fonction mk_event_wait */
       if ( p_mkObject->type == K_MK_SYSCALL_SYNCHRO_EVENT_WAIT_FUNCTION )
@@ -409,7 +409,7 @@ static T_mkCode mk_call_handlePool ( T_mkSVCObject* p_mkObject, uint32_t p_mkSta
                                       sizeof ( T_mkPool ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ] );
 
    /* Si l'instance est valide */
-   if ( ( l_result == K_MK_OK ) && ( l_pool->type != K_MK_ID_NO ) )
+   if ( ( l_result == K_MK_OK ) && ( l_pool->createByAddr != K_MK_INVALID_HANDLE ) )
    {
       /* Si l'appel système a été exécuté par la fonction mk_pool_allocSafe */
       if ( p_mkObject->type == K_MK_SYSCALL_SYNCHRO_POOL_ALLOC_FUNCTION )
@@ -461,7 +461,7 @@ static T_mkCode mk_call_handleMutex ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
                                       sizeof ( T_mkMutex ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ] );
 
    /* Si le mutex est valide */
-   if ( ( l_result == K_MK_OK ) && ( l_mutex->type != K_MK_ID_NO ) )
+   if ( ( l_result == K_MK_OK ) && ( l_mutex->createByAddr != K_MK_INVALID_HANDLE ) )
    {
       /* Si l'appel système a été exécuté par la fonction mk_mutex_take */
       if ( p_mkObject->type == K_MK_SYSCALL_SYNCHRO_MUTEX_TAKE_FUNCTION )
@@ -510,7 +510,7 @@ static T_mkCode mk_call_handleSemaphore ( T_mkSVCObject* p_mkObject, uint32_t p_
                                       sizeof ( T_mkSemaphore ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ] );
 
    /* Si le sémaphore est valide */
-   if ( ( l_result == K_MK_OK ) && ( l_semaphore->type != K_MK_ID_NO ) )
+   if ( ( l_result == K_MK_OK ) && ( l_semaphore->createByAddr != K_MK_INVALID_HANDLE ) )
    {
       /* Si l'appel système a été exécuté par la fonction mk_semaphore_take */
       if ( p_mkObject->type == K_MK_SYSCALL_SYNCHRO_SEMAPHORE_TAKE_FUNCTION )
