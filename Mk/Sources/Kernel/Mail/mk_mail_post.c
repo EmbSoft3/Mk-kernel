@@ -144,7 +144,7 @@ T_mkCode mk_mail_post ( T_mkMail* p_mkMail, T_mkAddr p_mkMessage, uint32_t p_sta
             if ( l_svcPnt->result == K_MK_OK )
             {
                /* Si le message n'a pas été posté */
-               if ( g_mkScheduler.currentTask->synchro.object == K_MK_NULL )
+               if ( ( l_isr == K_MK_ISR_NO ) && ( g_mkScheduler.currentTask->synchro.object == K_MK_NULL ) )
                {
                   /* Actualisation de la variable de retour */
                   l_result = K_MK_ERROR_TIMEOUT;
