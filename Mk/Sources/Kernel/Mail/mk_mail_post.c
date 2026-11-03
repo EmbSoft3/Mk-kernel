@@ -95,7 +95,7 @@ static T_mkSVCObject* mk_mail_call ( T_mkMail* p_mkMail, T_mkAddr p_mkMessage, u
  * @endinternal
  */
 
-T_mkCode mk_mail_post ( T_mkMail* p_mkMail, T_mkAddr p_mkMessage, uint32_t p_state, uint32_t p_mkTick )
+T_mkCode mk_mail_post ( T_mkMail* p_mkMail, T_mkAddr p_mkMessage, uint32_t p_mkState, uint32_t p_mkTick )
 {
    /* Déclaration de la variable de retour */
    T_mkCode l_result = K_MK_OK;
@@ -121,7 +121,7 @@ T_mkCode mk_mail_post ( T_mkMail* p_mkMail, T_mkAddr p_mkMessage, uint32_t p_sta
       {
          /* Si la fonction n'est pas exécutée depuis un vecteur d'interruption ou si la fonction est exécutée depuis un */
          /* vecteur d'interruption mais que la temporisation est nulle */
-         if ( ! ( ( l_isr != K_MK_ISR_NO ) && ( p_mkTick != 0 ) ) )
+         if ( ! ( ( l_isr != K_MK_ISR_NO ) && ( ( p_mkTick != 0 ) || ( p_mkState != K_MK_STATE_READY ) ) ) )
          {
             /* Entrée en section critique */
             /* La valeur du masque doit être récupérée car cette fonction peut être */
@@ -130,7 +130,7 @@ T_mkCode mk_mail_post ( T_mkMail* p_mkMail, T_mkAddr p_mkMessage, uint32_t p_sta
             l_mask = _mk_scheduler_maskFromIsr ( K_MK_SCHEDULER_MASK_PRIORITY );
 
             /* Déclenchement d'une requête SVC */
-            l_svcPnt = mk_mail_call ( p_mkMail, p_mkMessage, p_state, p_mkTick );
+            l_svcPnt = mk_mail_call ( p_mkMail, p_mkMessage, p_mkState, p_mkTick );
 
             /* Sortie de la section critique */
             /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
