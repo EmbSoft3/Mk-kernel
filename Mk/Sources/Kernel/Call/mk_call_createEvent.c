@@ -45,35 +45,63 @@
 void mk_call_createEvent ( T_mkSVCObject* p_mkObject )
 {
    /* Déclaration d'un pointeur d'événement */
-   T_mkEvent* l_event;
+   T_mkEvent* l_event = K_MK_NULL;
 
    /* Déclaration des variables stockant les caractéristiques de l'événement */
    uint32_t l_type = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_TYPE ];
    uint32_t l_areaType = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_AREA_TYPE ];
    uint32_t l_flag = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_PARAM_OBJECT ];
 
+   /* Déclaration d'une variable stockant le niveau d'exécution de la tâche courante*/
+   uint32_t l_right = _mk_scheduler_privileged ( );
+
    /* Actualisation de la variable de retour */
    p_mkObject->result = K_MK_OK;
 
-   /* Allocation d'une pool dans l'espace privilégié */
-   l_event = mk_pool_alloc ( &g_mkEventPool.pool, K_MK_POOL_CLEAR );
-
-   /* Si aucune erreur ne s'est produite */
-   if ( l_event != K_MK_NULL )
+   /* Si une tâche non privilégiée tente de créer un champ d'événement protégé */
+   if ( ( l_right == K_MK_MODE_THREAD ) && ( ( l_areaType & K_MK_AREA_PROTECTED ) == K_MK_AREA_PROTECTED ) )
    {
-      /* Initialisation des attributs de l'événement */
-      l_event->type = l_type | l_areaType;
-      l_event->bypass = K_MK_EVENT_BYPASS;
-      l_event->flag = l_flag;
-      l_event->pendingList.current = K_MK_NULL;
-      l_event->createByAddr = g_mkScheduler.currentTask->owner;
+      /* Déclenchement de la routine gérant les conflits */
+      mk_handler_rightFault ( );
+
+      /* Actualisation de la variable de retour */
+      p_mkObject->result = K_MK_ERROR_RIGHT;
    }
 
-   /* Sinon */
+   /* Sinon*/
    else
    {
-      /* Actualisation de la variable de retour */
-      p_mkObject->result = K_MK_ERROR_MALLOC;
+      /* Si les paramètre d'entrées sont valides */
+      if ( ( l_type == K_MK_ID_EVENT_FLAG ) || ( l_type == K_MK_ID_EVENT_SIGNAL ) )
+      {
+         /* Allocation d'un champ d'événements dans l'espace privilégié */
+         l_event = mk_pool_alloc ( &g_mkEventPool.pool, K_MK_POOL_CLEAR );
+
+         /* Si aucune erreur ne s'est produite */
+         if ( l_event != K_MK_NULL )
+         {
+            /* Initialisation des attributs de l'événement */
+            l_event->type = l_type | ( l_areaType & K_MK_AREA_PROTECTED );
+            l_event->bypass = K_MK_EVENT_BYPASS;
+            l_event->flag = l_flag & ( ~K_MK_EVENT_MASK );
+            l_event->pendingList.current = K_MK_NULL;
+            l_event->createByAddr = g_mkScheduler.currentTask->owner;
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Actualisation de la variable de retour */
+            p_mkObject->result = K_MK_ERROR_MALLOC;
+         }
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Actualisation de la variable de retour */
+         p_mkObject->result = K_MK_ERROR_PARAM;
+      }
    }
 
    /* Enregistrement du résultat */

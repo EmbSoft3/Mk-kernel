@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -54,6 +54,7 @@
  *         \li \ref K_MK_ERROR_MALLOC : la boite de messages n'a pas été initialisée car la taille de la zone mémoire p_mkMsgArea est insuffisante.
  *         \li \ref K_MK_ERROR_PARAM  : la boite de messages n'a pas été initialisée car au moins un paramètre est invalide.
  *         \li \ref K_MK_ERROR_ISR    : la boite de messages n'a pas été initialisée car la fonction a été exécutée depuis un vecteur d'interruption.
+ *         \li \ref K_MK_ERROR_RIGHT  : la boite de messages n'a pas été initialiséecar une tâche de type non privilégié ne peut pas créer une boite protégée.
  *
  */
 
@@ -65,7 +66,7 @@ T_mkCode mk_mail_create ( T_mkMail** p_mkMail, uint32_t p_mkAreaType, T_mkPoolAr
  *
  * @param[in,out] p_mkMail    Ce paramètre contient l'adresse d'une boite de messages de type \ref T_mkMail.
  * @param[in]     p_mkMessage Ce paramètre contient l'adresse du message à poster.
- * @param[in]     p_state     Ce paramètre contient l'état que doit prendre la tâche suite à l'écriture du message dans la boite. L'état n'est modifié que si l'écriture du message réussie.
+ * @param[in]     p_mkState   Ce paramètre contient l'état que doit prendre la tâche suite à l'écriture du message dans la boite. L'état n'est modifié que si l'écriture du message réussie.
  *                            Il peut prendre les valeurs suivantes :
  *                            \li K_MK_STATE_READY     : la tâche conserve l'état prêt à être exécuté.
  *                            \li K_MK_STATE_SUSPENDED : la tâche bascule dans l'état suspendu.
@@ -90,7 +91,7 @@ T_mkCode mk_mail_create ( T_mkMail** p_mkMail, uint32_t p_mkAreaType, T_mkPoolAr
  *
  */
 
-T_mkCode mk_mail_post ( T_mkMail* p_mkMail, T_mkAddr p_mkMessage, uint32_t p_state, uint32_t p_mkTick );
+T_mkCode mk_mail_post ( T_mkMail* p_mkMail, T_mkAddr p_mkMessage, uint32_t p_mkState, uint32_t p_mkTick );
 
 /**
  * @fn T_mkCode mk_mail_pend ( T_mkMail* p_mkMail, T_mkAddr p_mkMessage, uint32_t p_mkTick );

@@ -89,8 +89,11 @@ T_mkCode mk_mail_create ( T_mkMail** p_mkMail, uint32_t p_mkAreaType, T_mkPoolAr
    /* Déclaration d'un pointeur SVC */
    T_mkSVCObject* l_svcPnt;
 
-   /* Déclaration d'une variable stockant le statut d'interruption */
-   uint32_t l_isr = mk_scheduler_isr ( );
+   /* Déclaration des variables de travail */
+   uint32_t l_isr = 0, l_right = 0;
+
+   /* Récupération du statut d'interruption */
+   l_isr = mk_scheduler_isr ( );
 
    /* Si cette fonction n'est pas exécutée depuis un vecteur d'interruption */
    if ( l_isr == K_MK_ISR_NO )
@@ -99,25 +102,40 @@ T_mkCode mk_mail_create ( T_mkMail** p_mkMail, uint32_t p_mkAreaType, T_mkPoolAr
       if ( ( p_mkMail != K_MK_NULL ) && ( p_mkMsgArea != K_MK_NULL ) &&
            ( p_mkMsgSize != 0 ) && ( p_mkMsgNumber != 0 ) )
       {
-         /* Déclenchement d'une requête SVC */
-         l_svcPnt = mk_mail_call ( p_mkMsgArea, p_mkAreaType, p_mkMsgSize, p_mkMsgNumber );
-
-         /* Si une boite de messages a été allouée */
-         if ( ( l_svcPnt->result == K_MK_OK ) && ( l_svcPnt->handle != K_MK_NULL ) )
+         /* Récupération des droits d'exécution */
+         l_right = _mk_scheduler_privileged ( );
+         
+         /* La boite peut être créée par une tâche non privilégiée seulement si elle n'est pas protégée */
+         if ( ( l_right == K_MK_MODE_HANDLER ) || 
+            ( ( l_right == K_MK_MODE_THREAD ) && ( ( p_mkAreaType & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) ) )
          {
-            /* Récupération de l'adresse de la boite de messages */
-            *p_mkMail = l_svcPnt->handle;
+            /* Déclenchement d'une requête SVC */
+            l_svcPnt = mk_mail_call ( p_mkMsgArea, p_mkAreaType, p_mkMsgSize, p_mkMsgNumber );
 
-            /* Actualisation du pointeur du gestionnaire mémoire */
-            p_mkMsgArea->currentAddr = ( uint32_t* ) ( ( uint32_t* ) p_mkMsgArea->currentAddr ) +
-                                       ( p_mkMsgSize * p_mkMsgNumber );
+            /* Si une boite de messages a été allouée */
+            if ( ( l_svcPnt->result == K_MK_OK ) && ( l_svcPnt->handle != K_MK_NULL ) )
+            {
+               /* Récupération de l'adresse de la boite de messages */
+               *p_mkMail = l_svcPnt->handle;
+
+               /* Actualisation du pointeur du gestionnaire mémoire */
+               p_mkMsgArea->currentAddr = ( uint32_t* ) ( ( uint32_t* ) p_mkMsgArea->currentAddr ) +
+                                          ( p_mkMsgSize * p_mkMsgNumber );
+            }
+
+            /* Sinon */
+            else
+            {
+               /* Actualisation de la variable de retour */
+               l_result = l_svcPnt->result;
+            }
          }
 
          /* Sinon */
          else
          {
             /* Actualisation de la variable de retour */
-            l_result = l_svcPnt->result;
+            l_result = K_MK_ERROR_RIGHT;
          }
       }
 
@@ -135,6 +153,7 @@ T_mkCode mk_mail_create ( T_mkMail** p_mkMail, uint32_t p_mkAreaType, T_mkPoolAr
       /* Actualisation de la variable de retour */
       l_result = K_MK_ERROR_ISR;
    }
+
 
    /* Retour */
    return ( l_result );

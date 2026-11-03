@@ -45,33 +45,50 @@
 void mk_call_createMutex ( T_mkSVCObject* p_mkObject )
 {
    /* Déclaration d'un pointeur de mutex */
-   T_mkMutex* l_mutex;
+   T_mkMutex* l_mutex = K_MK_NULL;
 
    /* Déclaration des variables stockant les caractéristiques du mutex */
    uint32_t l_areaType = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_AREA_TYPE ];
 
-   /* Actualisation de la variable de retour */
-   p_mkObject->result = K_MK_OK;
+   /* Déclaration d'une variable stockant le niveau d'exécution de la tâche courante*/
+   uint32_t l_right = _mk_scheduler_privileged ( );
 
-   /* Allocation d'une pool dans l'espace privilégié */
-   l_mutex = mk_pool_alloc ( &g_mkMutexPool.pool, K_MK_POOL_CLEAR );
-
-   /* Si aucune erreur ne s'est produite */
-   if ( l_mutex != K_MK_NULL )
+   /* Si une tâche non privilégiée tente de créer un mutex protégé */
+   if ( ( l_right == K_MK_MODE_THREAD ) && ( ( l_areaType & K_MK_AREA_PROTECTED ) == K_MK_AREA_PROTECTED ) )
    {
-      /* Initialisation des attributs du mutex */
-      l_mutex->type = K_MK_ID_MUTEX | l_areaType;
-      l_mutex->lock = 0;
-      l_mutex->owner = K_MK_NULL;
-      l_mutex->pendingList.current = K_MK_NULL;
-      l_mutex->createByAddr = g_mkScheduler.currentTask->owner;
+      /* Déclenchement de la routine gérant les conflits */
+      mk_handler_rightFault ( );
+
+      /* Actualisation de la variable de retour */
+      p_mkObject->result = K_MK_ERROR_RIGHT;
    }
 
-   /* Sinon */
+   /* Sinon*/
    else
    {
       /* Actualisation de la variable de retour */
-      p_mkObject->result = K_MK_ERROR_MALLOC;
+      p_mkObject->result = K_MK_OK;
+
+      /* Allocation d'un mutex dans l'espace privilégié */
+      l_mutex = mk_pool_alloc ( &g_mkMutexPool.pool, K_MK_POOL_CLEAR );
+
+      /* Si aucune erreur ne s'est produite */
+      if ( l_mutex != K_MK_NULL )
+      {
+         /* Initialisation des attributs du mutex */
+         l_mutex->type = K_MK_ID_MUTEX | ( l_areaType & K_MK_AREA_PROTECTED );
+         l_mutex->lock = 0;
+         l_mutex->owner = K_MK_NULL;
+         l_mutex->pendingList.current = K_MK_NULL;
+         l_mutex->createByAddr = g_mkScheduler.currentTask->owner;
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Actualisation de la variable de retour */
+         p_mkObject->result = K_MK_ERROR_MALLOC;
+      }
    }
 
    /* Enregistrement du résultat */

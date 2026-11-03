@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -76,6 +76,7 @@ T_mkCode mk_callback_init ( uint32_t p_mkStackType );
  *         \li \ref K_MK_ERROR_PARAM  : le gestionnaire de rappel n'a pas été créé car au moins un paramètre est invalide.
  *         \li \ref K_MK_ERROR_MALLOC : le gestionnaire de rappel n'a pas été créé car le nombre de gestionnaire pouvant être alloués a été atteint.
  *         \li \ref K_MK_ERROR_ISR    : le gestionnaire de rappel n'a pas été créé car cette fonction a été exécutée dans un vecteur d'interruption.
+ *         \li \ref K_MK_ERROR_RIGHT  : le gestionnaire de rappel n'a pas été créé car une tâche de type non privilégié ne peut pas créer un gestionnaire protégé.
  *
  * @note Cette fonction peut être exécutée dans un vecteur d'interruption.
  *
@@ -99,7 +100,7 @@ T_mkCode mk_callback_createHandler ( T_mkCallbackHandler** p_mkHandler, uint32_t
  *         \li \ref K_MK_ERROR_PARAM  : la fonction de rappel n'a pas été créée car au moins un paramètre est invalide.
  *         \li \ref K_MK_ERROR_MALLOC : la fonction de rappel n'a pas été créée car le nombre de fonction pouvant être allouées est atteint.
  *         \li \ref K_MK_ERROR_ISR    : la fonction de rappel n'a pas été créée car cette fonction a été exécutée dans un vecteur d'interruption.
- *
+ *         \li \ref K_MK_ERROR_RIGHT  : la fonction de rappel n'a pas été créée car une tâche de type non privilégié ne peut pas créer une fonction protégée.
  * @note Cette fonction peut être exécutée dans un vecteur d'interruption.
  *
  */

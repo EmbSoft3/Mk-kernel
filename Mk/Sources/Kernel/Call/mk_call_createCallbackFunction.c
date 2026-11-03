@@ -67,7 +67,7 @@ void mk_call_createCallbackFunction ( T_mkSVCObject* p_mkObject )
                                                 K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLER, sizeof ( T_mkCallbackHandler), ( T_mkAddr ) l_handler );
 
    /* Si les paramètres sont valides */
-   if ( ( p_mkObject->result == K_MK_OK ) && ( l_function != K_MK_NULL ) )
+   if ( ( p_mkObject->result == K_MK_OK ) && ( l_handler->createByAddr != K_MK_INVALID_HANDLE ) && ( l_function != K_MK_NULL ) )
    {
       /* Récupération de l'index de la nouvelle fonction de rappel */
       l_index = _clearLeadingZero ( ( uint32_t ) ( ~ ( l_handler->identifier | K_MK_EVENT_AND | K_MK_EVENT_CLEAR ) ) );
@@ -76,8 +76,8 @@ void mk_call_createCallbackFunction ( T_mkSVCObject* p_mkObject )
       if ( l_index != 0 )
       {
          /* Si la tâche possède un niveau de droits suffisants pour exécuter l'appel système  */
-         if ( ( l_right != K_MK_MODE_THREAD ) ||
-            ( ( l_right == K_MK_MODE_THREAD ) && ( ( l_handler->type & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) ) )
+         if ( ( l_right != K_MK_MODE_THREAD ) || ( ( l_right == K_MK_MODE_THREAD ) && 
+            ( ( l_handler->type & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) && ( ( l_areaType & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) ) )
          {
             /* Allocation d'une fonction de rappel dans l'espace privilégié */
             l_callback = mk_pool_alloc ( &g_mkCallbackFunctionPool.pool, K_MK_POOL_CLEAR );
@@ -86,7 +86,7 @@ void mk_call_createCallbackFunction ( T_mkSVCObject* p_mkObject )
             if ( l_callback != K_MK_NULL )
             {
                /* Configuration du type de la fonction de rappel */
-               l_callback->type = K_MK_ID_CALLBACK_FUNCTION | l_areaType;
+               l_callback->type = K_MK_ID_CALLBACK_FUNCTION | ( l_areaType & K_MK_AREA_PROTECTED );
 
                /* Ecriture de l'adresse du propriétaire de l'objet */
                l_callback->createByAddr = g_mkScheduler.currentTask->owner;
@@ -115,6 +115,9 @@ void mk_call_createCallbackFunction ( T_mkSVCObject* p_mkObject )
          /* Sinon */
          else
          {
+            /* Déclenchement de la routine gérant les conflits */
+            mk_handler_rightFault ( );
+            
             /* Actualisation de la variable de retour */
             p_mkObject->result = K_MK_ERROR_RIGHT;
          }
@@ -132,6 +135,7 @@ void mk_call_createCallbackFunction ( T_mkSVCObject* p_mkObject )
    else
    {
       /* Actualisation de la variable de retour */
+      p_mkObject->result = K_MK_ERROR_PARAM;
    }
 
    /* Enregistrement du résultat */

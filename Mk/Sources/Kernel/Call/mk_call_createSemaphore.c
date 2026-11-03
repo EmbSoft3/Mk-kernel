@@ -45,46 +45,63 @@
 void mk_call_createSemaphore ( T_mkSVCObject* p_mkObject )
 {
    /* Déclaration d'un pointeur de sémaphore */
-   T_mkSemaphore* l_semaphore;
+   T_mkSemaphore* l_semaphore = K_MK_NULL;
 
    /* Déclaration des variables stockant les caractéristiques du sémaphore */
    uint32_t l_areaType = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_AREA_TYPE ];
    uint32_t l_initialToken = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_INITIAL_TOKEN_NUMBER ];
    uint32_t l_currentToken = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_TOKEN_NUMBER ];
 
+   /* Déclaration d'une variable stockant le niveau d'exécution de la tâche courante*/
+   uint32_t l_right = _mk_scheduler_privileged ( );
+
    /* Actualisation de la variable de retour */
    p_mkObject->result = K_MK_OK;
 
-   /* Allocation d'une pool dans l'espace privilégié */
-   l_semaphore = mk_pool_alloc ( &g_mkSemaphorePool.pool, K_MK_POOL_CLEAR );
+   /* Si une tâche non privilégiée tente de créer un sémaphore protégé */
+   if ( ( l_right == K_MK_MODE_THREAD ) && ( ( l_areaType & K_MK_AREA_PROTECTED ) == K_MK_AREA_PROTECTED ) )
+   {
+      /* Déclenchement de la routine gérant les conflits */
+      mk_handler_rightFault ( );
 
-   /* Si aucune erreur ne s'est produite */
-   if ( l_semaphore != K_MK_NULL )
+      /* Actualisation de la variable de retour */
+      p_mkObject->result = K_MK_ERROR_RIGHT;
+   }
+
+   /* Sinon*/
+   else
    {
       /* Si les paramètre d'entrées sont valides */
-      if ( l_initialToken <= l_currentToken )
+      if ( ( l_currentToken != 0 ) && ( l_initialToken <= l_currentToken ) )
       {
-         /* Initialisation des attributs du mutex */
-         l_semaphore->type = K_MK_ID_SEMAPHORE | l_areaType;
-         l_semaphore->token = l_initialToken;
-         l_semaphore->tokenNumber = l_currentToken;
-         l_semaphore->pendingList.current = K_MK_NULL;
-         l_semaphore->createByAddr = g_mkScheduler.currentTask->owner;
-      }
+         /* Allocation d'un sémaphore dans l'espace privilégié */
+         l_semaphore = mk_pool_alloc ( &g_mkSemaphorePool.pool, K_MK_POOL_CLEAR );
 
+         /* Si aucune erreur ne s'est produite */
+         if ( l_semaphore != K_MK_NULL )
+         {
+            /* Initialisation des attributs du sémaphore */
+            l_semaphore->type = K_MK_ID_SEMAPHORE | ( l_areaType & K_MK_AREA_PROTECTED );
+            l_semaphore->token = l_initialToken;
+            l_semaphore->tokenNumber = l_currentToken;
+            l_semaphore->pendingList.current = K_MK_NULL;
+            l_semaphore->createByAddr = g_mkScheduler.currentTask->owner;
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Actualisation de la variable de retour */
+            p_mkObject->result = K_MK_ERROR_MALLOC;
+         }
+      }
+      
       /* Sinon */
       else
       {
          /* Actualisation de la variable de retour */
          p_mkObject->result = K_MK_ERROR_PARAM;
       }
-   }
-
-   /* Sinon */
-   else
-   {
-      /* Actualisation de la variable de retour */
-      p_mkObject->result = K_MK_ERROR_MALLOC;
    }
 
    /* Enregistrement du résultat */

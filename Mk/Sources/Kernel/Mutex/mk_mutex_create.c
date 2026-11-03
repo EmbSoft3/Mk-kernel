@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -80,8 +80,11 @@ T_mkCode mk_mutex_create ( T_mkMutex** p_mkMutex, uint32_t p_mkAreaType )
    /* Déclaration d'un pointeur SVC */
    T_mkSVCObject* l_svcPnt;
 
-   /* Déclaration d'une variable stockant le statut d'interruption de la fonction */
-   uint32_t l_isr = mk_scheduler_isr ( );
+   /* Déclaration des variables de travail */
+   uint32_t l_isr = 0, l_right = 0;
+
+   /* Récupération du statut d'interruption */
+   l_isr = mk_scheduler_isr ( );
 
    /* Si cette fonction n'est pas exécutée depuis un vecteur d'interruption */
    if ( l_isr == K_MK_ISR_NO )
@@ -89,21 +92,36 @@ T_mkCode mk_mutex_create ( T_mkMutex** p_mkMutex, uint32_t p_mkAreaType )
       /* Si le paramètre est valide */
       if ( p_mkMutex != K_MK_NULL )
       {
-         /* Déclenchement d'une requête SVC */
-         l_svcPnt = mk_mutex_call ( p_mkAreaType );
-
-         /* Si le mutex a été alloué */
-         if ( ( l_svcPnt->result == K_MK_OK ) && ( l_svcPnt->handle != K_MK_NULL ) )
+         /* Récupération des droits d'exécution */
+         l_right = _mk_scheduler_privileged ( );
+         
+         /* Si la tâche possède les droits suffisants pour réaliser l'appel système */
+         if ( ( l_right == K_MK_MODE_HANDLER ) || 
+            ( ( l_right == K_MK_MODE_THREAD ) && ( ( p_mkAreaType & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) ) )
          {
-            /* Récupération de l'adresse du mutex */
-            *p_mkMutex = l_svcPnt->handle;
+            /* Déclenchement d'une requête SVC */
+            l_svcPnt = mk_mutex_call ( p_mkAreaType );
+
+            /* Si le mutex a été alloué */
+            if ( ( l_svcPnt->result == K_MK_OK ) && ( l_svcPnt->handle != K_MK_NULL ) )
+            {
+               /* Récupération de l'adresse du mutex */
+               *p_mkMutex = l_svcPnt->handle;
+            }
+
+            /* Sinon */
+            else
+            {
+               /* Actualisation de la variable de retour */
+               l_result = l_svcPnt->result;
+            }
          }
 
          /* Sinon */
          else
          {
             /* Actualisation de la variable de retour */
-            l_result = l_svcPnt->result;
+            l_result = K_MK_ERROR_RIGHT;
          }
       }
 

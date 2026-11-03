@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -54,6 +54,7 @@
  *         \li \ref K_MK_OK           : l'objet de synchronisation de type \ref T_mkEvent a été initialisé.
  *         \li \ref K_MK_ERROR_PARAM  : l'objet de synchronisation de type \ref T_mkEvent n'a pas été initialisé car au moins un paramètre est invalide.
  *         \li \ref K_MK_ERROR_ISR    : l'objet de synchronisation de type \ref T_mkEvent n'a pas été initialisé car la fonction a été exécutée depuis un vecteur d'interruption.
+ *         \li \ref K_MK_ERROR_RIGHT  : l'objet de synchronisation de type \ref T_mkEvent n'a pas été initialisé car une tâche de type non privilégié ne peut pas créer un champ d'événements protégé.
  *
  */
 

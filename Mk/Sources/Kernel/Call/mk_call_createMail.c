@@ -57,8 +57,8 @@ static T_mkCode mk_call_initMail ( T_mkMail* p_mkMail, uint32_t p_mkAreaType, ui
    p_mkMail->unused.item = K_MK_NULL;
 
    /* Initialisation des attribut de synchronisation de la boite de messages */
-   p_mkMail->poster.type = K_MK_ID_MAIL | p_mkAreaType;
-   p_mkMail->pender.type = K_MK_ID_MAIL | p_mkAreaType;
+   p_mkMail->poster.type = K_MK_ID_MAIL | ( p_mkAreaType & K_MK_AREA_PROTECTED );
+   p_mkMail->pender.type = K_MK_ID_MAIL | ( p_mkAreaType & K_MK_AREA_PROTECTED );
    p_mkMail->poster.item = K_MK_NULL;
    p_mkMail->pender.item = K_MK_NULL;
    p_mkMail->poster.pendingList.current = K_MK_NULL;
@@ -163,7 +163,7 @@ void mk_call_createMail ( T_mkSVCObject* p_mkObject )
    /* Déclaration d'un pointeur de boite de messages */
    T_mkMail* l_mail = K_MK_NULL;
 
-   /* Déclaration d'une variable stockant l'adresse de la zone mémoire associée à la pool */
+   /* Déclaration d'une variable stockant l'adresse de la zone mémoire associée à la boite */
    T_mkPoolArea* l_area = p_mkObject->data [ K_MK_OFFSET_AREA ];
 
    /* Déclaration des variables de travail */
@@ -172,7 +172,7 @@ void mk_call_createMail ( T_mkSVCObject* p_mkObject )
    /* Déclaration d'une variable de travail */
    uint32_t l_privilegedArea;
 
-   /* Déclaration des variables stockant les caractéristiques de la pool */
+   /* Déclaration des variables stockant les caractéristiques de la boite */
    uint32_t l_type = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_AREA_TYPE ];
    uint32_t l_msgSize = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_CHUNK_SIZE ];
    uint32_t l_msgNumber = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_CHUNK_COUNT ];
@@ -186,7 +186,7 @@ void mk_call_createMail ( T_mkSVCObject* p_mkObject )
    /* Si les paramètres sont valides */
    if ( ( l_area != K_MK_NULL ) && ( l_msgSize != 0 ) && ( l_msgNumber != 0 ) )
    {
-      /* Récupération du type de la zone où la pool sera créée*/
+      /* Récupération du type de la zone où la boite sera créée*/
       l_privilegedArea  = _mk_memory_isPrivilegedArea ( ( uint8_t* ) l_area );
       l_privilegedArea |= _mk_memory_isPrivilegedArea ( ( uint8_t* ) l_area + sizeof ( T_mkPoolArea ) - 1 );
 
@@ -203,8 +203,9 @@ void mk_call_createMail ( T_mkSVCObject* p_mkObject )
          /* Ne rien faire */
       }      
       
-      /* Si la pool est dans une zone privilégiée et si l'appel système a été réalisé par une tâche non privilégiée */
-      if ( ( l_right == K_MK_MODE_THREAD ) && ( l_privilegedArea != K_MK_AREA_UNPROTECTED ) )
+      /* Si l'appel système a été réalisé par une tâche non privilégiée et si la boite est protégée ou son buffer en mémoire privilégiée */
+      if ( ( l_right == K_MK_MODE_THREAD ) && 
+         ( ( l_privilegedArea != K_MK_AREA_UNPROTECTED ) || ( ( l_type & K_MK_AREA_PROTECTED ) == K_MK_AREA_PROTECTED ) ) )
       {
          /* Déclenchement de la routine gérant les conflits */
          mk_handler_rightFault ( );
@@ -226,7 +227,7 @@ void mk_call_createMail ( T_mkSVCObject* p_mkObject )
             /* Si la zone mémoire peut être allouée */
             if ( l_bytesAvailable >= l_bytesNeeded )
             {
-               /* Allocation d'une pool dans l'espace privilégié */
+               /* Allocation d'une boite dans l'espace privilégié */
                l_mail = mk_pool_alloc ( &g_mkMailPool.pool, K_MK_POOL_CLEAR );
 
                /* Si aucune erreur ne s'est produite */
@@ -238,8 +239,13 @@ void mk_call_createMail ( T_mkSVCObject* p_mkObject )
                   /* Si une erreur s'est produite */
                   if ( p_mkObject->result != K_MK_OK )
                   {
+                     /* Réinitialisation de la boite de messages */
+                     _writeBytes ( ( void_t ) l_mail, 0xFF, sizeof ( T_mkMail ) );
+
                      /* Libération de la mémoire allouée*/
                      ( void ) mk_pool_free ( &g_mkMailPool.pool, ( T_mkAddr ) l_mail );
+
+                     /* Réinitialisation du résultat*/
                      l_mail = K_MK_NULL;
                   }
 
@@ -262,7 +268,7 @@ void mk_call_createMail ( T_mkSVCObject* p_mkObject )
             else
             {
                /* Actualisation de la variable de retour */
-               p_mkObject->result = K_MK_ERROR_MALLOC;
+               p_mkObject->result = K_MK_ERROR_PARAM;
             }   
          }
 
@@ -270,7 +276,7 @@ void mk_call_createMail ( T_mkSVCObject* p_mkObject )
          else
          {
             /* Actualisation de la variable de retour */
-            p_mkObject->result = K_MK_ERROR_MALLOC;
+            p_mkObject->result = K_MK_ERROR_PARAM;
          }
       }
    }

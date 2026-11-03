@@ -45,7 +45,7 @@
 void mk_call_createCallbackHandler ( T_mkSVCObject* p_mkObject )
 {
    /* Déclaration d'un pointeur de gestionnaire */
-   T_mkCallbackHandler* l_handler;
+   T_mkCallbackHandler* l_handler = K_MK_NULL;
 
    /* Récupération du niveau de protection du gestionnaire */
    uint32_t l_areaType = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_AREA_TYPE ];
@@ -74,13 +74,13 @@ void mk_call_createCallbackHandler ( T_mkSVCObject* p_mkObject )
       if ( l_handler != K_MK_NULL )
       {
          /* Initialisation des attributs du gestionnaire de rappel */
-         l_handler->type = K_MK_ID_CALLBACK_HANDLER | l_areaType;
+         l_handler->type = K_MK_ID_CALLBACK_HANDLER | ( l_areaType & K_MK_AREA_PROTECTED );
          l_handler->identifier = 0;
          l_handler->event = ( T_mkEvent* ) p_mkObject->handle;
          l_handler->createByAddr = g_mkScheduler.currentTask->owner;
 
          /* Si l'appel système a été déclenché dans un contexte privilégié */
-         if ( ( l_right != K_MK_MODE_THREAD ) && ( l_areaType == K_MK_AREA_PROTECTED ) )
+         if ( ( l_right != K_MK_MODE_THREAD ) && ( ( l_areaType & K_MK_AREA_PROTECTED ) == K_MK_AREA_PROTECTED ) )
          {
             /* Ecriture de l'adresse de la boite de messages (privilégié) */
             l_handler->mail = g_mkPrivilegedCallbackManager.mail;
@@ -97,12 +97,12 @@ void mk_call_createCallbackHandler ( T_mkSVCObject* p_mkObject )
       /* Sinon */
       else
       {
+         /* Libération de la mémoire allouée */
+         ( void ) mk_pool_free ( &g_mkEventPool.pool, ( T_mkAddr ) p_mkObject->handle );
+         
          /* Actualisation de la variable de retour */
          p_mkObject->result = K_MK_ERROR_MALLOC;
       }
-
-      /* Enregistrement du résultat */
-      p_mkObject->handle = ( T_mkAddr ) l_handler;
    }
 
    /* Sinon */
@@ -110,6 +110,9 @@ void mk_call_createCallbackHandler ( T_mkSVCObject* p_mkObject )
    {
       /* Ne rien faire */
    }
+
+   /* Enregistrement du résultat */
+   p_mkObject->handle = ( T_mkAddr ) l_handler;
 
    /* Retour */
    return;
