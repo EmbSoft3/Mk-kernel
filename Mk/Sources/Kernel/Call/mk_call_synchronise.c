@@ -466,11 +466,22 @@ static T_mkCode mk_call_handleMutex ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
       /* Si l'appel système a été exécuté par la fonction mk_mutex_take */
       if ( p_mkObject->type == K_MK_SYSCALL_SYNCHRO_MUTEX_TAKE_FUNCTION )
       {
-         /* Configuration de la fonction de synchronisation */
-         p_mkObject->data [ K_MK_OFFSET_SYNC_FUNCTION ] = ( T_mkAddr ) _mk_call_mutexToAddr ( mk_mutex_lock );
+         /* Si la tâche courante ne possède pas déjà un mutex */
+         if ( g_mkScheduler.currentTask->synchro.mutex == K_MK_NULL )
+         {
+            /* Configuration de la fonction de synchronisation */
+            p_mkObject->data [ K_MK_OFFSET_SYNC_FUNCTION ] = ( T_mkAddr ) _mk_call_mutexToAddr ( mk_mutex_lock );
 
-         /* Exécution de la séquence de synchronisation */
-         l_result = mk_call_executeSynchronise ( p_mkObject, p_mkStatus );
+            /* Exécution de la séquence de synchronisation */
+            l_result = mk_call_executeSynchronise ( p_mkObject, p_mkStatus );
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Actualisation de la variable de retour */
+            l_result = K_MK_ERROR_NESTED;
+         }
       }
 
       /* Sinon */
@@ -502,7 +513,7 @@ static T_mkCode mk_call_handleSemaphore ( T_mkSVCObject* p_mkObject, uint32_t p_
    /* Déclaration de la variable de retour */
    T_mkCode l_result;
 
-   /* Déclaration d'un pointeur de mutex */
+   /* Déclaration d'un pointeur de sémaphore */
    T_mkSemaphore* l_semaphore = ( T_mkSemaphore* ) p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ];
 
    /* Vérification de l'alignement de l'adresse */
@@ -593,7 +604,7 @@ void mk_call_synchronise ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
       p_mkObject->result = mk_call_handleMutex ( p_mkObject, p_mkStatus );
    }
 
-   /* Sinon si l'appel système a été exécuté par la fonction mk_mutex_take */
+   /* Sinon si l'appel système a été exécuté par la fonction mk_semaphore_take */
    else if ( p_mkObject->type == K_MK_SYSCALL_SYNCHRO_SEMAPHORE_TAKE_FUNCTION )
    {
       /* Analyse et configuration des attributs de l'appel systèmes */
