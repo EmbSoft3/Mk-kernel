@@ -42,13 +42,13 @@
  * @endinternal
  */
 
-static T_mkSVCObject* mk_semaphore_call ( T_mkSemaphore* p_mkSemaphore )
+static T_mkCode mk_semaphore_call ( T_mkSemaphore* p_mkSemaphore )
 {
    /* Déclaration d'un gestionnaire SVC */
    T_mkSVCObject l_svc;
 
    /* Déclaration de la variable de retour */
-   T_mkSVCObject* l_result;
+   T_mkSVCObject* l_svcPnt;
 
    /* Ecriture du type de l'appel système dans le gestionnaire SVC */
    l_svc.type = K_MK_SYSCALL_UNBLOCK_SEMAPHORE_RELEASE_FUNCTION;
@@ -57,13 +57,13 @@ static T_mkSVCObject* mk_semaphore_call ( T_mkSemaphore* p_mkSemaphore )
    l_svc.data [ K_MK_OFFSET_SYNC_HANDLE ] = ( T_mkAddr ) ( p_mkSemaphore );
 
    /* Référencement de l'appel système dans le gestionnaire SVC */
-   l_result = mk_svc_set ( &l_svc );
+   l_svcPnt = mk_svc_set ( &l_svc );
 
    /* Déclenchement d'un appel système */
    _mk_svc_call ( );
 
    /* Retour */
-   return ( l_result );
+   return ( l_svcPnt->result );
 }
 
 /**
@@ -79,9 +79,6 @@ T_mkCode mk_semaphore_release ( T_mkSemaphore* p_mkSemaphore )
 
    /* Déclaration des variables de travail */
    uint32_t l_mask, l_isr, l_right;
-
-   /* Déclaration d'un pointeur SVC */
-   T_mkSVCObject* l_svcPnt;
 
    /* Si le paramètre est valide */
    if ( p_mkSemaphore != K_MK_NULL )
@@ -103,14 +100,11 @@ T_mkCode mk_semaphore_release ( T_mkSemaphore* p_mkSemaphore )
          l_mask = _mk_scheduler_maskFromIsr ( K_MK_SCHEDULER_MASK_PRIORITY );
 
          /* Déclenchement d'une requête SVC */
-         l_svcPnt = mk_semaphore_call ( p_mkSemaphore );
+         l_result = mk_semaphore_call ( p_mkSemaphore );
 
          /* Sortie de la section critique */
          /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
          _mk_scheduler_unmaskFromIsr ( l_mask );
-
-         /* Actualisation de la variable de retour */
-         l_result = l_svcPnt->result;
       }
 
       /* Sinon */

@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -42,10 +42,13 @@
  * @endinternal
  */
 
-static void mk_semaphore_call ( T_mkSemaphore* p_mkSemaphore, uint32_t p_mkTick )
+static T_mkCode mk_semaphore_call ( T_mkSemaphore* p_mkSemaphore, uint32_t p_mkTick )
 {
    /* Déclaration d'un gestionnaire SVC */
    T_mkSVCObject l_svc;
+
+   /* Déclaration d'un pointeur SVC */
+   T_mkSVCObject* l_svcPnt;
 
    /* Ecriture du type de l'appel système dans le gestionnaire SVC */
    l_svc.type = K_MK_SYSCALL_SYNCHRO_SEMAPHORE_TAKE_FUNCTION;
@@ -71,13 +74,13 @@ static void mk_semaphore_call ( T_mkSemaphore* p_mkSemaphore, uint32_t p_mkTick 
    l_svc.data [ K_MK_OFFSET_TIMEOUT ] = ( T_mkAddr ) ( 0 );
 
    /* Référencement de l'appel système dans le gestionnaire SVC */
-   ( void ) mk_svc_set ( &l_svc );
+   l_svcPnt = mk_svc_set ( &l_svc );
 
    /* Déclenchement d'un appel système */
    _mk_svc_call ( );
 
    /* Retour */
-   return;
+   return ( l_svcPnt->result );
 }
 
 /**
@@ -111,17 +114,27 @@ T_mkCode mk_semaphore_take ( T_mkSemaphore* p_mkSemaphore, uint32_t p_mkTick )
             ( ( p_mkSemaphore->type & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) ) )
          {
             /* Déclenchement d'une requête SVC */
-            mk_semaphore_call ( p_mkSemaphore, p_mkTick );
+            l_result = mk_semaphore_call ( p_mkSemaphore, p_mkTick );
 
             /*  Lorsque la tâche se reveille, deux situations peuvent se présenter : */
             /*  - la tâche a obtenue le sémaphore, l'attribut "object" pointe sur le sémaphore. */
             /*  - la tâche n'a pas obtenue le sémaphore, l'attribut "object" du semaphore est nul */
 
-            /* Si le sémaphore n'est pas vérrouillé */
-            if ( g_mkScheduler.currentTask->synchro.object == K_MK_NULL )
+            /* Si aucune erreur ne s'est produite durant l'appel système */
+            if ( l_result == K_MK_OK )
             {
-               /* Actualisation de la variable de retour */
-               l_result = K_MK_ERROR_TIMEOUT;
+               /* Si le sémaphore n'est pas vérrouillé */
+               if ( g_mkScheduler.currentTask->synchro.object == K_MK_NULL )
+               {
+                  /* Actualisation de la variable de retour */
+                  l_result = K_MK_ERROR_TIMEOUT;
+               }
+
+               /* Sinon */
+               else
+               {
+                  /* Ne rien faire */
+               }
             }
 
             /* Sinon */

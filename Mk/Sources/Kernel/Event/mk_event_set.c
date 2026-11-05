@@ -42,10 +42,13 @@
  * @endinternal
  */
 
-static void mk_event_call ( T_mkEvent* p_mkEvent, uint32_t p_mkFlag )
+static T_mkCode mk_event_call ( T_mkEvent* p_mkEvent, uint32_t p_mkFlag )
 {
    /* Déclaration d'un gestionnaire SVC */
    T_mkSVCObject l_svc;
+
+   /* Déclaration d'un pointeur SVC */
+   T_mkSVCObject* l_svcPnt;
 
    /* Ecriture du type de l'appel système dans le gestionnaire SVC */
    l_svc.type = K_MK_SYSCALL_UNBLOCK_EVENT_SET_FUNCTION;
@@ -57,13 +60,13 @@ static void mk_event_call ( T_mkEvent* p_mkEvent, uint32_t p_mkFlag )
    l_svc.data [ K_MK_OFFSET_PARAM_OBJECT ] = ( T_mkAddr ) ( p_mkFlag );
 
    /* Référencement de l'appel système dans le gestionnaire SVC */
-   ( void ) mk_svc_set ( &l_svc );
+   l_svcPnt = mk_svc_set ( &l_svc );
 
    /* Déclenchement d'un appel système */
    _mk_svc_call ( );
 
    /* Retour */
-   return;
+   return ( l_svcPnt->result );
 }
 
 /**
@@ -100,7 +103,7 @@ T_mkCode mk_event_set ( T_mkEvent* p_mkEvent, uint32_t p_mkFlag )
          l_mask = _mk_scheduler_maskFromIsr ( K_MK_SCHEDULER_MASK_PRIORITY );
 
          /* Déclenchement d'une requête SVC */
-         mk_event_call ( p_mkEvent, p_mkFlag );
+         l_result = mk_event_call ( p_mkEvent, p_mkFlag );
 
          /* Sortie de la section critique */
          /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */

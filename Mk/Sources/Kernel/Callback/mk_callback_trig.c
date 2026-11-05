@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -45,7 +45,7 @@
 T_mkCode mk_callback_trig ( T_mkCallbackHandler* p_mkHandler, T_mkCallback* p_mkCallback, T_mkCallbackParam* p_mkCallbackParam )
 {
    /* Déclaration de la variable de retour */
-   uint32_t l_result = K_MK_OK;
+   T_mkCode l_result = K_MK_OK;
 
    /* Déclaration d'un message */
    T_mkCallbackMessage l_message = {

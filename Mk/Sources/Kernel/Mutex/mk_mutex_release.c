@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -42,13 +42,13 @@
  * @endinternal
  */
 
-static T_mkSVCObject* mk_mutex_call ( T_mkMutex* p_mkMutex )
+static T_mkCode mk_mutex_call ( T_mkMutex* p_mkMutex )
 {
    /* Déclaration d'un gestionnaire SVC */
    T_mkSVCObject l_svc;
 
-   /* Déclaration de la variable de retour */
-   T_mkSVCObject* l_result;
+   /* Déclaration d'un pointeur SVC */
+   T_mkSVCObject* l_svcPnt;
 
    /* Ecriture du type de l'appel système dans le gestionnaire SVC */
    l_svc.type = K_MK_SYSCALL_UNBLOCK_MUTEX_RELEASE_FUNCTION;
@@ -57,13 +57,13 @@ static T_mkSVCObject* mk_mutex_call ( T_mkMutex* p_mkMutex )
    l_svc.data [ K_MK_OFFSET_SYNC_HANDLE ] = ( T_mkAddr ) ( p_mkMutex );
 
    /* Référencement de l'appel système dans le gestionnaire SVC */
-   l_result = mk_svc_set ( &l_svc );
+   l_svcPnt = mk_svc_set ( &l_svc );
 
    /* Déclenchement d'un appel système */
    _mk_svc_call ( );
 
    /* Retour */
-   return ( l_result );
+   return ( l_svcPnt->result );
 }
 
 /**
@@ -75,13 +75,10 @@ static T_mkSVCObject* mk_mutex_call ( T_mkMutex* p_mkMutex )
 T_mkCode mk_mutex_release ( T_mkMutex* p_mkMutex )
 {
    /* Déclaration d'une variable de retour */
-   uint32_t l_result = K_MK_OK;
+   T_mkCode l_result = K_MK_OK;
 
    /* Déclaration des variables de travail */
    uint32_t l_isr, l_right;
-
-   /* Déclaration d'un pointeur SVC */
-   T_mkSVCObject* l_svcPnt;
 
    /* Si le paramètre est valide */
    if ( p_mkMutex != K_MK_NULL )
@@ -100,10 +97,7 @@ T_mkCode mk_mutex_release ( T_mkMutex* p_mkMutex )
          if ( l_isr == K_MK_ISR_NO )
          {
             /* Déclenchement d'une requête SVC */
-            l_svcPnt = mk_mutex_call ( p_mkMutex );
-
-            /* Actualisation de la variable de retour */
-            l_result = l_svcPnt->result;
+            l_result = mk_mutex_call ( p_mkMutex );
          }
 
          /* Sinon */

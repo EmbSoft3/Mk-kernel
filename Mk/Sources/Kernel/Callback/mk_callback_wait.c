@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -45,7 +45,7 @@
 T_mkCode mk_callback_wait ( T_mkCallbackHandler* p_mkHandler, uint32_t p_mkIdentifiers, uint32_t* p_mkOutIdentifiers, uint32_t p_mkTimeout )
 {
    /* Déclaration de la variable de retour */
-   uint32_t l_result = K_MK_OK;
+   T_mkCode l_result = K_MK_OK;
 
    /* Si les paramètres sont valides */
    if ( ( p_mkHandler != K_MK_NULL ) && ( p_mkOutIdentifiers != K_MK_NULL ) )

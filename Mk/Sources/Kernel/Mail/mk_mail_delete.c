@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -42,13 +42,13 @@
  * @endinternal
  */
 
-static T_mkSVCObject* mk_mail_call ( T_mkMail* p_mkMail )
+static T_mkCode mk_mail_call ( T_mkMail* p_mkMail )
 {
    /* Déclaration d'un gestionnaire SVC */
    T_mkSVCObject l_svc;
 
-   /* Déclaration de la variable de retour */
-   T_mkSVCObject* l_result;
+   /* Déclaration d'un pointeur SVC */
+   T_mkSVCObject* l_svcPnt;
 
    /* Ecriture du type de l'appel système dans le gestionnaire SVC */
    l_svc.type = K_MK_SYSCALL_DELETE_MAIL_FUNCTION;
@@ -57,13 +57,13 @@ static T_mkSVCObject* mk_mail_call ( T_mkMail* p_mkMail )
    l_svc.data [ K_MK_OFFSET_SYNC_HANDLE ] = ( T_mkAddr ) ( p_mkMail );
 
    /* Référencement de l'appel système dans le gestionnaire SVC */
-   l_result = mk_svc_set ( &l_svc );
+   l_svcPnt = mk_svc_set ( &l_svc );
 
    /* Déclenchement d'un appel système */
    _mk_svc_call ( );
 
    /* Retour */
-   return ( l_result );
+   return ( l_svcPnt->result );
 }
 
 /**
@@ -75,10 +75,7 @@ static T_mkSVCObject* mk_mail_call ( T_mkMail* p_mkMail )
 T_mkCode mk_mail_delete ( T_mkMail* p_mkMail )
 {
    /* Déclaration de la variable de retour */
-   uint32_t l_result = K_MK_OK;
-
-   /* Déclaration d'un pointeur SVC */
-   T_mkSVCObject* l_svcPnt;
+   T_mkCode l_result = K_MK_OK;
 
    /* Déclaration des variables de travail */
    uint32_t l_right, l_isr = mk_scheduler_isr ( );
@@ -98,10 +95,7 @@ T_mkCode mk_mail_delete ( T_mkMail* p_mkMail )
             ( ( p_mkMail->poster.type & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) ) )
          {
             /* Déclenchement d'une requête SVC */
-            l_svcPnt = mk_mail_call ( p_mkMail );
-
-            /* Actualisation de la variable de retour */
-            l_result = l_svcPnt->result;
+            l_result = mk_mail_call ( p_mkMail );
          }
 
          /* Sinon */
