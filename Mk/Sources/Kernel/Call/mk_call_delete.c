@@ -225,6 +225,9 @@ void mk_call_delete ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    T_mkCallback* l_callback = K_MK_NULL;
    T_mkCallbackHandler* l_handler = K_MK_NULL;
 
+   /* Déclaration d'une variable stockant l'adresse d'un mutex */
+   T_mkMutex* l_mutex = K_MK_NULL;
+
    /* Déclaration d'une variable stockant la nouvelle valeur du champ identifiant les fonctions */
    /* de rappels référencées dans un gestionnaire */
    uint32_t l_fieldId = 0;
@@ -256,9 +259,23 @@ void mk_call_delete ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    /* Sinon si un mutex doit être détruit */
    else if ( p_mkObject->type == K_MK_SYSCALL_DELETE_MUTEX_FUNCTION )
    {
-      /* Destruction du mutex */
-      p_mkObject->result = mk_call_deleteObject ( &g_mkMutexPool.pool, ( T_mkAddr ) &g_mkMutexPool.mutex [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_MUTEX,
-                           sizeof ( T_mkMutex ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ], p_mkStatus );
+      /* Récupération de l'adresse du mutex */
+      l_mutex = ( T_mkMutex* ) p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ];
+
+      /* Si le mutex n'est pas verrouillé */
+      if ( l_mutex->lock == 0 )
+      {
+         /* Destruction du mutex */
+         p_mkObject->result = mk_call_deleteObject ( &g_mkMutexPool.pool, ( T_mkAddr ) &g_mkMutexPool.mutex [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_MUTEX,
+                              sizeof ( T_mkMutex ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ], p_mkStatus );
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Actualisation de la variable de retour */
+         p_mkObject->result = K_MK_ERROR_PARAM;
+      }
    }
 
    /* Sinon si un sémaphore doit être détruit */
