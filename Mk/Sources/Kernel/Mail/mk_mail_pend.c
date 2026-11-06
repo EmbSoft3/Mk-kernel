@@ -129,9 +129,10 @@ T_mkCode mk_mail_pend ( T_mkTask** p_mkTask, T_mkMail* p_mkMail, T_mkAddr p_mkMe
             /* Déclenchement d'une requête SVC */
             l_svcPnt = mk_mail_call ( p_mkMail, p_mkMessage, p_mkTick );
 
-            /* Lorsque la tâche se reveille, deux situations peuvent se présenter : */
+            /* Lorsque la tâche se reveille, trois situations peuvent se présenter : */
             /* - la tâche a récupérée un message, l'attribut "object" pointe sur la boite de messages. */
             /* - la tâche n'a pas récupérée de message, l'attribut "object" est nul */
+            /* - la boite a été supprimée, l'attribut "object" est invalide */
 
             /* Si l'appel système s'est correctement déroulé */
             if ( l_svcPnt->result == K_MK_OK )
@@ -141,6 +142,13 @@ T_mkCode mk_mail_pend ( T_mkTask** p_mkTask, T_mkMail* p_mkMail, T_mkAddr p_mkMe
                {
                   /* Actualisation de la variable de retour */
                   l_result = K_MK_ERROR_TIMEOUT;
+               }
+
+               /* Sinon si la boite de messages a été supprimé pendant que la tâche était bloquée */
+               else if ( g_mkScheduler.currentTask->synchro.object == K_MK_INVALID_HANDLE )
+               {
+                  /* Actualisation de la variable de retour */
+                  l_result = K_MK_ERROR_UNEXPECTED;
                }
 
                /* Sinon */
@@ -175,7 +183,6 @@ T_mkCode mk_mail_pend ( T_mkTask** p_mkTask, T_mkMail* p_mkMail, T_mkAddr p_mkMe
             /* Actualisation de la variable de retour */
             l_result = K_MK_ERROR_RIGHT;
          }
-
       }
 
       /* Sinon */

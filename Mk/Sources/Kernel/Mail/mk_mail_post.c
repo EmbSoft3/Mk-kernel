@@ -136,25 +136,43 @@ T_mkCode mk_mail_post ( T_mkMail* p_mkMail, T_mkAddr p_mkMessage, uint32_t p_mkS
             /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
             _mk_scheduler_unmaskFromIsr ( l_mask );
 
-            /* Lorsque la tâche se reveille, deux situations peuvent se présenter : */
+            /* Lorsque la tâche se reveille, trois situations peuvent se présenter : */
             /* - la tâche a posté le message, l'attribut "object" pointe sur la boite de messages. */
             /* - la tâche n'a pas posté le message, l'attribut "object" est nul */
+            /* - la boite a été supprimée, l'attribut "object" est invalide */
 
             /* Si l'appel système s'est correctement déroulé */
             if ( l_svcPnt->result == K_MK_OK )
             {
-               /* Si le message n'a pas été posté */
-               if ( ( l_isr == K_MK_ISR_NO ) && ( g_mkScheduler.currentTask->synchro.object == K_MK_NULL ) )
+               /* Si le message n'a pas été posté depuis un vecteur d'interruption  */
+               if ( l_isr == K_MK_ISR_NO )
                {
-                  /* Actualisation de la variable de retour */
-                  l_result = K_MK_ERROR_TIMEOUT;
+                  /* Si le message n'a pas été posté */
+                  if ( g_mkScheduler.currentTask->synchro.object == K_MK_NULL )
+                  {
+                     /* Actualisation de la variable de retour */
+                     l_result = K_MK_ERROR_TIMEOUT;
+                  }
+
+                  /* Sinon si la boite de messages a été supprimé pendant que la tâche était bloquée */
+                  else if ( g_mkScheduler.currentTask->synchro.object == K_MK_INVALID_HANDLE )
+                  {
+                     /* Actualisation de la variable de retour */
+                     l_result = K_MK_ERROR_UNEXPECTED;
+                  }
+
+                  /* Sinon */
+                  else
+                  {
+                     /* Ne rien faire */
+                  }
                }
 
                /* Sinon */
                else
                {
                   /* Ne rien faire */
-               }
+               }               
             }
 
             /* Sinon */

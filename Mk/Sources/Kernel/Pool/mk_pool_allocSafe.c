@@ -125,35 +125,47 @@ T_mkCode mk_pool_allocSafe ( T_mkPool* p_mkPool, T_mkAddr* p_mkAddr, uint32_t p_
             /* Déclenchement d'une requête SVC */
             l_svcPnt = mk_pool_call ( p_mkPool, p_mkTick );
 
-            /* Lorsque la tâche se reveille, deux situations peuvent se présenter : */
+            /* Lorsque la tâche se reveille, trois situations peuvent se présenter : */
             /* - la tâche a obtenu un bloc de mémoire, le pointeur "handle" est non nul. */
             /* - la tâche n'a pas obtenu un bloc de mémoire, le pointeur "handle" est nul */
+            /* - la pool a été supprimée, l'attribut "object" de la tâche est invalide */
 
             /* Si l'appel système s'est correctement déroulé */
             if ( l_svcPnt->result == K_MK_OK )
             {
-               /* Si l'allocation dynamique a échoué */
-               if ( l_svcPnt->handle == K_MK_NULL )
+               /* Si la pool a été supprimée pendant que la tâche était bloquée */
+               if ( g_mkScheduler.currentTask->synchro.object == K_MK_INVALID_HANDLE )
                {
                   /* Actualisation de la variable de retour */
-                  l_result = K_MK_ERROR_MALLOC;
+                  l_result = K_MK_ERROR_UNEXPECTED;
                }
 
                /* Sinon */
                else
                {
-                  /* Récupération de l'instance du bloc de mémoire allouée */
-                  l_addr = ( uint32_t* ) l_svcPnt->handle;
-
-                  /* Réinitialisation du morceau de mémoire alloué */
-                  for ( l_counter = 0 ; ( l_counter < p_mkPool->size ) &&  ( p_mkClear == K_MK_POOL_CLEAR ) ; l_counter++ )
+                  /* Si l'allocation dynamique a échoué */
+                  if ( ( g_mkScheduler.currentTask->synchro.object == K_MK_NULL ) || ( l_svcPnt->handle == K_MK_NULL ) )
                   {
-                     /* Remise à zéro du mot courant */
-                     *( l_addr + l_counter ) = 0;
+                     /* Actualisation de la variable de retour */
+                     l_result = K_MK_ERROR_MALLOC;
                   }
 
-                  /* Actualisation du résultat */
-                  *p_mkAddr = l_addr;
+                  /* Sinon */
+                  else
+                  {
+                     /* Récupération de l'instance du bloc de mémoire allouée */
+                     l_addr = ( uint32_t* ) l_svcPnt->handle;
+
+                     /* Réinitialisation du morceau de mémoire alloué */
+                     for ( l_counter = 0 ; ( l_counter < p_mkPool->size ) &&  ( p_mkClear == K_MK_POOL_CLEAR ) ; l_counter++ )
+                     {
+                        /* Remise à zéro du mot courant */
+                        *( l_addr + l_counter ) = 0;
+                     }
+
+                     /* Actualisation du résultat */
+                     *p_mkAddr = l_addr;
+                  }
                }
             }
 

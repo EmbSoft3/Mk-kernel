@@ -42,6 +42,117 @@
  * @endinternal
  */
 
+static void mk_call_wakeFromBlockedList ( T_mkAddr p_mkHandle, uint32_t p_mkStatus )
+{
+   /* Déclaration d'un pointeur de tâches*/
+   T_mkTask* l_task;
+
+   /* Récupération de l'adresse de la liste des tâches bloquées */
+   T_mkList* l_list = ( T_mkList* ) ( ( T_mkAddr* ) p_mkHandle + 3 );
+
+   /* Tant qu'une tâche est présente dans la liste */
+   while ( l_list->current != K_MK_NULL )
+   {
+      /* Récupération de l'adresse de la tâche courante */
+      l_task = l_list->current;
+
+      /* Mise à jour des objets de synchronisation */
+      l_task->synchro.object = K_MK_INVALID_HANDLE;
+
+      /* Réveil de la tâche bloquée */
+      mk_call_wakeTask ( l_list, l_task, p_mkStatus );
+   }
+
+   /* Retour */
+   return;
+}
+
+/**
+ * @internal
+ * @brief
+ * @endinternal
+ */
+
+static T_mkCode mk_call_deleteObject ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, uint32_t p_mkNumberOfObject, uint32_t p_mkObjectSize, T_mkAddr p_mkHandle, uint32_t p_mkStatus )
+{
+   /* Déclaration de la variable de retour */
+   T_mkCode l_result;
+
+   /* Déclaration de variables stockant le type de l'objet de synchronisation */
+   uint32_t l_type;
+
+   /* Vérification de la validité de l'instance */
+   l_result = mk_call_isValidHandle ( p_mkArea, p_mkNumberOfObject, p_mkObjectSize, p_mkHandle );
+
+   /* Si le sémaphore est valide */
+   if ( l_result == K_MK_OK )
+   {
+      /* Récupération du type de l'objet de synchronisation */
+      l_type = mk_call_type ( p_mkHandle );
+
+      /* Si l'objet de synchronisation n'a pas été détruit */
+      if ( ( T_mkAddr ) ( * ( ( uint32_t* ) p_mkHandle + 1 ) ) != K_MK_INVALID_HANDLE )
+      {
+         /* Analyse des droits de la tâche qui a exécutée l'appel système */
+         l_type = mk_call_isProtectedArea ( l_type, p_mkStatus );
+
+         /* Si l'appel système peut être exécutée */
+         if ( l_type == K_MK_AREA_UNPROTECTED )
+         {
+            /* Désallocation de l'objet de synchronisation */
+            l_result = mk_pool_free ( p_mkPool, p_mkHandle );
+
+            /* Si aucune erreur ne s'est produite */
+            if ( l_result == K_MK_OK )
+            {
+               /* Réveil des tâches bloquées*/
+               mk_call_wakeFromBlockedList ( ( T_mkAddr ) p_mkHandle, p_mkStatus );
+               
+               /* Réinitialisation de l'objet */
+               /* Le premier mot ne doit pas être effacé car la pool a écrit */
+               /* l'adresse du prochain bloc à l'intérieur */
+               _writeBytes ( ( void_t ) ( ( uint32_t* ) p_mkHandle + 1 ), 0xFF, p_mkObjectSize - 4 );
+            }
+
+            /* Sinon */
+            else
+            {
+               /* Ne rien faire */
+            }
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Actualisation de la variable de retour */
+            l_result = K_MK_ERROR_RIGHT;
+         }
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Actualisation de la variable de retour */
+         l_result = K_MK_ERROR_PARAM;
+      }
+   }
+
+   /* Sinon */
+   else
+   {
+      /* Ne rien faire */
+   }
+
+   /* Retour */
+   return ( l_result );
+}
+
+/**
+ * @internal
+ * @brief
+ * @endinternal
+ */
+
 static T_mkCode mk_call_deleteMail ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, uint32_t p_mkNumberOfObject, uint32_t p_mkObjectSize, T_mkMail* p_mkMail, uint32_t p_mkStatus )
 {
    /* Déclaration de la variable de retour */
@@ -97,6 +208,10 @@ static T_mkCode mk_call_deleteMail ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, uint
             /* Si aucune erreur ne s'est produite */
             if ( l_result == K_MK_OK )
             {
+               /* Réveil des tâches bloquées */
+               mk_call_wakeFromBlockedList ( ( T_mkAddr ) &p_mkMail->poster, p_mkStatus );
+               mk_call_wakeFromBlockedList ( ( T_mkAddr ) &p_mkMail->pender, p_mkStatus );
+               
                /* Réinitialisation de l'objet */
                /* Le premier mot ne doit pas être effacé car la pool a écrit */
                /* l'adresse du prochain bloc à l'intérieur */
@@ -142,7 +257,7 @@ static T_mkCode mk_call_deleteMail ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, uint
  * @endinternal
  */
 
-static T_mkCode mk_call_deleteObject ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, uint32_t p_mkNumberOfObject, uint32_t p_mkObjectSize, T_mkAddr p_mkHandle, uint32_t p_mkStatus )
+static T_mkCode mk_call_deleteCallbackHandler ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, uint32_t p_mkNumberOfObject, uint32_t p_mkObjectSize, T_mkCallbackHandler* p_mkHandler, uint32_t p_mkStatus )
 {
    /* Déclaration de la variable de retour */
    T_mkCode l_result;
@@ -151,16 +266,16 @@ static T_mkCode mk_call_deleteObject ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, ui
    uint32_t l_type;
 
    /* Vérification de la validité de l'instance */
-   l_result = mk_call_isValidHandle ( p_mkArea, p_mkNumberOfObject, p_mkObjectSize, p_mkHandle );
+   l_result = mk_call_isValidHandle ( p_mkArea, p_mkNumberOfObject, p_mkObjectSize, ( T_mkAddr ) p_mkHandler );
 
    /* Si le sémaphore est valide */
    if ( l_result == K_MK_OK )
    {
       /* Récupération du type de l'objet de synchronisation */
-      l_type = mk_call_type ( p_mkHandle );
+      l_type = mk_call_type ( ( T_mkAddr ) p_mkHandler );
 
       /* Si l'objet de synchronisation n'a pas été détruit */
-      if ( ( T_mkAddr ) ( * ( ( uint32_t* ) p_mkHandle + 1 ) ) != K_MK_INVALID_HANDLE )
+      if ( ( T_mkAddr ) ( * ( ( uint32_t* ) p_mkHandler + 1 ) ) != K_MK_INVALID_HANDLE )
       {
          /* Analyse des droits de la tâche qui a exécutée l'appel système */
          l_type = mk_call_isProtectedArea ( l_type, p_mkStatus );
@@ -168,16 +283,135 @@ static T_mkCode mk_call_deleteObject ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, ui
          /* Si l'appel système peut être exécutée */
          if ( l_type == K_MK_AREA_UNPROTECTED )
          {
-            /* Désallocation de l'objet de synchronisation */
-            l_result = mk_pool_free ( p_mkPool, p_mkHandle );
+            /* Si plus aucune fonction de rappel n'est référencée dans le gestionnaire */
+            if ( p_mkHandler->identifier == 0 )
+            {
+               /* Destruction du champ d'événements du gestionnaire de rappel */
+               l_result = mk_call_deleteObject ( &g_mkEventPool.pool, ( T_mkAddr ) &g_mkEventPool.event [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_EVENTS,
+                                       sizeof ( T_mkEvent ), ( T_mkAddr ) p_mkHandler->event, p_mkStatus );
+               
+               /* Si aucune erreur ne s'est produite */
+               if ( l_result == K_MK_OK )
+               {
+                  /* Désallocation de l'objet de synchronisation */
+                  l_result = mk_pool_free ( p_mkPool, ( T_mkAddr ) p_mkHandler );
+               }
 
+               /* Sinon */
+               else
+               {
+                  /* Ne rien faire */
+               }
+            
+               /* Si aucune erreur ne s'est produite */
+               if ( l_result == K_MK_OK )
+               {
+                  /* Réinitialisation de l'objet */
+                  /* Le premier mot ne doit pas être effacé car la pool a écrit */
+                  /* l'adresse du prochain bloc à l'intérieur */
+                  _writeBytes ( ( void_t ) ( ( uint32_t* ) p_mkHandler + 1 ), 0xFF, p_mkObjectSize - 4 );
+               }
+
+               /* Sinon */
+               else
+               {
+                  /* Ne rien faire */
+               }
+            }
+            
+            /* Sinon */
+            else
+            {
+               /* Actualisation de la variable de retour */
+               l_result = K_MK_ERROR_PARAM;
+            }
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Actualisation de la variable de retour */
+            l_result = K_MK_ERROR_RIGHT;
+         }
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Actualisation de la variable de retour */
+         l_result = K_MK_ERROR_PARAM;
+      }
+   }
+
+   /* Sinon */
+   else
+   {
+      /* Ne rien faire */
+   }
+
+   /* Retour */
+   return ( l_result );
+}
+
+/**
+ * @internal
+ * @brief
+ * @endinternal
+ */
+
+static T_mkCode mk_call_deleteCallbackFunction ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, uint32_t p_mkNumberOfObject, uint32_t p_mkObjectSize, T_mkCallback* p_mkFunction, uint32_t p_mkStatus )
+{
+   /* Déclaration de la variable de retour */
+   T_mkCode l_result;
+
+   /* Déclaration d'un variable stockant l'adresse d'un gestionnaire de rappel */
+   T_mkCallbackHandler* l_handler = K_MK_NULL;
+
+   /* Déclaration d'une variable stockant la nouvelle valeur du champ identifiant les fonctions */
+   /* de rappels référencées dans un gestionnaire */
+   uint32_t l_fieldId = 0;
+
+   /* Déclaration de variables stockant le type de l'objet de synchronisation */
+   uint32_t l_type;
+
+   /* Vérification de la validité de l'instance */
+   l_result = mk_call_isValidHandle ( p_mkArea, p_mkNumberOfObject, p_mkObjectSize, ( T_mkAddr ) p_mkFunction );
+
+   /* Si le sémaphore est valide */
+   if ( l_result == K_MK_OK )
+   {
+      /* Récupération du type de l'objet de synchronisation */
+      l_type = mk_call_type ( ( T_mkAddr ) p_mkFunction );
+
+      /* Si l'objet de synchronisation n'a pas été détruit */
+      if ( ( T_mkAddr ) ( * ( ( uint32_t* ) p_mkFunction + 1 ) ) != K_MK_INVALID_HANDLE )
+      {
+         /* Analyse des droits de la tâche qui a exécutée l'appel système */
+         l_type = mk_call_isProtectedArea ( l_type, p_mkStatus );
+
+         /* Si l'appel système peut être exécutée */
+         if ( l_type == K_MK_AREA_UNPROTECTED )
+         {
+            /* Récupération de l'adresse du gestionnaire de rappel */
+            l_handler = p_mkFunction->handler;
+
+            /* Détermination de la nouvelle valeur du champ identifiant les fonctions */
+            /* de rappels référencées dans un gestionnaire */
+            l_fieldId = ( uint32_t ) ( l_handler->identifier & ( ~ p_mkFunction->identifier ) );
+
+            /* Désallocation de l'objet de synchronisation */
+            l_result = mk_pool_free ( p_mkPool, ( T_mkAddr ) p_mkFunction );
+         
             /* Si aucune erreur ne s'est produite */
             if ( l_result == K_MK_OK )
             {
+               /* Actualisation du registre d'identification du gestionnaire */
+               l_handler->identifier = l_fieldId;
+               
                /* Réinitialisation de l'objet */
                /* Le premier mot ne doit pas être effacé car la pool a écrit */
                /* l'adresse du prochain bloc à l'intérieur */
-               _writeBytes ( ( void_t ) ( ( uint32_t* ) p_mkHandle + 1 ), 0xFF, p_mkObjectSize - 4 );
+               _writeBytes ( ( void_t ) ( ( uint32_t* ) p_mkFunction + 1 ), 0xFF, p_mkObjectSize - 4 );
             }
 
             /* Sinon */
@@ -219,19 +453,96 @@ static T_mkCode mk_call_deleteObject ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, ui
  * @endinternal
  */
 
+static T_mkCode mk_call_deleteMutex ( T_mkPool* p_mkPool, T_mkAddr p_mkArea, uint32_t p_mkNumberOfObject, uint32_t p_mkObjectSize, T_mkMutex* p_mkMutex, uint32_t p_mkStatus )
+{
+   /* Déclaration de la variable de retour */
+   T_mkCode l_result;
+
+   /* Déclaration de variables stockant le type de l'objet de synchronisation */
+   uint32_t l_type;
+
+   /* Vérification de la validité de l'instance */
+   l_result = mk_call_isValidHandle ( p_mkArea, p_mkNumberOfObject, p_mkObjectSize, ( T_mkAddr ) p_mkMutex );
+
+   /* Si le sémaphore est valide */
+   if ( l_result == K_MK_OK )
+   {
+      /* Récupération du type de l'objet de synchronisation */
+      l_type = mk_call_type ( ( T_mkAddr ) p_mkMutex );
+
+      /* Si l'objet de synchronisation n'a pas été détruit */
+      if ( ( T_mkAddr ) ( * ( ( uint32_t* ) p_mkMutex + 1 ) ) != K_MK_INVALID_HANDLE )
+      {
+         /* Analyse des droits de la tâche qui a exécutée l'appel système */
+         l_type = mk_call_isProtectedArea ( l_type, p_mkStatus );
+
+         /* Si l'appel système peut être exécutée */
+         if ( l_type == K_MK_AREA_UNPROTECTED )
+         {
+            /* Si le mutex n'est pas verrouillé */
+            if ( p_mkMutex->lock == 0 )
+            {
+               /* Désallocation de l'objet de synchronisation */
+               l_result = mk_pool_free ( p_mkPool, ( T_mkAddr ) p_mkMutex );
+            
+               /* Si aucune erreur ne s'est produite */
+               if ( l_result == K_MK_OK )
+               {
+                  /* Réinitialisation de l'objet */
+                  /* Le premier mot ne doit pas être effacé car la pool a écrit */
+                  /* l'adresse du prochain bloc à l'intérieur */
+                  _writeBytes ( ( void_t ) ( ( uint32_t* ) p_mkMutex + 1 ), 0xFF, p_mkObjectSize - 4 );
+               }
+
+               /* Sinon */
+               else
+               {
+                  /* Ne rien faire */
+               }
+            }
+            
+            /* Sinon */
+            else
+            {
+               /* Actualisation de la variable de retour */
+               l_result = K_MK_ERROR_PARAM;
+            }
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Actualisation de la variable de retour */
+            l_result = K_MK_ERROR_RIGHT;
+         }
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Actualisation de la variable de retour */
+         l_result = K_MK_ERROR_PARAM;
+      }
+   }
+
+   /* Sinon */
+   else
+   {
+      /* Ne rien faire */
+   }
+
+   /* Retour */
+   return ( l_result );
+}
+
+/**
+ * @internal
+ * @brief
+ * @endinternal
+ */
+
 void mk_call_delete ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
 {
-   /* Déclaration des variables stockant l'adresse d'une fonction de rappel et l'adresse d'un gestionnaire de rappel */
-   T_mkCallback* l_callback = K_MK_NULL;
-   T_mkCallbackHandler* l_handler = K_MK_NULL;
-
-   /* Déclaration d'une variable stockant l'adresse d'un mutex */
-   T_mkMutex* l_mutex = K_MK_NULL;
-
-   /* Déclaration d'une variable stockant la nouvelle valeur du champ identifiant les fonctions */
-   /* de rappels référencées dans un gestionnaire */
-   uint32_t l_fieldId = 0;
-   
    /* Si un gestionnaire d'allocation doit être détruit */
    if ( p_mkObject->type == K_MK_SYSCALL_DELETE_POOL_FUNCTION )
    {
@@ -259,23 +570,9 @@ void mk_call_delete ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    /* Sinon si un mutex doit être détruit */
    else if ( p_mkObject->type == K_MK_SYSCALL_DELETE_MUTEX_FUNCTION )
    {
-      /* Récupération de l'adresse du mutex */
-      l_mutex = ( T_mkMutex* ) p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ];
-
-      /* Si le mutex n'est pas verrouillé */
-      if ( l_mutex->lock == 0 )
-      {
-         /* Destruction du mutex */
-         p_mkObject->result = mk_call_deleteObject ( &g_mkMutexPool.pool, ( T_mkAddr ) &g_mkMutexPool.mutex [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_MUTEX,
-                              sizeof ( T_mkMutex ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ], p_mkStatus );
-      }
-
-      /* Sinon */
-      else
-      {
-         /* Actualisation de la variable de retour */
-         p_mkObject->result = K_MK_ERROR_PARAM;
-      }
+      /* Destruction du mutex */
+      p_mkObject->result = mk_call_deleteMutex ( &g_mkMutexPool.pool, ( T_mkAddr ) &g_mkMutexPool.mutex [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_MUTEX,
+                           sizeof ( T_mkMutex ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ], p_mkStatus );
    }
 
    /* Sinon si un sémaphore doit être détruit */
@@ -290,33 +587,17 @@ void mk_call_delete ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    else if ( p_mkObject->type == K_MK_SYSCALL_DELETE_CALLBACK_HANDLER_FUNCTION )
    {
       /* Destruction du gestionnaire de rappel */
-      p_mkObject->result = mk_call_deleteObject ( &g_mkCallbackHandlerPool.pool, ( T_mkAddr ) &g_mkCallbackHandlerPool.handler [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLER,
-                           sizeof ( T_mkCallbackHandler ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ], p_mkStatus );
+      p_mkObject->result = mk_call_deleteCallbackHandler ( &g_mkCallbackHandlerPool.pool, ( T_mkAddr ) &g_mkCallbackHandlerPool.handler [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLER,
+                            sizeof ( T_mkCallbackHandler ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ], p_mkStatus );
+
    }
 
    /* Sinon si une fonction de rappel doit être détruite */
    else if ( p_mkObject->type == K_MK_SYSCALL_DELETE_CALLBACK_FUNCTION )
    {
-      /* Récupération de l'adresse de la fonction de rappel */
-      l_callback = p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ];
-
-      /* Récupération de l'adresse du gestionnaire de rappel */
-      l_handler = l_callback->handler;
-
-      /* Détermination de la nouvelle valeur du champ identifiant les fonctions */
-      /* de rappels référencées dans un gestionnaire */
-      l_fieldId = ( uint32_t ) ( l_handler->identifier & ( ~ l_callback->identifier ) );
-
       /* Destruction de la fonction de rappel */
-      p_mkObject->result = mk_call_deleteObject ( &g_mkCallbackFunctionPool.pool, ( T_mkAddr ) &g_mkCallbackFunctionPool.callback [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTION,
-                           sizeof ( T_mkCallback ), ( T_mkAddr ) l_callback, p_mkStatus );
-
-      /* Si aucune erreur ne s'est produite */
-      if ( p_mkObject->result == K_MK_OK )
-      {
-         /* Actualisation du registre d'identification du gestionnaire */
-         l_handler->identifier = l_fieldId;
-      }
+      p_mkObject->result = mk_call_deleteCallbackFunction ( &g_mkCallbackFunctionPool.pool, ( T_mkAddr ) &g_mkCallbackFunctionPool.callback [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTION,
+                           sizeof ( T_mkCallback ), ( T_mkAddr ) p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ], p_mkStatus );
    }
 
    /* Sinon */

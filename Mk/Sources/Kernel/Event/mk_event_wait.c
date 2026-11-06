@@ -126,9 +126,10 @@ T_mkCode mk_event_wait ( T_mkEvent* p_mkEvent, uint32_t p_mkInFlag, uint32_t* p_
             /* Déclenchement d'une requête SVC */
             l_svcPnt = mk_event_call ( p_mkEvent, p_mkInFlag, p_mkTick );
 
-            /*  Lorsque la tâche se reveille, deux situations peuvent se présenter : */
+            /*  Lorsque la tâche se reveille, trois situations peuvent se présenter : */
             /*  - le ou les événements ont été positionnés, l'attribut "object" de la tâche pointe sur le champ d'événements. */
             /*  - le ou les événements n'ont pas été positionnés, l'attribut "object" de la tâche est nul */
+            /*  - le champ d'événements a été supprimée, l'attribut "object" de la tâche est invalide */
 
             /* Si l'appel système s'est correctement déroulé */
             if ( l_svcPnt->result == K_MK_OK )
@@ -138,6 +139,13 @@ T_mkCode mk_event_wait ( T_mkEvent* p_mkEvent, uint32_t p_mkInFlag, uint32_t* p_
                {
                   /* Actualisation de la variable de retour */
                   l_result = K_MK_ERROR_TIMEOUT;
+               }
+
+               /* Sinon si le champ d'événements a été supprimé pendant que la tâche était bloquée */
+               else if ( g_mkScheduler.currentTask->synchro.object == K_MK_INVALID_HANDLE )
+               {
+                  /* Actualisation de la variable de retour */
+                  l_result = K_MK_ERROR_UNEXPECTED;
                }
 
                /* Sinon */

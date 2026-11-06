@@ -116,9 +116,10 @@ T_mkCode mk_semaphore_take ( T_mkSemaphore* p_mkSemaphore, uint32_t p_mkTick )
             /* Déclenchement d'une requête SVC */
             l_result = mk_semaphore_call ( p_mkSemaphore, p_mkTick );
 
-            /*  Lorsque la tâche se reveille, deux situations peuvent se présenter : */
+            /*  Lorsque la tâche se reveille, trois situations peuvent se présenter : */
             /*  - la tâche a obtenue le sémaphore, l'attribut "object" pointe sur le sémaphore. */
             /*  - la tâche n'a pas obtenue le sémaphore, l'attribut "object" du semaphore est nul */
+            /*  - le sémaphore a été supprimé, l'attribut "object" du semaphore est invalide */
 
             /* Si aucune erreur ne s'est produite durant l'appel système */
             if ( l_result == K_MK_OK )
@@ -128,6 +129,13 @@ T_mkCode mk_semaphore_take ( T_mkSemaphore* p_mkSemaphore, uint32_t p_mkTick )
                {
                   /* Actualisation de la variable de retour */
                   l_result = K_MK_ERROR_TIMEOUT;
+               }
+
+               /* Sinon si le sémaphore a été supprimé pendant que la tâche était bloquée */
+               else if ( g_mkScheduler.currentTask->synchro.object == K_MK_INVALID_HANDLE )
+               {
+                  /* Actualisation de la variable de retour */
+                  l_result = K_MK_ERROR_UNEXPECTED;
                }
 
                /* Sinon */
