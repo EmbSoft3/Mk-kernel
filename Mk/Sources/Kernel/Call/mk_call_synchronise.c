@@ -334,12 +334,16 @@ static T_mkCode mk_call_handleEvent ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
    /* Déclaration d'un pointeur d'événements */
    T_mkEvent* l_event = ( T_mkEvent* ) p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ];
 
+   /* Récupération de la valeur du champ d'événements */
+   uint32_t l_flag = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_PARAM_OBJECT ]; 
+
    /* Vérification de l'alignement de l'adresse */
    l_result = mk_call_isValidHandle ( ( T_mkAddr ) &g_mkEventPool.event [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_EVENTS,
                                       sizeof ( T_mkEvent ), ( T_mkAddr ) l_event );
 
-   /* Si le champ d'événements est valide */
-   if ( ( l_result == K_MK_OK ) && ( l_event->createByAddr != K_MK_INVALID_HANDLE ) )
+   /* Si le champ d'événements est valide et si le drapeau d'attente / réinitialisation est non nul (retour immédiat AND ou attente infinie OR) */
+   if ( ( l_result == K_MK_OK ) && ( l_event->createByAddr != K_MK_INVALID_HANDLE ) && 
+      ( ( l_flag & ( ~K_MK_EVENT_MASK ) ) != 0 ) )
    {
       /* Si l'appel système a été exécuté par la fonction mk_event_wait */
       if ( p_mkObject->type == K_MK_SYSCALL_SYNCHRO_EVENT_WAIT_FUNCTION )
@@ -362,11 +366,14 @@ static T_mkCode mk_call_handleEvent ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
          }
       }
 
-      /* Sinon si l'appel système a été exécuté par la fonction mk_mail_post */
+      /* Sinon si l'appel système a été exécuté par la fonction mk_event_clear */
       else if ( p_mkObject->type == K_MK_SYSCALL_SYNCHRO_EVENT_CLEAR_FUNCTION )
       {
          /* Configuration de la fonction de synchronisation */
          p_mkObject->data [ K_MK_OFFSET_SYNC_FUNCTION ] = ( T_mkAddr ) _mk_call_eventToAddr ( mk_event_raz );
+
+         /* Configuration du masque de réinitialisation */
+         p_mkObject->data [ K_MK_OFFSET_PARAM_OBJECT ] = ( T_mkAddr ) ( ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_PARAM_OBJECT ] & ( ~K_MK_EVENT_MASK ) ) ;
 
          /* Exécution de la séquence de synchronisation */
          l_result =mk_call_executeSynchronise ( p_mkObject, p_mkStatus );

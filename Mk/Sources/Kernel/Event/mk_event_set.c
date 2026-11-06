@@ -86,35 +86,45 @@ T_mkCode mk_event_set ( T_mkEvent* p_mkEvent, uint32_t p_mkFlag )
    /* Si le paramètre est valide */
    if ( p_mkEvent != K_MK_NULL )
    {
-      /* Récupération du statut d'interruption */
-      l_isr = mk_scheduler_isr ( );
-
-      /* Récupération des droits d'exécution */
-      l_right = _mk_scheduler_privileged ( );
-
-      /* Si la tâche possède les droits suffisants pour réaliser l'appel système */
-      if ( ( l_isr != K_MK_ISR_NO ) || ( l_right == K_MK_MODE_HANDLER ) || ( ( l_right == K_MK_MODE_THREAD ) &&
-         ( ( p_mkEvent->type & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) ) )
+      /* Si des drapeaux doivent être positionnés */
+      if ( p_mkFlag != 0 )
       {
-         /* Entrée en section critique */
-         /* La valeur du masque doit être récupérée car cette fonction peut être */
-         /* exécutée dans un vecteur d'interruption. */
-         /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
-         l_mask = _mk_scheduler_maskFromIsr ( K_MK_SCHEDULER_MASK_PRIORITY );
+         /* Récupération du statut d'interruption */
+         l_isr = mk_scheduler_isr ( );
 
-         /* Déclenchement d'une requête SVC */
-         l_result = mk_event_call ( p_mkEvent, p_mkFlag );
+         /* Récupération des droits d'exécution */
+         l_right = _mk_scheduler_privileged ( );
 
-         /* Sortie de la section critique */
-         /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
-         _mk_scheduler_unmaskFromIsr ( l_mask );
+         /* Si la tâche possède les droits suffisants pour réaliser l'appel système */
+         if ( ( l_isr != K_MK_ISR_NO ) || ( l_right == K_MK_MODE_HANDLER ) || ( ( l_right == K_MK_MODE_THREAD ) &&
+            ( ( p_mkEvent->type & K_MK_AREA_PROTECTED ) == K_MK_AREA_UNPROTECTED ) ) )
+         {
+            /* Entrée en section critique */
+            /* La valeur du masque doit être récupérée car cette fonction peut être */
+            /* exécutée dans un vecteur d'interruption. */
+            /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
+            l_mask = _mk_scheduler_maskFromIsr ( K_MK_SCHEDULER_MASK_PRIORITY );
+
+            /* Déclenchement d'une requête SVC */
+            l_result = mk_event_call ( p_mkEvent, p_mkFlag );
+
+            /* Sortie de la section critique */
+            /* Cette fonction n'a aucun effet lorsqu'elle est exécutée en mode Thread. */
+            _mk_scheduler_unmaskFromIsr ( l_mask );
+         }
+
+         /* Sinon */
+         else
+         {
+            /* Actualisation de la variable de retour */
+            l_result = K_MK_ERROR_RIGHT;
+         }
       }
 
       /* Sinon */
       else
       {
-         /* Actualisation de la variable de retour */
-         l_result = K_MK_ERROR_RIGHT;
+         /* Ne rien faire */
       }
    }
 

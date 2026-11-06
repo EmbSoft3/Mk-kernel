@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -103,8 +103,9 @@ T_mkCode mk_event_wait ( T_mkEvent* p_mkEvent, uint32_t p_mkInFlag, uint32_t* p_
    /* Déclaration d'un pointeur SVC */
    T_mkSVCObject* l_svcPnt;
 
-   /* Si le paramètre est valide */
-   if ( ( p_mkEvent != K_MK_NULL ) && ( p_mkOutFlag != K_MK_NULL ) )
+   /* Si les paramètres sont valides et si le drapeau d'attente est non nul (retour immédiat AND ou attente infinie OR) */
+   if ( ( p_mkEvent != K_MK_NULL ) && ( p_mkOutFlag != K_MK_NULL ) && 
+      ( ( p_mkInFlag & ( ~K_MK_EVENT_MASK ) ) != 0 ) )
    {
       /* Récupération du statut d'interruption */
       l_isr = mk_scheduler_isr ( );
@@ -133,7 +134,7 @@ T_mkCode mk_event_wait ( T_mkEvent* p_mkEvent, uint32_t p_mkInFlag, uint32_t* p_
             if ( l_svcPnt->result == K_MK_OK )
             {
                /* Si les événements n'ont pas été positionné */
-               if ( ( g_mkScheduler.currentTask->synchro.object == K_MK_NULL ) && ( l_result == K_MK_OK ) )
+               if ( g_mkScheduler.currentTask->synchro.object == K_MK_NULL )
                {
                   /* Actualisation de la variable de retour */
                   l_result = K_MK_ERROR_TIMEOUT;
