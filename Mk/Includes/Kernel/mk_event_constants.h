@@ -62,13 +62,13 @@
 #define K_MK_EVENT_CLEAR 0x40000000
 
 /**
- * @def K_MK_EVENT_NOT_CLEAR
+ * @def K_MK_EVENT_NO_CLEAR
  * @brief Cette constante indique que le champ d'événements ne doit pas être
  *        réinitialisé lorsque le ou les événements attendus par la tâche sont
  *        positionnés.
  */
 
-#define K_MK_EVENT_NOT_CLEAR 0x00000000
+#define K_MK_EVENT_NO_CLEAR 0x00000000
 
 /**
  * @def K_MK_EVENT_MASK

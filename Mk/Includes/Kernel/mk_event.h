@@ -107,7 +107,7 @@ T_mkCode mk_event_clear ( T_mkEvent* p_mkEvent, uint32_t p_mkFlag );
  *                            \li \ref K_MK_EVENT_OR        : une opération de types OR est effectuée entre la valeur du champ d'événements et la valeur du registre d'événements de la tâche.
  *                            \li \ref K_MK_EVENT_AND       : une opération de types AND est effectuée entre la valeur du champ d'événements et la valeur du registre d'événements de la tâche.
  *                            \li \ref K_MK_EVENT_CLEAR     : les événements attendus par la tâche sont réinitialisés suite à la comparaison.
- *                            \li \ref K_MK_EVENT_NOT_CLEAR : les événements attendus par la tâche ne sont pas réinitialisés suite à la comparaison.
+ *                            \li \ref K_MK_EVENT_NO_CLEAR  : les événements attendus par la tâche ne sont pas réinitialisés suite à la comparaison.
  *
  * @param[out]    p_mkOutFlag Ce paramètre contient les événements positionnés.
  * @param[in]     p_mkTick    Ce paramètre contient la valeur du timeout de blocage. Il peut prendre les valeurs suivantes:

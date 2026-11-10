@@ -153,7 +153,7 @@ T_mkCode mk_callback_delete ( T_mkCallback* p_mkCallback );
  *                                \li \ref K_MK_EVENT_OR        : le déblocage de la tâche est réalisée selon une condition de type OR.
  *                                \li \ref K_MK_EVENT_AND       : le déblocage de la tâche est réalisée selon une condition de type AND.
  *                                \li \ref K_MK_EVENT_CLEAR     : l'intégralité du registre d'événements est réinitialisé si toutes les conditions de déblocage sont réunies.
- *                                \li \ref K_MK_EVENT_NOT_CLEAR : le registre d'événements n'est pas réinitialisé suite au réveil de la tâche.
+ *                                \li \ref K_MK_EVENT_NO_CLEAR  : le registre d'événements n'est pas réinitialisé suite au réveil de la tâche.
  *
  * @param[out] p_mkOutIdentifiers Ce paramètre contient l'identifiant des fonctions de rappel ayant été exécutée suite au réveil de la tâche.
  * @param[in]  p_mkTimeout        Ce paramètre contient la valeur du timeout de blocage. Il peut prendre les valeurs suivantes:
