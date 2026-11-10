@@ -352,7 +352,7 @@ static T_mkCode mk_call_handleEvent ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
          if ( ( l_event->type == K_MK_ID_EVENT_FLAG ) && ( l_event->pendingList.current != K_MK_NULL ) )
          {
             /* Actualisation de la variable de retour */
-            l_result = K_MK_ERROR_NESTED;
+            l_result = K_MK_ERROR_NOT_AVAILABLE;
          }
 
          /* Sinon */

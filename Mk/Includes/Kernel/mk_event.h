@@ -117,12 +117,13 @@ T_mkCode mk_event_clear ( T_mkEvent* p_mkEvent, uint32_t p_mkFlag );
  *                            \note Si la valeur "p_mkTick" est nulle et qu'aucun événements n'est positionnés, la fonction retourne immédiatement.
  *
  * @return Cette fonction retourne un des codes suivants:
- *         \li \ref K_MK_OK            : le ou les événements ont été positionnés.
- *         \li \ref K_MK_ERROR_TIMEOUT : le ou les événements n'ont pas été positionnés dans le timeout imparti.
- *         \li \ref K_MK_ERROR_PARAM   : le positionnement des événements n'a pas été vérifié car au moins un paramètre est invalide.
- *         \li \ref K_MK_ERROR_ISR     : le positionnement des événements n'a pas été vérifié car la fonction a été exécutée depuis un vecteur d'interruption.
- *         \li \ref K_MK_ERROR_NESTED  : le positionnement des événements n'a pas été vérifié car une tâche est déjà en attente du champ d'événements.
- *         \li \ref K_MK_ERROR_RIGHT   : le positionnement des événements n'a pas été vérifié car une tâche de type non privilégié ne peut pas utiliser un champ d'événements protégé.
+ *         \li \ref K_MK_OK                  : le ou les événements ont été positionnés.
+ *         \li \ref K_MK_ERROR_TIMEOUT       : le ou les événements n'ont pas été positionnés dans le timeout imparti.
+ *         \li \ref K_MK_ERROR_PARAM         : le positionnement des événements n'a pas été vérifié car au moins un paramètre est invalide.
+ *         \li \ref K_MK_ERROR_ISR           : le positionnement des événements n'a pas été vérifié car la fonction a été exécutée depuis un vecteur d'interruption.
+ *         \li \ref K_MK_ERROR_NOT_AVAILABLE : le positionnement des événements n'a pas été vérifié car une tâche est déjà en attente du champ d'événements.
+ *         \li \ref K_MK_ERROR_RIGHT         : le positionnement des événements n'a pas été vérifié car une tâche de type non privilégié ne peut pas utiliser 
+ *                                             un champ d'événements protégé.
  *
  */
 
