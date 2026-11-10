@@ -349,7 +349,7 @@ static T_mkCode mk_call_handleEvent ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
       if ( p_mkObject->type == K_MK_SYSCALL_SYNCHRO_EVENT_WAIT_FUNCTION )
       {
          /* Si le champ d'événements est de type drapeau et si une tâche est en attente de l'événement */
-         if ( ( l_event->type == K_MK_ID_EVENT_FLAG ) && ( l_event->pendingList.current != K_MK_NULL ) )
+         if ( ( l_event->type == K_MK_ID_EVENT_SINGLE ) && ( l_event->pendingList.current != K_MK_NULL ) )
          {
             /* Actualisation de la variable de retour */
             l_result = K_MK_ERROR_NOT_AVAILABLE;

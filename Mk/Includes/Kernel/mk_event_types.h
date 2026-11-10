@@ -46,7 +46,7 @@
 typedef volatile struct T_mkEvent T_mkEvent;
 struct T_mkEvent
 {
-   uint32_t type;          /*!< Ce membre stocke le type de l'objet de synchronisation (\ref K_MK_ID_EVENT_FLAG et \ref K_MK_ID_EVENT_SIGNAL). */
+   uint32_t type;          /*!< Ce membre stocke le type de l'objet de synchronisation (\ref K_MK_ID_EVENT_SINGLE et \ref K_MK_ID_EVENT_MULTI). */
    uint32_t bypass;        /*!< Ce membre n'est pas utilisé. Il doit avoir une valeur supérieur à 0 pour la compatibilité des objets de synchronisation. */
    uint32_t flag;          /*!< Ce membre stocke la valeur du champ d'événements. */
    T_mkList pendingList;   /*!< Ce membre stocke l'adresse de la tâche en attente d'un événement. */

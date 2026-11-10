@@ -72,7 +72,7 @@ void mk_call_createEvent ( T_mkSVCObject* p_mkObject )
    else
    {
       /* Si les paramètre d'entrées sont valides */
-      if ( ( l_type == K_MK_ID_EVENT_FLAG ) || ( l_type == K_MK_ID_EVENT_SIGNAL ) )
+      if ( ( l_type == K_MK_ID_EVENT_SINGLE ) || ( l_type == K_MK_ID_EVENT_MULTI ) )
       {
          /* Allocation d'un champ d'événements dans l'espace privilégié */
          l_event = mk_pool_alloc ( &g_mkEventPool.pool, K_MK_POOL_CLEAR );

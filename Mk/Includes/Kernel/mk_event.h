@@ -43,8 +43,8 @@
  *
  * @param[out] p_mkEvent    Ce paramètre contient l'adresse d'un objet de synchronisation de type \ref T_mkEvent.
  * @param[in]  p_mkType     Ce paramètre contient le type de l'objet de synchronisation. Les constantes suivantes peuvent être utilisées :
- *                          \li \ref K_MK_ID_EVENT_FLAG    : l'objet de synchronisation est un champ d'événements de type drapeau (un seul tâche peut être en attente de l'événement).
- *                          \li \ref K_MK_ID_EVENT_SIGNAL  : l'objet de synchronisation est un champ d'événements de type signal (un nombre illimité de tâches peuvent être en attentes de l'événement).
+ *                          \li \ref K_MK_ID_EVENT_SINGLE : l'objet de synchronisation est un champ d'événements de type SINGLE (un seul tâche peut être en attente de l'événement).
+ *                          \li \ref K_MK_ID_EVENT_MULTI  : l'objet de synchronisation est un champ d'événements de type MULTI (un nombre illimité de tâches peuvent être en attentes de l'événement).
  * @param[in]  p_mkAreaType Ce paramètre contient le type de la zone mémoire \ref T_mkEvent. Les constantes suivantes peuvent être utilisées :
  *                          \li \ref K_MK_AREA_PROTECTED   : l'objet de synchronisation est protégé des appels système de type non privilégié.
  *                          \li \ref K_MK_AREA_UNPROTECTED : l'objet de synchronisation n'est pas protégé des appels système de type non privilégié.

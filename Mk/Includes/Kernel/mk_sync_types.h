@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -54,8 +54,8 @@ typedef enum T_mkTaskSync
    K_MK_ID_SEMAPHORE = 4,              /*!< Ce code indique que l'objet de synchronisation est un sémaphore. */
    K_MK_ID_MAIL = 8,                   /*!< Ce code indique que l'objet de synchronisation est une boite de messages. */
    K_MK_ID_POOL = 16,                  /*!< Ce code indique que l'objet de synchronisation est un gestionnaire d'allocation dynamique. */
-   K_MK_ID_EVENT_FLAG = 32,            /*!< Ce code indique que l'objet de synchronisation est un champ d'événements de type drapeau. */
-   K_MK_ID_EVENT_SIGNAL = 65,          /*!< Ce code indique que l'objet de synchronisation est un champ d'événements de type signal. */
+   K_MK_ID_EVENT_SINGLE = 32,          /*!< Ce code indique que l'objet de synchronisation est un champ d'événements de type SINGLE. */
+   K_MK_ID_EVENT_MULTI = 65,           /*!< Ce code indique que l'objet de synchronisation est un champ d'événements de type MULTI. */
    K_MK_ID_CALLBACK_HANDLER = 128,     /*!< Ce code indique que l'objet de synchronisation est un gestionnaire de fonctions rappel. */
    K_MK_ID_CALLBACK_FUNCTION = 256     /*!< Ce code indique que l'objet de synchronisation est une fonction de rappel. */
 } T_mkTaskSync;

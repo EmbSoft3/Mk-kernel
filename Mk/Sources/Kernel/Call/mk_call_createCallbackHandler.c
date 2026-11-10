@@ -58,7 +58,7 @@ void mk_call_createCallbackHandler ( T_mkSVCObject* p_mkObject )
 
    /* Initialisation du champ d'événements */
    p_mkObject->data [ K_MK_OFFSET_AREA_TYPE ] = ( T_mkAddr ) l_areaType;
-   p_mkObject->data [ K_MK_OFFSET_TYPE ] = ( T_mkAddr ) K_MK_ID_EVENT_SIGNAL;
+   p_mkObject->data [ K_MK_OFFSET_TYPE ] = ( T_mkAddr ) K_MK_ID_EVENT_MULTI;
    p_mkObject->data [ K_MK_OFFSET_PARAM_OBJECT ] = 0;
 
    /* Création d'un champ d'événements */
