@@ -337,6 +337,9 @@ static T_mkCode mk_call_handleEvent ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
    /* Récupération de la valeur du champ d'événements */
    uint32_t l_flag = ( uint32_t ) p_mkObject->data [ K_MK_OFFSET_PARAM_OBJECT ]; 
 
+   /* Déclaration d'une variable de travail */
+   uint32_t l_type = 0;
+
    /* Vérification de l'alignement de l'adresse */
    l_result = mk_call_isValidHandle ( ( T_mkAddr ) &g_mkEventPool.event [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_EVENTS,
                                       sizeof ( T_mkEvent ), ( T_mkAddr ) l_event );
@@ -348,8 +351,11 @@ static T_mkCode mk_call_handleEvent ( T_mkSVCObject* p_mkObject, uint32_t p_mkSt
       /* Si l'appel système a été exécuté par la fonction mk_event_wait */
       if ( p_mkObject->type == K_MK_SYSCALL_SYNCHRO_EVENT_WAIT_FUNCTION )
       {
+         /* Récupération du type du champ d'événements */
+         l_type =  l_event->type & ( uint32_t ) ( ~K_MK_AREA_PROTECTED );
+         
          /* Si le champ d'événements est de type drapeau et si une tâche est en attente de l'événement */
-         if ( ( l_event->type == K_MK_ID_EVENT_SINGLE ) && ( l_event->pendingList.current != K_MK_NULL ) )
+         if ( ( l_type == K_MK_ID_EVENT_SINGLE ) && ( l_event->pendingList.current != K_MK_NULL ) )
          {
             /* Actualisation de la variable de retour */
             l_result = K_MK_ERROR_NOT_AVAILABLE;
