@@ -87,7 +87,7 @@ T_mkCode mk_event_set ( T_mkEvent* p_mkEvent, uint32_t p_mkFlag )
    if ( p_mkEvent != K_MK_NULL )
    {
       /* Si des drapeaux doivent être positionnés */
-      if ( p_mkFlag != 0 )
+      if ( ( p_mkFlag & ( ~K_MK_EVENT_MASK ) ) != 0 )
       {
          /* Récupération du statut d'interruption */
          l_isr = mk_scheduler_isr ( );
