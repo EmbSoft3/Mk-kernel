@@ -72,7 +72,7 @@
  * @note Cette constante peut être modifiée par l'utilisateur.
  */
 
-#define K_MK_CALLBACK_MESSAGE_NUMBER 3
+#define K_MK_CALLBACK_MESSAGE_NUMBER 8
 
 /**
  * @def K_MK_CALLBACK_MESSAGE_AREA_SIZE
@@ -80,7 +80,7 @@
  *        Il comprend à minima les 4 octets d'adresse de la fonction et 4 octets par paramètre.
  */
 
-#define K_MK_CALLBACK_MESSAGE_SIZE 8
+#define K_MK_CALLBACK_MESSAGE_SIZE 7
 
 /**
  * @def K_MK_CALLBACK_MESSAGE_AREA_SIZE

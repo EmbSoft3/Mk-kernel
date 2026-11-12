@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -76,7 +76,7 @@ void mk_callback ( T_mkAddr p_mkParam )
                          l_message.arguments.param4, l_message.arguments.param5, l_message.arguments.param6 );
 
             /* Signalisation de l'exécution de la fonction de rappel */
-            l_result = mk_event_set ( l_message.handler->event, l_message.callback->identifier );
+            l_result = mk_event_set ( l_message.callback->handler->event, l_message.callback->identifier );
          }
 
          /* Sinon */

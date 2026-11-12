@@ -98,7 +98,6 @@ struct T_mkCallbackParam
 typedef struct T_mkCallbackMessage T_mkCallbackMessage;
 struct T_mkCallbackMessage
 {
-   T_mkCallbackHandler* handler;                                           /*!< Ce membre contient l'adresse d'un gestionnaire de rappel. */
    T_mkCallback* callback;                                                 /*!< Ce membre contient l'adresse d'une fonction de rappel. */
    T_mkCallbackParam arguments;                                            /*!< Ce membre contient les paramètres de la fonction de rappel. */
 };

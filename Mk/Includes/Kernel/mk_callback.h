@@ -147,7 +147,6 @@ T_mkCode mk_callback_delete ( T_mkCallback* p_mkCallback );
  * @fn T_mkCode mk_callback_trig ( T_mkCallbackHandler* p_mkHandler, T_mkCallback* p_mkCallback, T_mkCallbackParam* p_mkCallbackParam );
  * @brief Cette fonction déclenche l'exécution d'une fonction de rappel.
  *
- * @param[in] p_mkHandler       Ce paramètre contient un pointeur vers un gestionnaire de rappel de type \ref T_mkCallbackHandler.
  * @param[in] p_mkCallback      Ce paramètre contient un pointeur vers une fonction de rappel de type \ref T_mkCallback.
  * @param[in] p_mkCallbackParam Ce paramètre contient les arguments de la fonction de rappel.
  *
@@ -163,7 +162,7 @@ T_mkCode mk_callback_delete ( T_mkCallback* p_mkCallback );
  *
  */
 
-T_mkCode mk_callback_trig ( T_mkCallbackHandler* p_mkHandler, T_mkCallback* p_mkCallback, T_mkCallbackParam* p_mkCallbackParam );
+T_mkCode mk_callback_trig ( T_mkCallback* p_mkCallback, T_mkCallbackParam* p_mkCallbackParam );
 
 /**
  * @fn T_mkCode mk_callback_wait ( T_mkCallbackHandler* p_mkHandler, uint32_t p_mkIdentifiers, uint32_t* p_mkOutIdentifiers, uint32_t p_mkTimeout );

@@ -42,23 +42,28 @@
  * @endinternal
  */
 
-T_mkCode mk_callback_trig ( T_mkCallbackHandler* p_mkHandler, T_mkCallback* p_mkCallback, T_mkCallbackParam* p_mkCallbackParam )
+T_mkCode mk_callback_trig ( T_mkCallback* p_mkCallback, T_mkCallbackParam* p_mkCallbackParam )
 {
    /* Déclaration de la variable de retour */
    T_mkCode l_result = K_MK_OK;
 
    /* Déclaration d'un message */
-   T_mkCallbackMessage l_message = {
-         p_mkHandler,
-         p_mkCallback,
-       { p_mkCallbackParam->param1, p_mkCallbackParam->param2, p_mkCallbackParam->param3, p_mkCallbackParam->param4, p_mkCallbackParam->param5, p_mkCallbackParam->param6 }
-   };
+   T_mkCallbackMessage l_message;
 
    /* Si les paramètres sont valides */
-   if ( ( p_mkHandler != K_MK_NULL ) && ( p_mkCallback != K_MK_NULL ) )
+   if ( ( p_mkCallback != K_MK_NULL ) && ( p_mkCallback->handler != K_MK_NULL ) )
    {
+      /* Configuration du message */
+      l_message.callback = p_mkCallback;
+      l_message.arguments.param1 = p_mkCallbackParam->param1;
+      l_message.arguments.param2 = p_mkCallbackParam->param2;
+      l_message.arguments.param3 = p_mkCallbackParam->param3;
+      l_message.arguments.param4 = p_mkCallbackParam->param4;
+      l_message.arguments.param5 = p_mkCallbackParam->param5;
+      l_message.arguments.param6 = p_mkCallbackParam->param6;
+      
       /* Transmission d'un message à la tâche qui gére l'exécution des fonctions de rappel */
-      l_result = mk_mail_post ( p_mkHandler->mail, &l_message, K_MK_STATE_READY, K_MK_TASK_WAIT_FOREVER );
+      l_result = mk_mail_post ( p_mkCallback->handler->mail, &l_message, K_MK_STATE_READY, K_MK_TASK_WAIT_FOREVER );
    }
 
    /* Sinon */
