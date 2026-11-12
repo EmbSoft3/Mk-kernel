@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -28,8 +28,8 @@
 * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
-* @file mk_callback_init.c
-* @brief Définition de la fonction mk_callback_init.
+* @file mk_callback_createManagers.c
+* @brief Définition de la fonction mk_callback_createManagers.
 * @date 6 sept. 2020
 *
 */
@@ -165,7 +165,7 @@ static T_mkCode mk_callback_createManager ( T_mkCallbackManager* p_mkHandler, ui
  * @endinternal
  */
 
-T_mkCode mk_callback_init ( uint32_t p_mkStackType )
+T_mkCode mk_callback_createManagers ( uint32_t p_mkStackType )
 {
    /* Déclaration de la variable de retour */
    T_mkCode l_result;

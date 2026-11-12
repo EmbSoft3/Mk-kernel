@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -47,28 +47,6 @@
  */
 
 void mk_callback ( T_mkAddr p_mkParam );
-
-/**
- * @fn T_mkCode mk_callback_trig ( T_mkCallbackHandler* p_mkHandler, T_mkCallback* p_mkCallback, T_mkCallbackParam* p_mkCallbackParam );
- * @brief Cette fonction déclenche l'exécution d'une fonction de rappel.
- *
- * @param[in] p_mkHandler       Ce paramètre contient un pointeur vers un gestionnaire de rappel de type \ref T_mkCallbackHandler.
- * @param[in] p_mkCallback      Ce paramètre contient un pointeur vers une fonction de rappel de type \ref T_mkCallback.
- * @param[in] p_mkCallbackParam Ce paramètre contient les arguments de la fonction de rappel.
- *
- * @return Cette fonction retourne un des codes suivants:
- *         \li \ref K_MK_OK            : l'ordre déclenchant l'exécution de la fonction de rappel a été posté.
- *         \li \ref K_MK_ERROR_PARAM   : l'ordre déclenchant l'exécution de la fonction de rappel n'a pas été posté car au moins un paramètre est invalide.
- *         \li \ref K_MK_ERROR_TIMEOUT : l'ordre déclenchant l'exécution de la fonction de rappel n'a pas été posté car aucun emplaçement mémoire ne s'est libéré dans
- *                                       la boite de messages dans le timeout imparti.
- *         \li \ref K_MK_ERROR_ISR     : l'ordre déclenchant l'exécution de la fonction de rappel n'a pas été posté car la fonction a été exécutée depuis un vecteur
- *                                       d'interruption avec le paramètre p_mkTick différent de zéro.
- *         \li \ref K_MK_ERROR_RIGHT   : l'ordre déclenchant l'exécution de la fonction de rappel n'a pas été posté car une tâche non privilégiée ne possède pas
- *                                       suffisamment de droits.
- *
- */
-
-T_mkCode mk_callback_trig ( T_mkCallbackHandler* p_mkHandler, T_mkCallback* p_mkCallback, T_mkCallbackParam* p_mkCallbackParam );
 
 /**
  * @fn T_mkCode mk_callback_report ( T_mkCode p_code );
