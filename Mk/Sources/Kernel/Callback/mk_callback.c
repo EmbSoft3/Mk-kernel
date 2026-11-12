@@ -44,8 +44,8 @@
 
 void mk_callback ( T_mkAddr p_mkParam )
 {
-   /* Déclaration de la variable de retour */
-   T_mkCode l_result;
+   /* Déclaration des variables de retour */
+   T_mkCode l_result, l_localResult;
 
    /* Déclaration d'un pointeur de fonction */
    T_mkCallbackFunction l_function;
@@ -65,24 +65,50 @@ void mk_callback ( T_mkAddr p_mkParam )
       /* Si aucune erreur ne s'est produite */
       if ( l_result == K_MK_OK )
       {
-         /* Si la fonction de rappel est valide */
-         if ( l_message.callback->addr != K_MK_NULL )
+         /* Détermination de la validité des instances */
+         l_localResult = mk_call_isValidHandle ( ( T_mkAddr ) &g_mkCallbackFunctionPool.callback [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTIONS,
+                                      sizeof ( T_mkCallback ), ( T_mkAddr ) l_message.callback );
+
+         /* Si l'instance est valide */
+         if ( l_localResult == K_MK_OK )
          {
-            /* Récupération de l'adresse de la fonction de rappel */
-            l_function = _mk_call_addrToCallback ( l_message.callback->addr );
+            /* Si la fonction de rappel n'a pas été détruite */
+            if ( l_message.callback->createByAddr != K_MK_INVALID_HANDLE ) 
+            {
+               /* Si la fonction de rappel est valide */
+               if ( l_message.callback->addr != K_MK_NULL )
+               {
+                  /* Récupération de l'adresse de la fonction de rappel */
+                  l_function = _mk_call_addrToCallback ( l_message.callback->addr );
 
-            /* Exécution de la fonction de rappel */
-            l_function ( l_message.arguments.param1, l_message.arguments.param2, l_message.arguments.param3,
-                         l_message.arguments.param4, l_message.arguments.param5, l_message.arguments.param6 );
+                  /* Exécution de la fonction de rappel */
+                  l_function ( l_message.arguments.param1, l_message.arguments.param2, l_message.arguments.param3,
+                              l_message.arguments.param4, l_message.arguments.param5, l_message.arguments.param6 );
 
-            /* Signalisation de l'exécution de la fonction de rappel */
-            l_result = mk_event_set ( l_message.callback->handler->event, l_message.callback->identifier );
+                  /* Signalisation de l'exécution de la fonction de rappel */
+                  l_result = mk_event_set ( l_message.callback->handler->event, l_message.callback->identifier );
+               }
+
+               /* Sinon */
+               else
+               {
+                  /* Ne rien faire */
+               }
+            }
+            
+            /* Sinon */
+            else
+            {
+               /* Déclenchement de la routine gérant les instances invalides */
+               mk_handler_handleFault ( );
+            }
          }
-
+         
          /* Sinon */
          else
          {
             /* Ne rien faire */
+            /* Le gestionnaire handleFault est appelée dans la fonction mk_call_isValidHandle */
          }
       }
 
@@ -92,10 +118,10 @@ void mk_callback ( T_mkAddr p_mkParam )
          /* Ne rien faire */
       }
 
-      /* Si aucune erreur s'est produite */
+      /* Si une erreur s'est produite */
       if ( l_result != K_MK_OK )
       {
-         /* Une erreur grave vient de se produire */
+         /* Exécution du gestionnaire d'erreur */
          mk_handler_callbackFault ( );
       }
 

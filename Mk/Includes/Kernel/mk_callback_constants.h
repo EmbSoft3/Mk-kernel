@@ -66,13 +66,13 @@
  */
 
 /**
- * @def K_MK_CALLBACK_MESSAGE_AREA_SIZE
+ * @def K_MK_CALLBACK_MESSAGES_NUMBER
  * @brief Cette constante contient le nombre de fonctions de rappel pouvant être
  *        en attente d'exécution dans la boite de messages.
  * @note Cette constante peut être modifiée par l'utilisateur.
  */
 
-#define K_MK_CALLBACK_MESSAGE_NUMBER 8
+#define K_MK_CALLBACK_MESSAGES_NUMBER 8
 
 /**
  * @def K_MK_CALLBACK_MESSAGE_AREA_SIZE
@@ -88,7 +88,7 @@
  *        de messages gérant l'exécution des fonctions de rappel.
  */
 
-#define K_MK_CALLBACK_MESSAGE_AREA_SIZE ( K_MK_CALLBACK_MESSAGE_SIZE * K_MK_CALLBACK_MESSAGE_NUMBER )
+#define K_MK_CALLBACK_MESSAGE_AREA_SIZE ( K_MK_CALLBACK_MESSAGE_SIZE * K_MK_CALLBACK_MESSAGES_NUMBER )
 
 /**
  *

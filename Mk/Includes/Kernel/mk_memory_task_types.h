@@ -138,7 +138,7 @@ struct T_mkCallbackFunctionPool
 {
    T_mkPoolArea area;                                                                           /*!< Ce membre contient les caractéristiques mémoire du gestionnaire d'allocation dynamique des fonctions de rappel. */
    T_mkPool pool;                                                                               /*!< Ce membre contient le gestionnaire mémoire utilisé pour allouer dynamiquement les fonctions de rappel. */
-   T_mkCallback callback [ K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTION ];                    /*!< Ce membre contient la mémoire dédiée aux fonctions de rappel. */
+   T_mkCallback callback [ K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTIONS ];                    /*!< Ce membre contient la mémoire dédiée aux fonctions de rappel. */
 };
 
 /**
@@ -151,7 +151,7 @@ struct T_mkCallbackHandlerPool
 {
    T_mkPoolArea area;                                                                           /*!< Ce membre contient les caractéristiques mémoire du gestionnaire d'allocation dynamique des gestionnaires de rappel. */
    T_mkPool pool;                                                                               /*!< Ce membre contient le gestionnaire mémoire utilisé pour allouer dynamiquement les gestionnaires de rappel. */
-   T_mkCallbackHandler handler [ K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLER ];               /*!< Ce membre contient la mémoire dédiée aux gestionnaires de rappels. */
+   T_mkCallbackHandler handler [ K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLERS ];               /*!< Ce membre contient la mémoire dédiée aux gestionnaires de rappels. */
 };
 
 /**

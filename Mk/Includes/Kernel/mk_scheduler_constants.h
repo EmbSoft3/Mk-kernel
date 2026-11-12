@@ -137,22 +137,22 @@
 #define K_MK_SCHEDULER_MAX_NUMBER_OF_SEMAPHORES 32
 
 /**
- * @def K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLER
+ * @def K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLERS
  * @brief Cette constante définit le nombre totale de gestionnaires de rappel pouvant être allouées.
  *        Cette constante peut être modifiée par l'utilisateur. Elle doit être différente de la
  *        valeur 0.
  */
 
-#define K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLER 32
+#define K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLERS 32
 
 /**
- * @def K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTION
+ * @def K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTIONS
  * @brief Cette constante définit le nombre totale de fonctions de rappel pouvant être allouées.
  *        Cette constante peut être modifiée par l'utilisateur. Elle doit être différente de la
  *        valeur 0.
  */
 
-#define K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTION 32
+#define K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTIONS 32
 
 /**
  * @def K_MK_SCHEDULER_PRIORITY_NUMBER

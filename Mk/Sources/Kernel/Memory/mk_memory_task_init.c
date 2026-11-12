@@ -181,7 +181,7 @@ T_mkCode mk_memory_init ( void )
       if ( l_result == K_MK_OK )
       {
          /* Initialisation des fonctions de rappel du noyau */
-         l_result = mk_memory_initPool ( &g_mkCallbackFunctionPool.area, &g_mkCallbackFunctionPool.pool, ( T_mkAddr ) &g_mkCallbackFunctionPool.callback [ 0 ], ( sizeof ( T_mkCallback ) >> 2 ), K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTION );
+         l_result = mk_memory_initPool ( &g_mkCallbackFunctionPool.area, &g_mkCallbackFunctionPool.pool, ( T_mkAddr ) &g_mkCallbackFunctionPool.callback [ 0 ], ( sizeof ( T_mkCallback ) >> 2 ), K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTIONS );
       }
 
       /* Sinon */
@@ -194,7 +194,7 @@ T_mkCode mk_memory_init ( void )
       if ( l_result == K_MK_OK )
       {
          /* Initialisation des gestionnaire de rappel du noyau */
-         l_result = mk_memory_initPool ( &g_mkCallbackHandlerPool.area, &g_mkCallbackHandlerPool.pool, ( T_mkAddr ) &g_mkCallbackHandlerPool.handler [ 0 ], ( sizeof ( T_mkCallbackHandler ) >> 2 ), K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLER );
+         l_result = mk_memory_initPool ( &g_mkCallbackHandlerPool.area, &g_mkCallbackHandlerPool.pool, ( T_mkAddr ) &g_mkCallbackHandlerPool.handler [ 0 ], ( sizeof ( T_mkCallbackHandler ) >> 2 ), K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLERS );
       }
 
       /* Sinon */

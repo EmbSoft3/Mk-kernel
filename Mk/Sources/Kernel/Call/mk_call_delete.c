@@ -587,7 +587,7 @@ void mk_call_delete ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    else if ( p_mkObject->type == K_MK_SYSCALL_DELETE_CALLBACK_HANDLER_FUNCTION )
    {
       /* Destruction du gestionnaire de rappel */
-      p_mkObject->result = mk_call_deleteCallbackHandler ( &g_mkCallbackHandlerPool.pool, ( T_mkAddr ) &g_mkCallbackHandlerPool.handler [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLER,
+      p_mkObject->result = mk_call_deleteCallbackHandler ( &g_mkCallbackHandlerPool.pool, ( T_mkAddr ) &g_mkCallbackHandlerPool.handler [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLERS,
                             sizeof ( T_mkCallbackHandler ), p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ], p_mkStatus );
 
    }
@@ -596,7 +596,7 @@ void mk_call_delete ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    else if ( p_mkObject->type == K_MK_SYSCALL_DELETE_CALLBACK_FUNCTION )
    {
       /* Destruction de la fonction de rappel */
-      p_mkObject->result = mk_call_deleteCallbackFunction ( &g_mkCallbackFunctionPool.pool, ( T_mkAddr ) &g_mkCallbackFunctionPool.callback [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTION,
+      p_mkObject->result = mk_call_deleteCallbackFunction ( &g_mkCallbackFunctionPool.pool, ( T_mkAddr ) &g_mkCallbackFunctionPool.callback [ 0 ], K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_FUNCTIONS,
                            sizeof ( T_mkCallback ), ( T_mkAddr ) p_mkObject->data [ K_MK_OFFSET_SYNC_HANDLE ], p_mkStatus );
    }
 

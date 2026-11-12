@@ -57,14 +57,14 @@ static T_mkCode mk_callback_createMail ( T_mkCallbackManager* p_mkHandler, uint3
       if ( p_mkRight == K_MK_TYPE_PRIVILEGED )
       {
          /* Initialisation d'une boite de messages protégée */
-         l_result = mk_mail_create ( &p_mkHandler->mail, K_MK_AREA_PROTECTED, &p_mkHandler->mailArea, K_MK_CALLBACK_MESSAGE_SIZE, K_MK_CALLBACK_MESSAGE_NUMBER );
+         l_result = mk_mail_create ( &p_mkHandler->mail, K_MK_AREA_PROTECTED, &p_mkHandler->mailArea, K_MK_CALLBACK_MESSAGE_SIZE, K_MK_CALLBACK_MESSAGES_NUMBER );
       }
 
       /* Sinon */
       else
       {
          /* Initialisation d'une boite de messages non protégée */
-         l_result = mk_mail_create ( &p_mkHandler->mail, K_MK_AREA_UNPROTECTED, &p_mkHandler->mailArea, K_MK_CALLBACK_MESSAGE_SIZE, K_MK_CALLBACK_MESSAGE_NUMBER );
+         l_result = mk_mail_create ( &p_mkHandler->mail, K_MK_AREA_UNPROTECTED, &p_mkHandler->mailArea, K_MK_CALLBACK_MESSAGE_SIZE, K_MK_CALLBACK_MESSAGES_NUMBER );
       }
    }
 
@@ -170,25 +170,36 @@ T_mkCode mk_callback_createManagers ( uint32_t p_mkStackType )
    /* Déclaration de la variable de retour */
    T_mkCode l_result;
 
-   /* Suppression des droits privilégiés. On ne conserve que le type (flottant, non flottant) */
-   p_mkStackType = ( uint32_t ) ( p_mkStackType & ( uint32_t ) ( ~K_MK_TYPE_PRIVILEGED ) );
-
-   /* Création du manager privilégié */
-   l_result = mk_callback_createManager ( &g_mkPrivilegedCallbackManager,
-                                          K_MK_TASK_ID_CALLBACK_PRIVILEGED, K_MK_TYPE_PRIVILEGED | p_mkStackType, p_mkStackType, K_MK_CALLBACK_PRIVILEGED_PRIORITY );
-
-   /* Si aucune erreur ne s'est produite */
-   if ( l_result == K_MK_OK )
+   /* Si l'ordonnanceur est initialisé */
+   if ( g_mkScheduler.statusRegister.initialized == 1 )
    {
-      /* Création du manager non privilégié */
-      l_result = mk_callback_createManager ( &g_mkUnPrivilegedCallbackManager,
-                                             K_MK_TASK_ID_CALLBACK_UNPRIVILEGED, K_MK_TYPE_DEFAULT | p_mkStackType, p_mkStackType, K_MK_CALLBACK_UNPRIVILEGED_PRIORITY );
+      /* Suppression des droits privilégiés. On ne conserve que le type (flottant, non flottant) */
+      p_mkStackType = ( uint32_t ) ( p_mkStackType & ( uint32_t ) ( ~K_MK_TYPE_PRIVILEGED ) );
+
+      /* Création du manager privilégié */
+      l_result = mk_callback_createManager ( &g_mkPrivilegedCallbackManager,
+                                             K_MK_TASK_ID_CALLBACK_PRIVILEGED, K_MK_TYPE_PRIVILEGED | p_mkStackType, p_mkStackType, K_MK_CALLBACK_PRIVILEGED_PRIORITY );
+
+      /* Si aucune erreur ne s'est produite */
+      if ( l_result == K_MK_OK )
+      {
+         /* Création du manager non privilégié */
+         l_result = mk_callback_createManager ( &g_mkUnPrivilegedCallbackManager,
+                                                K_MK_TASK_ID_CALLBACK_UNPRIVILEGED, K_MK_TYPE_DEFAULT | p_mkStackType, p_mkStackType, K_MK_CALLBACK_UNPRIVILEGED_PRIORITY );
+      }
+
+      /* Sinon */
+      else
+      {
+         /* Ne rien faire */
+      }
    }
 
    /* Sinon */
    else
    {
-      /* Ne rien faire */
+      /* Actualisation de la variable de retour */
+      l_result = K_MK_ERROR_INIT;
    }
 
    /* Retour */

@@ -64,7 +64,7 @@ void mk_call_createCallbackFunction ( T_mkSVCObject* p_mkObject )
 
    /* Vérification de la validité de l'instance */
    p_mkObject->result = mk_call_isValidHandle ( ( T_mkAddr ) &g_mkCallbackHandlerPool.handler [ 0 ],
-                                                K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLER, sizeof ( T_mkCallbackHandler), ( T_mkAddr ) l_handler );
+                                                K_MK_SCHEDULER_MAX_NUMBER_OF_CALLBACK_HANDLERS, sizeof ( T_mkCallbackHandler), ( T_mkAddr ) l_handler );
 
    /* Si les paramètres sont valides */
    if ( ( p_mkObject->result == K_MK_OK ) && ( l_handler->createByAddr != K_MK_INVALID_HANDLE ) && ( l_function != K_MK_NULL ) )
