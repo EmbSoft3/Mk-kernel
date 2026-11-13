@@ -42,7 +42,7 @@
  * @endinternal
  */
 
-void mk_handler_kernelFault ( T_mkSVCError p_mkCode, T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
+void mk_handler_kernelFault ( T_mkKernelError p_mkCode, T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
 {
    /* Si un gestionnaire a été référencé */
    if ( g_mkKernelCallback.kernelFault != K_MK_NULL )

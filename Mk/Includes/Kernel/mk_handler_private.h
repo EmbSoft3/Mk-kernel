@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -160,7 +160,7 @@ void mk_handler_set ( T_mkKernelCallback* p_kernelCallback );
  * @fn void mk_handler_kernelFault ( void );
  * @brief Cette fonction est déclenchée lorsqu'une erreur interne au noyau se produit.
  *
- * @param[in] p_mkCode   Ce paramètre contient le code de l'erreur rencontrée. La structure \ref T_mkSVCError liste les codes d'erreur
+ * @param[in] p_mkCode   Ce paramètre contient le code de l'erreur rencontrée. La structure \ref T_mkKernelError liste les codes d'erreur
  *                       pouvant être rencontrés.
  * @param[in] p_mkObject Ce paramètre contient les paramètres de l'appel système lorsque l'erreur a été rencontrée. L'analyse de cette
  *                       données peut aider à la compréhension de l'erreur.
@@ -170,7 +170,7 @@ void mk_handler_set ( T_mkKernelCallback* p_kernelCallback );
  *
  */
 
-void mk_handler_kernelFault ( T_mkSVCError p_mkCode, T_mkSVCObject* p_mkObject, uint32_t p_mkStatus );
+void mk_handler_kernelFault ( T_mkKernelError p_mkCode, T_mkSVCObject* p_mkObject, uint32_t p_mkStatus );
 
 /**
  *

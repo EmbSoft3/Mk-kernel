@@ -66,6 +66,23 @@ struct T_mkKernelCallback
 };
 
 /**
+ * @enum T_mkKernelError
+ * @brief Déclaration de la structure T_mkKernelError.
+ */
+
+typedef enum T_mkKernelError
+{
+   K_MK_ERROR_SYNC1 = 1,                                    /*!< Ce code indique qu'une erreur grave s'est produite. L'objet de synchronisation ne peut pas attribuer de jetons. */
+   K_MK_ERROR_SYNC2 = 2,                                    /*!< Ce code indique qu'une erreur grave s'est produite. L'objet de synchronisation ne peut pas libérer de jetons. */
+   K_MK_ERROR_SYNC3 = 4,                                    /*!< Ce code indique qu'une erreur grave s'est produite. L'objet de synchronisation ne peut pas attribuer de jetons suite à la libération précédente d'un jeton. */
+   K_MK_ERROR_SYNC4 = 8,                                    /*!< Ce code indique qu'une erreur grave s'est produite. La tâche courante ne peut pas être suspendue depuis un vecteur d'interruption. */
+   K_MK_ERROR_TERMINATE = 16,                               /*!< Ce code indique qu'une erreur grave s'est produite. La destruction de la tâche a échoué. */
+   K_MK_ERROR_ALLOC_TASK = 32,                              /*!< Ce code indique qu'une erreur grave s'est produite. La tâche à créer n'a pas réussie à être allouée dynamiquement. */
+   K_MK_ERROR_ALLOC_STACK = 64,                             /*!< Ce code indique qu'une erreur grave s'est produite. La stack de la tâche en cours de création n'a pas réussie à être allouée dynamiquement. */
+   K_MK_ERROR_PRIORITY = 128,                               /*!< Ce code indique qu'une erreur grave s'est produite. Les listes de tâches et le registre de priorité ne sont plus en adéquation. */
+} T_mkKernelError;
+
+/**
  *
  */
 
