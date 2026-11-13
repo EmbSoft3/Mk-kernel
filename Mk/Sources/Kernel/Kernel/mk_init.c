@@ -203,7 +203,7 @@ static void mk_initKernelCallback ( void )
    g_mkKernelCallback.busFault = K_MK_NULL;
    g_mkKernelCallback.handleFault = K_MK_NULL;
    g_mkKernelCallback.hardFault = K_MK_NULL;
-   g_mkKernelCallback.svcFault = K_MK_NULL;
+   g_mkKernelCallback.kernelFault = K_MK_NULL;
    g_mkKernelCallback.memFault = K_MK_NULL;
    g_mkKernelCallback.rightFault = K_MK_NULL;
    g_mkKernelCallback.stackFault = K_MK_NULL;

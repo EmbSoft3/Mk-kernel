@@ -45,10 +45,10 @@
 void mk_handler_kernelFault ( T_mkSVCError p_mkCode, T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
 {
    /* Si un gestionnaire a été référencé */
-   if ( g_mkKernelCallback.svcFault != K_MK_NULL )
+   if ( g_mkKernelCallback.kernelFault != K_MK_NULL )
    {
       /* Exécution du gestionnaire */
-      g_mkKernelCallback.svcFault ( ( T_mkAddr ) p_mkCode, ( T_mkAddr ) p_mkObject, ( T_mkAddr ) p_mkStatus );
+      g_mkKernelCallback.kernelFault ( ( T_mkAddr ) p_mkCode, ( T_mkAddr ) p_mkObject, ( T_mkAddr ) p_mkStatus );
    }
 
    /* Sinon */

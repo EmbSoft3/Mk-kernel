@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2023 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2023-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -61,7 +61,7 @@ struct T_mkKernelCallback
    T_mkKernelCallbackFunction stackFault;                               /*!< Cet attribut contient la fonction de rappel "stackFault". */
    T_mkKernelCallbackFunction rightFault;                               /*!< Cet attribut contient la fonction de rappel "rightFault". */
    T_mkKernelCallbackFunction handleFault;                              /*!< Cet attribut contient la fonction de rappel "handlerFault". */
-   T_mkKernelCallbackFunction svcFault;                                 /*!< Cet attribut contient la fonction de rappel "kernelFault". */
+   T_mkKernelCallbackFunction kernelFault;                              /*!< Cet attribut contient la fonction de rappel "kernelFault". */
    T_mkKernelCallbackFunction callbackFault;                            /*!< Cet attribut contient la fonction de rappel "callbackFault". */
 };
 
