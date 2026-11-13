@@ -275,7 +275,7 @@ void mk_main ( void )
          mk_initKernelCallback ( ) ||
 
          /* Initialisation du module de gestion des fonctions de rappel */
-         mk_callback_init ( K_MK_TYPE_FLOATING ) ||
+         mk_callback_createManagers ( K_MK_TYPE_FLOATING ) ||
 
          /* Initialisation de la tâche de repos */
          mk_createIdle ( g_mkIdleStack, K_MK_TASK_IDLE_STACK_SIZE, mk_task_idle, ( T_mkAddr ) 'I' ) ||
