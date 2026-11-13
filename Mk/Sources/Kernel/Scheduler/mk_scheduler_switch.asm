@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -91,7 +91,7 @@ _mk_scheduler_switch:
 
     /* Détermination de la valeur des taux de charge */
     PUSH { R1, LR }
-    BL _mk_scheduler_load
+    BL mk_scheduler_load
     POP { R1, LR }
 
     /* Récupération de l'adresse du scheduler */

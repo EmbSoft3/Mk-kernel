@@ -123,14 +123,14 @@ void mk_scheduler_disableSysTick ( void );
 void mk_scheduler_pend ( uint32_t p_mkStatus );
 
 /**
- * @fn void _mk_scheduler_load ( void );
+ * @fn void mk_scheduler_load ( void );
  * @brief Cette fonction effectue le calcul du taux de charge CPU de l'intégralité des tâches du noyau.
  *
  * @return Sans objet.
  *
  */
 
-void _mk_scheduler_load ( void );
+void mk_scheduler_load ( void );
 
 /**
  * @fn void mk_scheduler_wake ( void );
