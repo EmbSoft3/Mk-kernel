@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2019 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2019-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -48,6 +48,9 @@ void mk_scheduler_checkHealth ( void )
    /* Déclaration d'une variable de comptage */
    uint32_t l_counter;
 
+   /* Déclaration d'une variable d'erreur */
+   uint32_t l_fault = 0;
+
    /* Pour le nombre de liste de type ready */
    for ( l_counter = 0 ; l_counter < K_MK_SCHEDULER_PRIORITY_NUMBER ; l_counter++ )
    {
@@ -58,11 +61,7 @@ void mk_scheduler_checkHealth ( void )
            ( ( g_mkScheduler.priorityRegister & ( uint32_t ) ( 1 << l_counter ) ) == 0 ) )
       {
          /* Une erreur grave vient de se produire */
-         /* Boucle pour toujours */
-         while ( 1 )
-         {
-
-         }
+         l_fault = 1;
       }
 
       /* Sinon */
@@ -70,6 +69,19 @@ void mk_scheduler_checkHealth ( void )
       {
          /* Ne rien faire */
       }
+   }
+
+   /* Si une erreur s'est produite */
+   if ( l_fault == 1 )
+   {
+      /* Exécution du gestionnaire d'erreur */
+      mk_handler_kernelFault ( K_MK_ERROR_PRIORITY, K_MK_NULL, 0 );
+   }
+
+   /* Sinon */
+   else
+   {
+      /* Ne rien faire */
    }
 
    /* Retour */

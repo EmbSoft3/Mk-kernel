@@ -56,6 +56,7 @@ void mk_handler_handleFault ( void )
    {
       /* Ne rien faire */
    }
+   
    /* Retour */
    return;
 }

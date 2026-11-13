@@ -60,6 +60,7 @@ void mk_handler_fpuFault ( void )
 
       }
    }
+   
    /* Retour */
    return;
 }

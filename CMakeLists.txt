@@ -191,7 +191,6 @@ set(COMMON_OPTIONS
 ################################################################################
 
 set_source_files_properties(
-    Mk/Sources/Kernel/Handler/mk_handler_callbackFault.c
     Mk/Sources/Kernel/Handler/mk_handler_busFault.c
     Mk/Sources/Kernel/Handler/mk_handler_hardFault.c
     Mk/Sources/Kernel/Handler/mk_handler_memFault.c

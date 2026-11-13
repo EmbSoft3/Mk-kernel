@@ -54,11 +54,7 @@ void mk_handler_callbackFault ( void )
    /* Sinon */
    else
    {
-      /* Boucle pour toujours */
-      for ( ;; )
-      {
-
-      }
+      /* Ne rien faire */
    }
 
    /* Retour */

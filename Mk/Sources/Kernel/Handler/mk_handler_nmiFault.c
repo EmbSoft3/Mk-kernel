@@ -60,6 +60,7 @@ void mk_handler_nmiFault ( void )
 
       }
    }
+   
    /* Retour */
    return;
 }
