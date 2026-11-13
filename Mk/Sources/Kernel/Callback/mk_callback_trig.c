@@ -51,7 +51,7 @@ T_mkCode mk_callback_trig ( T_mkCallback* p_mkCallback, T_mkCallbackParam* p_mkC
    T_mkCallbackMessage l_message;
 
    /* Si les paramètres sont valides */
-   if ( ( p_mkCallback != K_MK_NULL ) && ( p_mkCallback->handler != K_MK_NULL ) )
+   if ( ( p_mkCallback != K_MK_NULL ) && ( p_mkCallback->handler != K_MK_NULL ) && ( p_mkCallbackParam != K_MK_NULL ) )
    {
       /* Configuration du message */
       l_message.callback = p_mkCallback;
