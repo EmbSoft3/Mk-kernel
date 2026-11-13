@@ -37,6 +37,7 @@
 #include "mk_kernel_api.h"
 #include "mk_id.h"
 #include "mk_main.h"
+#include "mk_fault.h"
 #include "mk_system_boot_constants.h"
 #include "mk_system_boot_data.h"
 
@@ -54,12 +55,6 @@
  /* Celui-ci doit être dans une zone protégée */
  K_MK_UNPRIVILEGED_BSS_MEMORY uint32_t l_unprivilegedStackBuf [ 512 ];
 
- /* Déclaration du buffer où sera stocké la tâche */
- /* Celui-ci doit être dans une zone protégée */
- K_MK_UNPRIVILEGED_BSS_MEMORY uint32_t l_poolBuf [ 16 ];
- K_MK_PRIVILEGED_RO_MEMORY T_mkPool* g_pool;
-
-
  /**
  * @internal
  * @brief
@@ -71,30 +66,10 @@ void mk_task_privileged ( T_mkAddr p_param )
    /* Déclaration de la variable de retour */
    T_mkCode l_result = K_MK_OK;
 
-   /* Déclaration du gestionnaire de buffer dédié à la pool */
-   T_mkPoolArea l_area;
-
-   /* Déclaration d'un pointeur mémoire */
-   uint32_t* l_memory1, *l_memory2, *l_memory3, *l_memory4;
-
-   l_result |= mk_pool_initArea ( &l_area, l_poolBuf, 16 );
-   l_result |= mk_pool_create( &l_area, &g_pool, K_MK_AREA_UNPROTECTED, 4, 4 );
-   l_result |= mk_pool_delete ( g_pool );
    /* Boucle pour toujours... */
    while ( 1 )
    {
-      l_result |= mk_pool_allocSafe ( g_pool, ( T_mkAddr* ) &l_memory1, K_MK_POOL_NO_CLEAR, 0 );
-      l_result |= mk_pool_allocSafe ( g_pool, ( T_mkAddr* ) &l_memory2, K_MK_POOL_NO_CLEAR, 0 );
-      l_result |= mk_pool_allocSafe ( g_pool, ( T_mkAddr* ) &l_memory3, K_MK_POOL_NO_CLEAR, 0 );
-      l_result |= mk_pool_allocSafe ( g_pool, ( T_mkAddr* ) &l_memory4, K_MK_POOL_NO_CLEAR, 0 );
       l_result |= mk_task_sleep ( 10 );
-      l_result |= mk_pool_freeSafe ( g_pool, l_memory1 );
-      l_result |= mk_pool_freeSafe ( g_pool, l_memory2 );
-      l_result |= mk_pool_freeSafe ( g_pool, l_memory3 );
-      l_result |= mk_pool_freeSafe ( g_pool, l_memory4 ); 
-      /*l_result |= mk_pool_allocSafe ( g_pool, ( T_mkAddr* ) &l_memory1, K_MK_POOL_NO_CLEAR, K_MK_TASK_WAIT_FOREVER );
-      l_result |= mk_task_sleep ( 10 );
-      l_result |= mk_pool_freeSafe ( g_pool, l_memory1 );*/
    }
 
    /* Suppression warning */
@@ -113,18 +88,16 @@ void mk_task_privileged ( T_mkAddr p_param )
 static void mk_task_unprivileged ( T_mkAddr p_param )
 {
    /* Déclaration de la variable de retour */
-   //T_mkCode l_result = K_MK_OK;
-   //uint32_t* l_memory1 = K_MK_NULL;
-    
-   /* Suppression warning */
-   ( void ) p_param;
+   T_mkCode l_result = K_MK_OK;
 
    /* Boucle pour toujours... */
    while ( 1 )
    {
-      /*l_result |= mk_pool_allocSafe ( g_pool, ( T_mkAddr* ) &l_memory1, K_MK_POOL_NO_CLEAR, K_MK_TASK_WAIT_FOREVER );
-      l_result |= mk_task_sleep ( 10 );*/
+      l_result |= mk_task_sleep ( 10 );
    }
+
+   /* Suppression warning */
+   ( void ) p_param;
 
    /* Retour */
    return;
@@ -216,44 +189,26 @@ static T_mkCode mk_task_initUnprivileged ( void ) {
    return ( l_result );
 }
 
-static void mk_rightFault ( T_mkAddr p_param1, T_mkAddr p_param2, T_mkAddr p_param3 )
+/**
+ * @internal
+ * @brief
+ * @endinternal
+ */
+
+T_mkCode mk_initApplication ( void )
 {
-   /* Ces 3 paramètres ont la valeur K_MK_NULL pour cette fonction */
-   ( void ) p_param1, ( void ) p_param2, ( void ) p_param3;
-   
-   /* Déclenchement d'un changement de contexte */
-   nvic_setPendingException ( K_NVIC_PENDING_MEMFAULT );
-   
-   return;
-}
+   /* Déclaration de la variable de retour */
+   T_mkCode l_result;
 
+   /* Initialisation des gestionnaire d'erreur */
+   mk_fault_initHandlers ( );
 
-
-static void mk_memFault ( T_mkAddr p_param1, T_mkAddr p_param2, T_mkAddr p_param3 )
-{
-   /* Ces 3 paramètres ont la valeur K_MK_NULL pour cette fonction */
-   ( void ) p_param1, ( void ) p_param2, ( void ) p_param3;
-   
-   /* Déclenchement d'un changement de contexte */
-   ( void ) mk_task_suspend ( g_mkScheduler.currentTask );
-   
-   return;
-}
-
-
-static T_mkCode mk_initKernelCallback ( void )
-{
-   /* Déclaration de la structure stockant les gestionnaires de rappels */
-   T_mkKernelCallback l_kernelCallbackHandler = { K_MK_NULL };
-
-   /* Configuration des fonctions de rappels */
-   l_kernelCallbackHandler.rightFault = mk_rightFault;
-   //l_kernelCallbackHandler.handleFault = mk_handleFault;
-   l_kernelCallbackHandler.memFault = mk_memFault;
-   mk_handler_set ( &l_kernelCallbackHandler );
+   /* Initialisation des tâches de l'application */
+   l_result  = mk_task_initPrivileged ( );
+   l_result |= mk_task_initUnprivileged ( );
 
    /* Retour */
-   return ( K_MK_OK );
+   return ( l_result );
 }
 
 /**
@@ -264,27 +219,19 @@ static T_mkCode mk_initKernelCallback ( void )
 
 void mk_main ( void )
 {
-
-   
    /* Si l'initialisation du système a échoué */
    if ( 
          /* Initialisation du noyau */
          mk_init ( K_MK_MODE_FLOATING, g_mkProcessStack, K_MK_PROCESS_STACK_SIZE ) ||   
 
-         /* Initialisation des gestionnaires de rappels */
-         mk_initKernelCallback ( ) ||
-
-         /* Initialisation du module de gestion des fonctions de rappel */
+         /* Création des managers de rappel */
          mk_callback_createManagers ( K_MK_TYPE_FLOATING ) ||
 
          /* Initialisation de la tâche de repos */
          mk_createIdle ( g_mkIdleStack, K_MK_TASK_IDLE_STACK_SIZE, mk_task_idle, ( T_mkAddr ) 'I' ) ||
 
-         /* Initialisation des tâches privilégiées */
-         mk_task_initPrivileged ( ) || 
-
-         /* Initialisation des tâches non privilégiées */
-         mk_task_initUnprivileged ( ) ||
+         /* Initialisation de l'application */
+         mk_initApplication ( ) || 
 
          /* Lançement du noyau avec un tick de 1ms */
          mk_start ( 27000 ) )

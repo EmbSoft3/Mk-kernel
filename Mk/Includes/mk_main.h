@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -85,13 +85,13 @@ void mk_task_privileged ( T_mkAddr p_param );
 
 /**
  * @fn T_mkCode mk_task_init ( T_mkAddr p_param );
- * @brief Cette fonction initialise les tâches de notre application.
+ * @brief Cette fonction initialise les tâches et les gestionnaire de l'application.
  * @param p_param Sans objet.
  * @return Cf. fonctions
  *
  */
 
-T_mkCode mk_task_init ( void );
+T_mkCode mk_initApplication ( void );
 
 /**
  *
