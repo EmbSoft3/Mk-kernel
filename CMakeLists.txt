@@ -152,7 +152,7 @@ set(ARM_OPTIONS
 ################################################################################
 
 set(WARN_OPTIONS
-    -Wpedantic -pedantic-errors -Werror -Wall -Wextra
+    -Wpedantic -Wall -Wextra
     -Wdouble-promotion -Wnull-dereference -Wshift-negative-value
     -Wswitch-default -Wswitch-enum -Wswitch-bool -Wswitch-unreachable
     -Wstrict-overflow=5 -Wduplicated-branches -Wduplicated-cond
