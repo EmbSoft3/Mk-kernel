@@ -89,7 +89,7 @@ static void mk_task_unprivileged ( T_mkAddr p_param )
 {
    /* Déclaration de la variable de retour */
    T_mkCode l_result = K_MK_OK;
-   uint32_t l_buf [150];
+
    /* Boucle pour toujours... */
    while ( 1 )
    {
