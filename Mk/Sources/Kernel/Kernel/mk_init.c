@@ -175,7 +175,7 @@ static void mk_initIdleTask ( void )
    g_mkScheduler.idle.load.value = 0;
 
    /* Initialisation des attributs de la tâche de repos */
-   g_mkScheduler.idle.attribute.type = K_MK_TYPE_DEFAULT;
+   g_mkScheduler.idle.attribute.type = K_MK_TYPE_PRIVILEGED;
    g_mkScheduler.idle.attribute.identifier = K_MK_TASK_ID_IDLE;
    g_mkScheduler.idle.attribute.state = K_MK_STATE_READY;
    g_mkScheduler.idle.attribute.priority = 0;
