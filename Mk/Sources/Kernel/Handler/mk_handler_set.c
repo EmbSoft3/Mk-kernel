@@ -42,11 +42,25 @@
  * @endinternal
  */
 
-void mk_handler_set ( T_mkKernelCallback* p_kernelCallback )
+T_mkCode mk_handler_set ( T_mkKernelCallback* p_kernelCallback )
 {
-   /* Mise à jour de l'adresse des fonctions de rappel du noyau */
-   _copy ( &g_mkKernelCallback, p_kernelCallback, sizeof ( T_mkKernelCallback ) );
+   /* Déclaration de la variable de retour */
+   T_mkCode l_result = K_MK_OK;
+
+   /* Si le paramètre est valide */
+   if ( p_kernelCallback != K_MK_NULL )
+   {
+      /* Mise à jour de l'adresse des fonctions de rappel du noyau */
+      _copy ( &g_mkKernelCallback, p_kernelCallback, sizeof ( T_mkKernelCallback ) );
+   }
+   
+   /* Sinon */
+   else
+   {
+      /* Actualisation de la variable de retour */
+      l_result = K_MK_ERROR_PARAM;
+   }   
 
    /* Retour */
-   return;
+   return ( l_result );
 }

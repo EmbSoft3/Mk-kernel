@@ -48,7 +48,7 @@ void mk_handler_busFault ( void )
    if ( g_mkKernelCallback.busFault != K_MK_NULL )
    {
       /* Exécution du gestionnaire */
-      g_mkKernelCallback.busFault ( K_MK_NULL, K_MK_NULL, K_MK_NULL );
+      g_mkKernelCallback.busFault ( );
    }
 
    /* Sinon */

@@ -48,7 +48,7 @@ void mk_handler_usageFault ( void )
    if ( g_mkKernelCallback.usageFault != K_MK_NULL )
    {
       /* Exécution du gestionnaire */
-      g_mkKernelCallback.usageFault ( K_MK_NULL, K_MK_NULL, K_MK_NULL );
+      g_mkKernelCallback.usageFault ( );
    }
 
    /* Sinon */

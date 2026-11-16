@@ -124,40 +124,28 @@ void mk_handler_stackFault ( void );
 void mk_handler_rightFault ( void );
 
 /**
- * @fn void mk_handler_handleFault ( void );
+ * @fn void mk_handler_handleFault ( T_mkAddr p_mkHandle );
  * @brief Cette fonction est déclenchée lorsqu'un appel système a été réalisé avec une instance invalide.
+ * @param[in] p_mkHandle Ce paramètre contient l'adresse de l'instance invalide.
+ * @return Sans objet.
+ *
+ */
+
+void mk_handler_handleFault ( T_mkAddr p_mkHandle );
+
+/**
+ * @fn void mk_handler_callbackFault ( T_mkCode p_mkResult );
+ * @brief Cette fonction est déclenchée lorsqu'une erreur interne s'est produite dans le manager de rappel.
+ * @param[in] p_mkResult Ce paramètre contient la valeur du code retour ayant provoqué l'erreur.
  *
  * @return Sans objet.
  *
  */
 
-void mk_handler_handleFault ( void );
+void mk_handler_callbackFault ( T_mkCode p_mkResult );
 
 /**
- * @fn void mk_handler_callbackFault ( void );
- * @brief Cette fonction est déclenchée lorsqu'une erreur interne s'est produite dans le gestionnaire de rappel.
- *
- * @return Sans objet.
- *
- */
-
-void mk_handler_callbackFault ( void );
-
-/**
- * @fn void mk_handler_set ( void );
- * @brief Cette fonction configure le gestionnaire de rappel du noyau. Elle copie la structure \ref T_mkKernelCallback fournie par l'utilisateur
- *        dans la structure de données \ref g_mkKernelCallback.
- *
- * @param[in] p_kernelCallback Ce paramètre contient l'adresse d'une structure de type \ref T_mkKernelCallback.
- *
- * @return Sans objet.
- *
- */
-
-void mk_handler_set ( T_mkKernelCallback* p_kernelCallback );
-
-/**
- * @fn void mk_handler_kernelFault ( void );
+ * @fn void mk_handler_kernelFault ( T_mkKernelError p_mkCode, T_mkSVCObject* p_mkObject, uint32_t p_mkStatus );
  * @brief Cette fonction est déclenchée lorsqu'une erreur interne au noyau se produit.
  *
  * @param[in] p_mkCode   Ce paramètre contient le code de l'erreur rencontrée. La structure \ref T_mkKernelError liste les codes d'erreur

@@ -48,7 +48,7 @@ void mk_handler_kernelFault ( T_mkKernelError p_mkCode, T_mkSVCObject* p_mkObjec
    if ( g_mkKernelCallback.kernelFault != K_MK_NULL )
    {
       /* Exécution du gestionnaire */
-      g_mkKernelCallback.kernelFault ( ( T_mkAddr ) p_mkCode, ( T_mkAddr ) p_mkObject, ( T_mkAddr ) p_mkStatus );
+      g_mkKernelCallback.kernelFault ( p_mkCode, p_mkObject, p_mkStatus );
    }
 
    /* Sinon */

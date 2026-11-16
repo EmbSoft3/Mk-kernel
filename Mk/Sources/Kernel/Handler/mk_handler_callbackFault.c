@@ -42,13 +42,13 @@
  * @endinternal
  */
 
-void mk_handler_callbackFault ( void )
+void mk_handler_callbackFault ( T_mkCode p_mkResult )
 {
    /* Si un gestionnaire a été référencé */
    if ( g_mkKernelCallback.callbackFault != K_MK_NULL )
    {
       /* Exécution du gestionnaire */
-      g_mkKernelCallback.callbackFault ( K_MK_NULL, K_MK_NULL, K_MK_NULL );
+      g_mkKernelCallback.callbackFault ( p_mkResult );
    }
 
    /* Sinon */

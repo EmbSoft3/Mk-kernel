@@ -40,11 +40,13 @@
 /**
  * @fn void mk_fault_initHandlers ( void );
  * @brief Cette fonction configure l'ensemble des gestionnaires d'erreurs du noyau.
- * @return Sans objet.
+ * @return Cette fonction retourne un des codes suivants:
+ *         \li \ref K_MK_OK          : les gestionnaires de rappels ont été configurés.
+ *         \li \ref K_MK_ERROR_PARAM : les gestionnaires de rappels n'ont pas été configurés car un paramètre est invalide.
  *
  */
 
-void mk_fault_initHandlers ( void );
+T_mkCode mk_fault_initHandlers ( void );
 
 /**
  *

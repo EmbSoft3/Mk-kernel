@@ -48,7 +48,7 @@ void mk_handler_nmiFault ( void )
    if ( g_mkKernelCallback.nmiFault != K_MK_NULL )
    {
       /* Exécution du gestionnaire */
-      g_mkKernelCallback.nmiFault ( K_MK_NULL, K_MK_NULL, K_MK_NULL );
+      g_mkKernelCallback.nmiFault ( );
    }
 
    /* Sinon */

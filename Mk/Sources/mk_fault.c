@@ -44,19 +44,11 @@
  * @endinternal
  */
 
- static void mk_handleDefaultFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_unused3 )
+ static void mk_handleDefaultFault ( void )
  {
-   /* Déclaration d'une variable de travail */
-   uint32_t l_right;
-   
-   /* Suppression des warnings */
-   ( void ) p_unused1, ( void ) p_unused2, ( void ) p_unused3;
-   
-   /* Récupération du niveau d'exécution */
-   l_right = _mk_scheduler_privileged ( );
-
-   /* Si l'erreur s'est produite dans un contexte non privilégié */
-   if ( l_right == K_MK_MODE_THREAD )
+   /* Si la tâche courant est une tâche non privilégiée */
+   if ( ( g_mkScheduler.currentTask != K_MK_NULL ) && 
+        ( g_mkScheduler.currentTask->attribute.type & K_MK_TYPE_PRIVILEGED ) == K_MK_TYPE_DEFAULT )
    {
       /* On Arrête la tâche qui a provoqué l'erreur */
       ( void ) mk_task_suspend ( g_mkScheduler.currentTask );
@@ -79,10 +71,10 @@
  * @endinternal
  */
 
-static void mk_busFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_unused3 )
+static void mk_busFault ( void )
 {
    /* Exécution du gestionnaire d'erreur */
-   mk_handleDefaultFault ( p_unused1, p_unused2, p_unused3 );
+   mk_handleDefaultFault ( );
    return;
 }
 
@@ -92,10 +84,10 @@ static void mk_busFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_unu
  * @endinternal
  */
 
-static void mk_memFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_unused3 )
+static void mk_memFault ( void )
 {
    /* Exécution du gestionnaire d'erreur */
-   mk_handleDefaultFault ( p_unused1, p_unused2, p_unused3 );
+   mk_handleDefaultFault ( );
    return;
 }
 
@@ -105,10 +97,10 @@ static void mk_memFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_unu
  * @endinternal
  */
 
-static void mk_fpuFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_unused3 )
+static void mk_fpuFault ( void )
 {
    /* Exécution du gestionnaire d'erreur */
-   mk_handleDefaultFault ( p_unused1, p_unused2, p_unused3 );
+   mk_handleDefaultFault ( );
    return;
 }
 
@@ -119,10 +111,10 @@ static void mk_fpuFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_unu
  * @endinternal
  */
 
-static void mk_usageFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_unused3 )
+static void mk_usageFault ( void )
 {
    /* Exécution du gestionnaire d'erreur */
-   mk_handleDefaultFault ( p_unused1, p_unused2, p_unused3 );
+   mk_handleDefaultFault ( );
    return;
 }
 
@@ -132,10 +124,10 @@ static void mk_usageFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_u
  * @endinternal
  */
 
-static void mk_hardFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_unused3 )
+static void mk_hardFault ( void )
 {
    /* Exécution du gestionnaire d'erreur */
-   mk_handleDefaultFault ( p_unused1, p_unused2, p_unused3 );
+   mk_handleDefaultFault ( );
    return;
 }
 
@@ -145,10 +137,10 @@ static void mk_hardFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_un
  * @endinternal
  */
 
-static void mk_kernelFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_unused3 )
+static void mk_kernelFault ( T_mkKernelError p_mkCode, T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
 {
    /* Suppression des warnings */
-   ( void ) p_unused1, ( void ) p_unused2, ( void ) p_unused3;
+   ( void ) p_mkCode, ( void ) p_mkObject, ( void ) p_mkStatus;
 
    /* On reset le programme */
    cortex_resetSystem ( );
@@ -161,11 +153,8 @@ static void mk_kernelFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_
  * @endinternal
  */
 
-static void mk_nmiFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_unused3 )
+static void mk_nmiFault ( void )
 {
-   /* Suppression des warnings */
-   ( void ) p_unused1, ( void ) p_unused2, ( void ) p_unused3;
-   
    /* On reset le programme */
    cortex_resetSystem ( );
    return;
@@ -177,15 +166,10 @@ static void mk_nmiFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_unu
  * @endinternal
  */
 
-static void mk_stackFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_unused3 )
+static void mk_stackFault ( void )
 {
-   /* Suppression des warnings */
-   ( void ) p_unused1, ( void ) p_unused2, ( void ) p_unused3;
-   
-   /* On reset le programme */
-   /* La MPU protège les données privilégiée, le déclenchement de cette erreur */
-   /* indique donc qu'une tâche privilégiée a débordée */
-   cortex_resetSystem ( );
+   /* Exécution du gestionnaire d'erreur */
+   mk_handleDefaultFault ( );
    return;
 }
 
@@ -195,10 +179,10 @@ static void mk_stackFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_u
  * @endinternal
  */
 
-static void mk_handleFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_unused3 )
+static void mk_handleFault ( T_mkAddr p_mkAddr )
 {
-   /* Suppression des warnings */
-   ( void ) p_unused1, ( void ) p_unused2, ( void ) p_unused3;
+   /* Suppression du warning */
+   ( void ) p_mkAddr;
    
    /* L'interruption matérielle MemManageFault sera déclenchée */
    /* après la fin du changement de contexte */
@@ -212,11 +196,8 @@ static void mk_handleFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_
  * @endinternal
  */
 
-static void mk_rightFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_unused3 )
+static void mk_rightFault ( void )
 {
-   /* Suppression des warnings */
-   ( void ) p_unused1, ( void ) p_unused2, ( void ) p_unused3;
-   
    /* L'interruption matérielle MemManageFault sera déclenchée */
    /* après la fin du changement de contexte */
    nvic_setPendingException ( K_NVIC_PENDING_MEMFAULT );
@@ -229,12 +210,13 @@ static void mk_rightFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_u
  * @endinternal
  */
 
-static void mk_callbackFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr p_unused3 )
+static void mk_callbackFault ( T_mkCode p_result )
 {
-   /* Suppression des warnings */
-   ( void ) p_unused1, ( void ) p_unused2, ( void ) p_unused3;
+   /* Suppression du warning */
+   ( void ) p_result;
 
-   /* Ne rien faire */
+   /* Exécution du gestionnaire d'erreur */
+   mk_handleDefaultFault ( );
    return;
 }
 
@@ -244,8 +226,11 @@ static void mk_callbackFault ( T_mkAddr p_unused1, T_mkAddr p_unused2, T_mkAddr 
  * @endinternal
  */
 
-void mk_fault_initHandlers ( void )
+T_mkCode mk_fault_initHandlers ( void )
 {
+   /* Déclaration de la variable de retour */
+   T_mkCode l_result;
+   
    /* Initialisation de la structure */
    T_mkKernelCallback l_kernelCallbackHandler = { K_MK_NULL };
    l_kernelCallbackHandler.busFault = mk_busFault;
@@ -261,7 +246,7 @@ void mk_fault_initHandlers ( void )
    l_kernelCallbackHandler.usageFault = mk_usageFault;
 
    /* Référencement des gestionnaires d'erreur du noyau */
-   mk_handler_set ( &l_kernelCallbackHandler );
-   return; 
+   l_result = mk_handler_set ( &l_kernelCallbackHandler );
+   return ( l_result ); 
 }
 

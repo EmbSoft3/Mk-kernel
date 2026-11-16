@@ -48,7 +48,7 @@ void mk_handler_hardFault ( void )
    if ( g_mkKernelCallback.hardFault != K_MK_NULL )
    {
       /* Exécution du gestionnaire */
-      g_mkKernelCallback.hardFault ( K_MK_NULL, K_MK_NULL, K_MK_NULL );
+      g_mkKernelCallback.hardFault ( );
    }
 
    /* Sinon */

@@ -38,36 +38,8 @@
 #define MK_HANDLER_TYPES_H
 
 /**
- * @struct T_mkKernelCallbackFunction
- * @brief Création du type T_mkKernelCallbackFunction.
- */
-
-typedef void ( *T_mkKernelCallbackFunction ) ( T_mkAddr p_param1, T_mkAddr p_param2, T_mkAddr p_param3 );
-
-/**
- * @struct T_mkKernelCallback
- * @brief Déclaration de la structure T_mkKernelCallback.
- */
-
-typedef struct T_mkKernelCallback T_mkKernelCallback;
-struct T_mkKernelCallback
-{
-   T_mkKernelCallbackFunction nmiFault;                                 /*!< Cet attribut contient la fonction de rappel "nmiFault".  */
-   T_mkKernelCallbackFunction hardFault;                                /*!< Cet attribut contient la fonction de rappel "hardFault". */
-   T_mkKernelCallbackFunction busFault;                                 /*!< Cet attribut contient la fonction de rappel "busFault". */
-   T_mkKernelCallbackFunction memFault;                                 /*!< Cet attribut contient la fonction de rappel "memFault". */
-   T_mkKernelCallbackFunction usageFault;                               /*!< Cet attribut contient la fonction de rappel "usageFault". */
-   T_mkKernelCallbackFunction fpuFault;                                 /*!< Cet attribut contient la fonction de rappel "fpuFault". */
-   T_mkKernelCallbackFunction stackFault;                               /*!< Cet attribut contient la fonction de rappel "stackFault". */
-   T_mkKernelCallbackFunction rightFault;                               /*!< Cet attribut contient la fonction de rappel "rightFault". */
-   T_mkKernelCallbackFunction handleFault;                              /*!< Cet attribut contient la fonction de rappel "handlerFault". */
-   T_mkKernelCallbackFunction kernelFault;                              /*!< Cet attribut contient la fonction de rappel "kernelFault". */
-   T_mkKernelCallbackFunction callbackFault;                            /*!< Cet attribut contient la fonction de rappel "callbackFault". */
-};
-
-/**
  * @enum T_mkKernelError
- * @brief Déclaration de la structure T_mkKernelError.
+ * @brief Déclaration de l'énumération T_mkKernelError.
  */
 
 typedef enum T_mkKernelError
@@ -81,6 +53,56 @@ typedef enum T_mkKernelError
    K_MK_ERROR_ALLOC_STACK = 64,                             /*!< Ce code indique qu'une erreur grave s'est produite. La stack de la tâche en cours de création n'a pas réussie à être allouée dynamiquement. */
    K_MK_ERROR_PRIORITY = 128,                               /*!< Ce code indique qu'une erreur grave s'est produite. Les listes de tâches et le registre de priorité ne sont plus en adéquation. */
 } T_mkKernelError;
+
+/**
+ * @typedef T_mkDefaultFaultFunction
+ * @brief Création du type T_mkDefaultFaultFunction.
+ */
+
+typedef void ( *T_mkDefaultFaultFunction ) ( void );
+
+/**
+ * @typedef T_mkKernelFaultCallback
+ * @brief Création du type T_mkKernelFaultCallback.
+ */
+
+typedef void ( *T_mkKernelFaultFunction ) ( T_mkKernelError p_mkCode, T_mkSVCObject* p_mkObject, uint32_t p_mkStatus );
+
+/**
+ * @typedef T_mkCallbackFaultFunction
+ * @brief Création du type T_mkCallbackFaultFunction.
+ */
+
+typedef void ( *T_mkCallbackFaultFunction ) ( T_mkCode p_mkCode );
+
+/**
+ * @typedef T_mkHandleFaultFunction
+ * @brief Création du type T_mkHandleFaultFunction.
+ */
+
+typedef void ( *T_mkHandleFaultFunction ) ( T_mkAddr p_mkHandle );
+
+
+/**
+ * @struct T_mkKernelCallback
+ * @brief Déclaration de la structure T_mkKernelCallback.
+ */
+
+typedef struct T_mkKernelCallback T_mkKernelCallback;
+struct T_mkKernelCallback
+{
+   T_mkDefaultFaultFunction nmiFault;                                 /*!< Cet attribut contient la fonction de rappel "nmiFault".  */
+   T_mkDefaultFaultFunction hardFault;                                /*!< Cet attribut contient la fonction de rappel "hardFault". */
+   T_mkDefaultFaultFunction busFault;                                 /*!< Cet attribut contient la fonction de rappel "busFault". */
+   T_mkDefaultFaultFunction memFault;                                 /*!< Cet attribut contient la fonction de rappel "memFault". */
+   T_mkDefaultFaultFunction usageFault;                               /*!< Cet attribut contient la fonction de rappel "usageFault". */
+   T_mkDefaultFaultFunction fpuFault;                                 /*!< Cet attribut contient la fonction de rappel "fpuFault". */
+   T_mkDefaultFaultFunction stackFault;                               /*!< Cet attribut contient la fonction de rappel "stackFault". */
+   T_mkDefaultFaultFunction rightFault;                               /*!< Cet attribut contient la fonction de rappel "rightFault". */
+   T_mkHandleFaultFunction handleFault;                               /*!< Cet attribut contient la fonction de rappel "handleFault". */
+   T_mkKernelFaultFunction kernelFault;                               /*!< Cet attribut contient la fonction de rappel "kernelFault". */
+   T_mkCallbackFaultFunction callbackFault;                           /*!< Cet attribut contient la fonction de rappel "callbackFault". */
+};
 
 /**
  *

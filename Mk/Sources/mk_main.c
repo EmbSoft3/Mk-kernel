@@ -89,7 +89,7 @@ static void mk_task_unprivileged ( T_mkAddr p_param )
 {
    /* Déclaration de la variable de retour */
    T_mkCode l_result = K_MK_OK;
-
+   uint32_t l_buf [150];
    /* Boucle pour toujours... */
    while ( 1 )
    {
@@ -201,10 +201,10 @@ T_mkCode mk_initApplication ( void )
    T_mkCode l_result;
 
    /* Initialisation des gestionnaire d'erreur */
-   mk_fault_initHandlers ( );
+   l_result = mk_fault_initHandlers ( );
 
    /* Initialisation des tâches de l'application */
-   l_result  = mk_task_initPrivileged ( );
+   l_result |= mk_task_initPrivileged ( );
    l_result |= mk_task_initUnprivileged ( );
 
    /* Retour */

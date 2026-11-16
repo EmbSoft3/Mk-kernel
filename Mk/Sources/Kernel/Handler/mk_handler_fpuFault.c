@@ -48,7 +48,7 @@ void mk_handler_fpuFault ( void )
    if ( g_mkKernelCallback.fpuFault != K_MK_NULL )
    {
       /* Exécution du gestionnaire */
-      g_mkKernelCallback.fpuFault ( K_MK_NULL, K_MK_NULL, K_MK_NULL );
+      g_mkKernelCallback.fpuFault ( );
    }
 
    /* Sinon */

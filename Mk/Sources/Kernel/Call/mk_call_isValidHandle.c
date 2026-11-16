@@ -93,7 +93,7 @@ T_mkCode mk_call_isValidHandle ( T_mkAddr p_mkAreaAddr, uint32_t p_mkHandleNumbe
    if ( l_result == K_MK_ERROR_PARAM )
    {
       /* Déclenchement de la routine gérant les paramètres invalides */
-      mk_handler_handleFault ( );
+      mk_handler_handleFault ( p_mkHandle );
    }
 
    /* Sinon */

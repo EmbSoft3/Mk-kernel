@@ -48,7 +48,7 @@ void mk_handler_stackFault ( void )
    if ( g_mkKernelCallback.stackFault != K_MK_NULL )
    {
       /* Exécution du gestionnaire */
-      g_mkKernelCallback.stackFault ( K_MK_NULL, K_MK_NULL, K_MK_NULL );
+      g_mkKernelCallback.stackFault ( );
    }
 
    /* Sinon */
