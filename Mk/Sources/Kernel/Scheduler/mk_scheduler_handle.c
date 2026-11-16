@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -109,11 +109,11 @@ void mk_scheduler_handle ( void )
    /* Si un appel système a été réalisé */
    if ( l_svc == K_MK_SVC_FILLED )
    {
-      /* Réinitialisation du drapeau d'interruption */
-      g_mkScheduler.statusRegister.isr = 0;
-
       /* Traitement de l'appel système */
       mk_scheduler_handleSVC ( l_svcObject, l_isr );
+
+      /* Réinitialisation du drapeau d'interruption */
+      g_mkScheduler.statusRegister.isr = 0;
    }
 
    /* Sinon */
