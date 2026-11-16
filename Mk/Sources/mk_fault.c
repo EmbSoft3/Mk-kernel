@@ -46,8 +46,8 @@
 
  static void mk_handleDefaultFault ( void )
  {
-   /* Si la tâche courant est une tâche non privilégiée */
-   if ( ( g_mkScheduler.currentTask != K_MK_NULL ) && 
+   /* Si la tâche courant est une tâche non privilégiée et si l'erreur ne s'est pas produite depuis un vecteur d'interruption */
+   if ( ( g_mkScheduler.currentTask != K_MK_NULL ) && ( g_mkScheduler.statusRegister.isr == 0 ) &&
         ( g_mkScheduler.currentTask->attribute.type & K_MK_TYPE_PRIVILEGED ) == K_MK_TYPE_DEFAULT )
    {
       /* On Arrête la tâche qui a provoqué l'erreur */
