@@ -288,6 +288,10 @@ static void mk_call_executeCreate ( T_mkSVCObject* p_mkObject, uint32_t p_mkStat
       l_task->tick.timeout = 0;
       l_task->tick.refTime = g_mkScheduler.tickRegister;
 
+      /* Configuration des données de charge */
+      l_task->load.value = 0;
+      l_task->load.lastValue = 0;
+
       /* Configuration des droits de la tâche */
       mk_call_checkRight ( p_mkObject, l_task, p_mkStatus );
 
