@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2018 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2018-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -352,6 +352,17 @@ void mk_call_getTaskHandle ( T_mkSVCObject* p_mkObject );
  */
 
 void mk_call_getTaskAttribute ( T_mkSVCObject* p_mkObject );
+
+/**
+ * @fn void mk_call_getTaskLoad ( T_mkSVCObject* p_mkObject );
+ * @brief Cette fonction retourne le taux de charge CPU d'une tâche.
+ *
+ * @param[in] p_mkObject Ce paramètre contient les attributs de l'appel système.
+ * @return Sans objet.
+ *
+ */
+
+void mk_call_getTaskLoad ( T_mkSVCObject* p_mkObject );
 
 /**
  * @fn void mk_call_swapList ( T_mkTask* p_mkOwner, uint32_t p_mkNewPriority );

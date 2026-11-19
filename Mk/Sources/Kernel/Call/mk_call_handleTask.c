@@ -1,6 +1,6 @@
 /**
 *
-* @copyright Copyright (C) 2020 RENARD Mathieu. All rights reserved.
+* @copyright Copyright (C) 2020-2026 RENARD Mathieu. All rights reserved.
 *
 * This file is part of Mk.
 *
@@ -63,6 +63,13 @@ void mk_call_handleTask ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    {
       /* Récupération d'un attribut d'une tâche */
       mk_call_getTaskAttribute ( p_mkObject );
+   }
+
+   /* Sinon si le taux de charge CPU d'une tâche doit être renvoyée */
+   else if ( p_mkObject->type == K_MK_SYSCALL_GET_LOAD_FUNCTION )
+   {
+      /* Récupération du taux de charge CPU de la tâche */
+      mk_call_getTaskLoad ( p_mkObject );
    }
 
    /* Sinon si un l'instance d'une tâche doit être renvoyée */

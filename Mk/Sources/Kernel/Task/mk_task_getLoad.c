@@ -42,16 +42,46 @@
  * @endinternal
  */
 
+static T_mkSVCObject* mk_task_call ( T_mkTask* p_mkTask )
+{
+   /* Déclaration d'un gestionnaire SVC */
+   T_mkSVCObject l_svc;
+
+   /* Déclaration de la variable de retour */
+   T_mkSVCObject* l_result;
+
+   /* Ecriture du type de l'appel système dans le gestionnaire SVC */
+   l_svc.type = K_MK_SYSCALL_GET_LOAD_FUNCTION;
+
+   /* Ecriture de l'adresse de la tâche dont la priorité doit être modifiée */
+   l_svc.data [ K_MK_OFFSET_TASK_HANDLE ] = ( T_mkAddr ) ( p_mkTask );
+
+   /* Référencement de l'appel système dans le gestionnaire SVC */
+   l_result = mk_svc_set ( &l_svc );
+
+   /* Déclenchement d'un appel système */
+   _mk_svc_call ( );
+
+   /* Retour */
+   return ( l_result );
+}
+
+/**
+ * @internal
+ * @brief
+ * @endinternal
+ */
+
 T_mkCode mk_task_getLoad ( T_mkTask* p_mkTask, uint32_t* p_mkTaskLoad )
 {
    /* Déclaration de la variable de retour */
    T_mkCode l_result = K_MK_OK;
 
+   /* Déclaration d'un pointeur SVC */
+   T_mkSVCObject* l_svcPnt;
+
    /* Récupération du statut d'interruption */
    uint32_t l_isr = mk_scheduler_isr ( );
-
-   /* Récupération des droits d'exécution */
-   uint32_t l_right = _mk_scheduler_privileged ( );
 
    /* Si la paramètres d'entrées sont valides */
    if ( ( p_mkTask != K_MK_NULL ) && ( p_mkTaskLoad != K_MK_NULL ) )
@@ -62,36 +92,14 @@ T_mkCode mk_task_getLoad ( T_mkTask* p_mkTask, uint32_t* p_mkTaskLoad )
       /* Si cette fonction n'est pas exécutée depuis un vecteur d'interruption */
       if ( l_isr == K_MK_ISR_NO )
       {
-         /* Si cette fonction n'est pas exécutée dans un contexte non privilégié */
-         if ( l_right != K_MK_MODE_THREAD )
-         {
-            /* Entrée en section critique */
-            /* Le contexte est obligatoirement privilégié */
-            ( void ) _mk_scheduler_mask ( K_MK_SCHEDULER_MASK_PRIORITY );
+         /* Déclenchement d'une requête SVC */
+         l_svcPnt = mk_task_call ( p_mkTask );
 
-            /* Si le taux de charge peut être calculé */
-            if ( g_mkScheduler.load.usTickRegisterLastSum != 0 )
-            {
-               /* Détermination du taux de charge CPU de la tâche */
-               *p_mkTaskLoad = ( p_mkTask->load.lastValue * 100 ) / ( g_mkScheduler.load.usTickRegisterLastSum );
-            }
+         /* Récupération du résultat */
+         *p_mkTaskLoad = ( uint32_t ) l_svcPnt->handle;
 
-            /* Sinon */
-            else
-            {
-               /* Ne rien faire */
-            }
-
-            /* Sortie de la section critique */
-            _mk_scheduler_unmask ( K_MK_SCHEDULER_IDLE_PRIORITY );
-         }
-
-         /* Sinon */
-         else
-         {
-            /* Actualisation de la variable de retour */
-            l_result = K_MK_ERROR_RIGHT;
-         }
+         /* Actualisation de la variable de retour */
+         l_result = l_svcPnt->result;
       }
 
       /* Sinon */

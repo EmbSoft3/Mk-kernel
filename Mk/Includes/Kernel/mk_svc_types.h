@@ -75,7 +75,8 @@ typedef enum T_mkSVCIdentifier
    K_MK_SYSCALL_TERMINATE_FUNCTION = 3006,                  /*!< Ce code est l'identifiant de l'appel système permettant de détruire une tâche. */
    K_MK_SYSCALL_GET_FUNCTION = 3007,                        /*!< Ce code est l'identifiant de l'appel système permettant de récupérer un attribut d'une tâche. */
    K_MK_SYSCALL_GET_HANDLE_FUNCTION = 3008,                 /*!< Ce code est l'identifiant de l'appel système permettant de récupérer l'instance d'une tâche en fonction de son identifiant. */
-   K_MK_SYSCALL_TASK_LAST_ID = 3008,                        /*!< Identifiant de fin des appels système en relation avec les tâches. */
+   K_MK_SYSCALL_GET_LOAD_FUNCTION = 3009,                   /*!< Ce code est l'identifiant de l'appel système permettant de récupérer le taux de charge CPU d'une tâche. */
+   K_MK_SYSCALL_TASK_LAST_ID = 3009,                        /*!< Identifiant de fin des appels système en relation avec les tâches. */
 
    K_MK_SYSCALL_SYNCHRO_FIRST_ID = 4000,                    /*!< Identifiant de base des appels système en relation avec la synchronisation. */
    K_MK_SYSCALL_SYNCHRO_MAILBOX_POST_FUNCTION = 4000,       /*!< Ce code est l'identifiant de l'appel système permettant de synchroniser une tâche (dédié à la fonction \ref mk_mail_post). */
