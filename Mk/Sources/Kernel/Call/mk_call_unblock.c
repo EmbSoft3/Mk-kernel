@@ -499,7 +499,7 @@ void mk_call_unblock ( T_mkSVCObject* p_mkObject, uint32_t p_mkStatus )
    }
 
    /* Sinon si l'appel système a été exécuté par la fonction mk_pool_freeSafe */
-   else if ( p_mkObject->type == K_MK_SYSCALL_UNBLOCK_POOL_DELETE_FUNCTION )
+   else if ( p_mkObject->type == K_MK_SYSCALL_UNBLOCK_POOL_FREE_FUNCTION )
    {
       /* Analyse et configuration des attributs de l'appel système */
       p_mkObject->result = mk_call_handlePool ( p_mkObject, p_mkStatus );

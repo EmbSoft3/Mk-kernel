@@ -91,7 +91,7 @@ typedef enum T_mkSVCIdentifier
    K_MK_SYSCALL_UNBLOCK_SEMAPHORE_RELEASE_FUNCTION = 5000,  /*!< Ce code est l'identifiant de l'appel système permettant de débloquer une tâche (dédié à la fonction \ref mk_semaphore_release). */
    K_MK_SYSCALL_UNBLOCK_MUTEX_RELEASE_FUNCTION = 5001,      /*!< Ce code est l'identifiant de l'appel système permettant de débloquer une tâche (dédié à la fonction \ref mk_mutex_release). */
    K_MK_SYSCALL_UNBLOCK_EVENT_SET_FUNCTION = 5002,          /*!< Ce code est l'identifiant de l'appel système permettant de débloquer une tâche (dédié à la fonction \ref mk_event_set). */
-   K_MK_SYSCALL_UNBLOCK_POOL_DELETE_FUNCTION = 5003,        /*!< Ce code est l'identifiant de l'appel système permettant de débloquer une tâche (dédié à la fonction \ref mk_pool_freeSafe). */
+   K_MK_SYSCALL_UNBLOCK_POOL_FREE_FUNCTION = 5003,          /*!< Ce code est l'identifiant de l'appel système permettant de débloquer une tâche (dédié à la fonction \ref mk_pool_freeSafe). */
    K_MK_SYSCALL_UNBLOCK_LAST_ID = 5003                      /*!< Identifiant de fin des appels système en relation avec la désynchronisation. */
 } T_mkSVCIdentifier;
 
