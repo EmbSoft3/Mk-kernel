@@ -274,7 +274,8 @@ static T_mkCode mk_call_executeUnblock ( T_mkSVCObject* p_mkObject, uint32_t p_m
    /* Sinon */
    else
    {
-      /* Ne rien faire */
+      /* Actualisation de la variable de retour */
+      l_result = K_MK_ERROR_RIGHT;
    }
 
    /* Retour */
