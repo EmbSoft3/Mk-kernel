@@ -1,14 +1,16 @@
 ﻿################################################################################
-# CMakeLists.txt — ARM Cortex-M7 bare-metal project
+# CMakeLists.txt — Noyau Mk (mk-kernel), ARM Cortex-M7 bare-metal
 #
+# Deux modes d'utilisation :
 #
-# Requirements:
-#   - arm-none-eabi-gcc in PATH (Linux/macOS)
-#     or TOOLCHAIN_PATH defined below (Windows)
-#   - CMake >= 3.25
-#   - Ninja (recommended for cross-compilation with Visual Studio)
+#  1. Sous-module de l'OS (add_subdirectory(Kernel)) :
+#     expose la cible mk_kernel (bibliothèque OBJECT). C'est l'OS qui porte
+#     le script linker, le post-build (strip, sym2srec) et l'exécutable final.
 #
-# Usage from command line:
+#  2. Autonome (noyau = projet racine) :
+#     construit en plus l'exécutable de validation MkKernel.elf.
+#
+# Usage autonome :
 #
 #   cmake -B build -G Ninja \
 #         -DCMAKE_TOOLCHAIN_FILE=CMake/arm-none-eabi-toolchain.cmake \
@@ -16,23 +18,31 @@
 #         -DCMAKE_BUILD_TYPE=Release
 #   cmake --build build
 #
-# Usage from Visual Studio (CMakeSettings.json or CMakePresets.json):
-#   See cmake/CMakePresets.json provided alongside.
+# Pourquoi une bibliothèque OBJECT et non STATIC ?
+#   Avec une archive .a, l'éditeur de liens n'extrait que les objets
+#   référencés. Avec la règle « un fichier = une fonction » et la table de
+#   symboles embarquée (sym2srec), toute fonction exportée vers les
+#   applications ELF mais jamais appelée par le noyau ou l'OS disparaîtrait
+#   de l'image, donc de la table. Une bibliothèque OBJECT lie TOUS les objets.
 ################################################################################
 
 cmake_minimum_required(VERSION 3.25)
 
-# The toolchain must be defined BEFORE project()
-# It is passed as an argument (-DCMAKE_TOOLCHAIN_FILE=...) or via a preset.
-
-project(Mk
+project(MkKernel
     LANGUAGES C ASM
     VERSION   1.0.0
-    DESCRIPTION "ARM Cortex-M7 bare-metal firmware"
+    DESCRIPTION "Noyau Mk — ARM Cortex-M7 bare-metal"
 )
+
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    set(MK_KERNEL_STANDALONE ON)
+else()
+    set(MK_KERNEL_STANDALONE OFF)
+endif()
 
 ################################################################################
 # Board
+# (si l'OS a déjà défini BOARD dans le cache, cette valeur est conservée)
 ################################################################################
 
 set(BOARD "EVAL2" CACHE STRING "Target board (EVAL2 | DISCO_REV_C)")
@@ -46,7 +56,7 @@ else()
     message(FATAL_ERROR "Unknown BOARD=${BOARD}. Use EVAL2 or DISCO_REV_C.")
 endif()
 
-message(STATUS "Board : ${BOARD}  (${BOARD_DEFINE})")
+message(STATUS "[Kernel] Board : ${BOARD}  (${BOARD_DEFINE})")
 
 ################################################################################
 # Paths
@@ -54,18 +64,12 @@ message(STATUS "Board : ${BOARD}  (${BOARD_DEFINE})")
 
 set(SOURCES_PATH  "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Sources")
 set(INCLUDES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes")
-set(LD_SCRIPT     "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Make/linker.ld")
-set(SYMBOL_BASE_ADDR "0x002C0000")
 
-# Sanity checks
 if(NOT EXISTS "${SOURCES_PATH}")
     message(FATAL_ERROR "SOURCES_PATH '${SOURCES_PATH}' introuvable.")
 endif()
 if(NOT EXISTS "${INCLUDES_PATH}")
     message(FATAL_ERROR "INCLUDES_PATH '${INCLUDES_PATH}' introuvable.")
-endif()
-if(NOT EXISTS "${LD_SCRIPT}")
-    message(FATAL_ERROR "Linker script '${LD_SCRIPT}' introuvable.")
 endif()
 
 ################################################################################
@@ -103,21 +107,19 @@ set_source_files_properties(${ASM_SOURCES} PROPERTIES
 )
 
 ################################################################################
-# Executable
+# Bibliothèque OBJECT mk_kernel
 ################################################################################
 
-add_executable(${PROJECT_NAME}
+add_library(mk_kernel OBJECT
     ${C_SOURCES}
     ${ASM_SOURCES}
 )
+add_library(Mk::Kernel ALIAS mk_kernel)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    OUTPUT_NAME          "${PROJECT_NAME}"
-    SUFFIX               ".elf"
-)
-
-target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${BOARD_DEFINE})
+# PUBLIC : l'OS (ou toute application) voit les en-têtes du noyau
+# (mk_api.h, etc.) et la définition de carte, sans les redéclarer.
+target_include_directories(mk_kernel PUBLIC ${INCLUDE_DIRS})
+target_compile_definitions(mk_kernel PUBLIC ${BOARD_DEFINE})
 
 ################################################################################
 # C dialect compilation options
@@ -188,9 +190,13 @@ set(COMMON_OPTIONS
 
 ################################################################################
 # Disable warning for specific files
+#
+# Les propriétés de fichiers source sont limitées au répertoire courant
+# (Kernel/), qui est celui où la cible mk_kernel est définie : elles
+# s'appliquent donc aussi lorsque le noyau est utilisé en sous-module.
 ################################################################################
 
-set_source_files_properties(
+set(NO_ANALYZER_LOOP_FILES
     Mk/Sources/Kernel/Handler/mk_handler_busFault.c
     Mk/Sources/Kernel/Handler/mk_handler_hardFault.c
     Mk/Sources/Kernel/Handler/mk_handler_memFault.c
@@ -212,7 +218,10 @@ set_source_files_properties(
     Mk/Sources/Mcu/stm32f746xx/Peripherals/vectors/mk_peripheral_vector_DefaultUsageFaultHandler.c
     Mk/Sources/mk_recovery.c
     Mk/Sources/mk_main.c
-    PROPERTIES
+)
+list(TRANSFORM NO_ANALYZER_LOOP_FILES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
+
+set_source_files_properties(${NO_ANALYZER_LOOP_FILES} PROPERTIES
     COMPILE_OPTIONS "-Wno-analyzer-infinite-loop"
 )
 
@@ -242,9 +251,12 @@ endif()
 
 ################################################################################
 # Apply flags to target
+#
+# PRIVATE : le noyau est compilé avec ses propres options (avertissements
+# du noyau, sans -Werror). L'OS compile ses sources avec les siennes.
 ################################################################################
 
-target_compile_options(${PROJECT_NAME} PRIVATE
+target_compile_options(mk_kernel PRIVATE
     # Options C uniquement (appliquées aux .c)
     $<$<COMPILE_LANGUAGE:C>:
         ${CDIAL_OPTIONS}
@@ -262,38 +274,52 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 )
 
 ################################################################################
-# Linker
+# Mode autonome : exécutable de validation (n'existe pas en sous-module)
 ################################################################################
 
-target_link_options(${PROJECT_NAME} PRIVATE
-    # Options de liaison
+if(MK_KERNEL_STANDALONE)
+
+    set(LD_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Make/linker.ld")
+    if(NOT EXISTS "${LD_SCRIPT}")
+        message(FATAL_ERROR "Linker script '${LD_SCRIPT}' introuvable.")
+    endif()
+
+    add_executable(MkKernel $<TARGET_OBJECTS:mk_kernel>)
+
+    set_target_properties(MkKernel PROPERTIES
+        OUTPUT_NAME "Mk"
+        SUFFIX      ".elf"
+    )
+
+    target_link_options(MkKernel PRIVATE
     -nostartfiles
     -nodefaultlibs
     -nolibc
     -nostdlib
     -no-pie
     -export-dynamic
-    # Script linker
     -T "${LD_SCRIPT}"
-    # Map file
-    -Wl,-Map=${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map
+        -Wl,-Map=${CMAKE_BINARY_DIR}/MkKernel.map
 )
 
-################################################################################
-# Utility target 'print' (size only, no rebuild)
-################################################################################
+    set(ELF_FILE "${CMAKE_BINARY_DIR}/MkKernel.elf")
 
+    # Cible utilitaire 'print' (taille seule, sans recompilation).
+    # Limitée au mode autonome : les noms de cibles sont globaux et l'OS
+    # définit déjà sa propre cible 'print'.
 add_custom_target(print
     COMMAND ${CMAKE_SIZE_TOOL} --format=berkeley --totals "${ELF_FILE}"
-    COMMENT "  SIZE  ${PROJECT_NAME}.elf"
+        COMMENT "  SIZE  Mk.elf"
 )
+
+    message(STATUS "[Kernel] Linker script: ${LD_SCRIPT}")
+endif()
 
 ################################################################################
 # Configuration summary
 ################################################################################
 
-message(STATUS "Build type   : ${CMAKE_BUILD_TYPE}")
-message(STATUS "Sources      : ${SOURCES_PATH}")
-message(STATUS "Includes     : ${INCLUDES_PATH}")
-message(STATUS "Linker script: ${LD_SCRIPT}")
-message(STATUS "sym2srec     : ${SYM2SREC}")
+message(STATUS "[Kernel] Build type   : ${CMAKE_BUILD_TYPE}")
+message(STATUS "[Kernel] Sources      : ${SOURCES_PATH}")
+message(STATUS "[Kernel] Includes     : ${INCLUDES_PATH}")
+message(STATUS "[Kernel] Standalone   : ${MK_KERNEL_STANDALONE}")
