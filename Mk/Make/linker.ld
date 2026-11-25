@@ -76,9 +76,9 @@ K_STACK_BASE_ADDR = 0x20020000 ;
 K_MK_PRIVILEGED_DMA_DATA_BASE_ADDR = 0x20021000 ;
 
 /* Définition de l'adresse de base des données priviligiées en lecture seule */
-/* Mémoire K_SRAM2 */
-/* Taille 16384 octets (0x4000) */
-K_MK_PRIVILEGED_RO_DATA_BASE_ADDR = 0x2004C000 ;
+/* Mémoire K_DTCM */
+/* Taille 32768 octets (0x8000) */
+K_MK_PRIVILEGED_RO_DATA_BASE_ADDR = 0x20008000 ;
 
 /* Définition des sections */
 SECTIONS
@@ -265,7 +265,7 @@ SECTIONS
       /* privilégiée */
       K_PRIVILEGED_RO_MEMORY_END_ADDR = .;
 
-   } > K_SRAM2  
+   } > K_DTCM_RAM  
 }
 
 
