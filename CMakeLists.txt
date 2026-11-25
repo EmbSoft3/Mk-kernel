@@ -86,6 +86,40 @@ file(GLOB_RECURSE ALL_HEADERS CONFIGURE_DEPENDS
     "${INCLUDES_PATH}/*.asm"
 )
 
+################################################################################
+# Exclude directories when used as a submodule
+################################################################################
+
+if(NOT MK_KERNEL_STANDALONE)
+
+    # Paths relative to the kernel root, one per line
+    set(EXCLUDED_DIRS
+        Mk/Sources/Mcu/stm32f746xx/System
+        Mk/Includes/Mcu/stm32f746xx/System
+    )
+
+    list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/mk_fault.h")
+    list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/mk_id.h")
+    list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/mk_main.h")
+    list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/mk.h")
+    list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/Kernel/mk_memory_private.h")
+    list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/Kernel/mk_memory_constants.h")
+
+    list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Sources/mk_fault.c")
+    list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Sources/mk_main.c")
+    list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Sources/mk_recovery.c")
+    list(REMOVE_ITEM ASM_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Sources/Kernel/Memory/mk_memory_isPrivilegedArea.asm")
+
+    foreach(_dir IN LISTS EXCLUDED_DIRS)
+        set(_abs "${CMAKE_CURRENT_SOURCE_DIR}/${_dir}")
+        list(FILTER C_SOURCES   EXCLUDE REGEX "^${_abs}/")
+        list(FILTER ASM_SOURCES EXCLUDE REGEX "^${_abs}/")
+        list(FILTER ALL_HEADERS EXCLUDE REGEX "^${_abs}/")
+        message(STATUS "[Kernel] Excluded directory: ${_dir}")
+    endforeach()
+
+endif()
+
 # Extract unique directories from header list
 set(INCLUDE_DIRS "${INCLUDES_PATH}")
 foreach(_hdr IN LISTS ALL_HEADERS)
