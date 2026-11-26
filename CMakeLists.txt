@@ -103,7 +103,6 @@ if(NOT MK_KERNEL_STANDALONE)
     list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/mk_main.h")
     list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/mk.h")
     list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/Kernel/mk_memory_private.h")
-    list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/Kernel/mk_memory_constants.h")
 
     list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Sources/mk_fault.c")
     list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Sources/mk_main.c")
