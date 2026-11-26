@@ -1,16 +1,17 @@
 ﻿################################################################################
-# CMakeLists.txt — Noyau Mk (mk-kernel), ARM Cortex-M7 bare-metal
+# CMakeLists.txt — Mk Kernel (mk-kernel), bare-metal ARM Cortex-M7
 #
-# Deux modes d'utilisation :
+# Two usage modes:
 #
-#  1. Sous-module de l'OS (add_subdirectory(Kernel)) :
-#     expose la cible mk_kernel (bibliothèque OBJECT). C'est l'OS qui porte
-#     le script linker, le post-build (strip, sym2srec) et l'exécutable final.
+#  1. OS submodule (add_subdirectory(Kernel)):
+#     exposes the mk_kernel target (OBJECT library). The OS provides
+#     the linker script, post-build steps (strip, sym2srec), and the final
+#     executable.
 #
-#  2. Autonome (noyau = projet racine) :
-#     construit en plus l'exécutable de validation MkKernel.elf.
+#  2. Standalone (kernel = root project):
+#     also builds the MkKernel.elf validation executable.
 #
-# Usage autonome :
+# Standalone usage:
 #
 #   cmake -B build -G Ninja \
 #         -DCMAKE_TOOLCHAIN_FILE=CMake/arm-none-eabi-toolchain.cmake \
@@ -18,12 +19,12 @@
 #         -DCMAKE_BUILD_TYPE=Release
 #   cmake --build build
 #
-# Pourquoi une bibliothèque OBJECT et non STATIC ?
-#   Avec une archive .a, l'éditeur de liens n'extrait que les objets
-#   référencés. Avec la règle « un fichier = une fonction » et la table de
-#   symboles embarquée (sym2srec), toute fonction exportée vers les
-#   applications ELF mais jamais appelée par le noyau ou l'OS disparaîtrait
-#   de l'image, donc de la table. Une bibliothèque OBJECT lie TOUS les objets.
+# Why an OBJECT library instead of STATIC?
+#   With a .a archive, the linker only extracts referenced object files.
+#   With the "one file = one function" rule and the embedded symbol table
+#   (sym2srec), any function exported to ELF applications but never called by
+#   the kernel or OS would disappear from the image, and therefore from the
+#   table. An OBJECT library links ALL object files.
 ################################################################################
 
 cmake_minimum_required(VERSION 3.25)
@@ -31,7 +32,7 @@ cmake_minimum_required(VERSION 3.25)
 project(MkKernel
     LANGUAGES C ASM
     VERSION   1.0.0
-    DESCRIPTION "Noyau Mk — ARM Cortex-M7 bare-metal"
+    DESCRIPTION "Mk Kernel — bare-metal ARM Cortex-M7"
 )
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
@@ -42,7 +43,7 @@ endif()
 
 ################################################################################
 # Board
-# (si l'OS a déjà défini BOARD dans le cache, cette valeur est conservée)
+# (if the OS has already set BOARD in the cache, that value is preserved)
 ################################################################################
 
 set(BOARD "EVAL2" CACHE STRING "Target board (EVAL2 | DISCO_REV_C)")
@@ -66,10 +67,10 @@ set(SOURCES_PATH  "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Sources")
 set(INCLUDES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes")
 
 if(NOT EXISTS "${SOURCES_PATH}")
-    message(FATAL_ERROR "SOURCES_PATH '${SOURCES_PATH}' introuvable.")
+    message(FATAL_ERROR "SOURCES_PATH '${SOURCES_PATH}' not found.")
 endif()
 if(NOT EXISTS "${INCLUDES_PATH}")
-    message(FATAL_ERROR "INCLUDES_PATH '${INCLUDES_PATH}' introuvable.")
+    message(FATAL_ERROR "INCLUDES_PATH '${INCLUDES_PATH}' not found.")
 endif()
 
 ################################################################################
@@ -98,11 +99,11 @@ if(NOT MK_KERNEL_STANDALONE)
         Mk/Includes/Mcu/stm32f746xx/System
     )
 
-    list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/mk_fault.h")
-    list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/mk_id.h")
-    list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/mk_main.h")
-    list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/mk.h")
-    list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/Kernel/mk_memory_private.h")
+    list(REMOVE_ITEM ALL_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/mk_fault.h")
+    list(REMOVE_ITEM ALL_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/mk_id.h")
+    list(REMOVE_ITEM ALL_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/mk_main.h")
+    list(REMOVE_ITEM ALL_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/mk.h")
+    list(REMOVE_ITEM ALL_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Includes/Kernel/mk_memory_private.h")
 
     list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Sources/mk_fault.c")
     list(REMOVE_ITEM C_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Sources/mk_main.c")
@@ -140,7 +141,7 @@ set_source_files_properties(${ASM_SOURCES} PROPERTIES
 )
 
 ################################################################################
-# Bibliothèque OBJECT mk_kernel
+# OBJECT library mk_kernel
 ################################################################################
 
 add_library(mk_kernel OBJECT
@@ -149,8 +150,8 @@ add_library(mk_kernel OBJECT
 )
 add_library(Mk::Kernel ALIAS mk_kernel)
 
-# PUBLIC : l'OS (ou toute application) voit les en-têtes du noyau
-# (mk_api.h, etc.) et la définition de carte, sans les redéclarer.
+# PUBLIC: the OS (or any application) sees the kernel headers
+# (mk_api.h, etc.) and the board definition without redeclaring them.
 target_include_directories(mk_kernel PUBLIC ${INCLUDE_DIRS})
 target_compile_definitions(mk_kernel PUBLIC ${BOARD_DEFINE})
 
@@ -224,9 +225,9 @@ set(COMMON_OPTIONS
 ################################################################################
 # Disable warning for specific files
 #
-# Les propriétés de fichiers source sont limitées au répertoire courant
-# (Kernel/), qui est celui où la cible mk_kernel est définie : elles
-# s'appliquent donc aussi lorsque le noyau est utilisé en sous-module.
+# Source file properties are scoped to the current directory
+# (Kernel/), where the mk_kernel target is defined: they therefore
+# also apply when the kernel is used as a submodule.
 ################################################################################
 
 set(NO_ANALYZER_LOOP_FILES
@@ -265,7 +266,7 @@ set_source_files_properties(${NO_ANALYZER_LOOP_FILES} PROPERTIES
 # we disable its default flags (CACHE "") and manage our own.
 ################################################################################
 
-# Suppression des drapeaux CMake par défaut pour ne pas interférer
+# Clear default CMake flags to avoid interference
 set(CMAKE_C_FLAGS_DEBUG          "" CACHE STRING "" FORCE)
 set(CMAKE_C_FLAGS_RELEASE        "" CACHE STRING "" FORCE)
 set(CMAKE_C_FLAGS_RELWITHDEBINFO "" CACHE STRING "" FORCE)
@@ -276,7 +277,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         -g3 -ggdb -fno-eliminate-unused-debug-symbols
         -O0 -fno-inline-functions -fno-short-enums -fno-move-loop-invariants
     )
-else()  # Release (défaut)
+else()  # Release (default)
     set(BUILD_OPT_OPTIONS
         -Ofast -fno-inline-functions -fno-short-enums -fno-move-loop-invariants
     )
@@ -285,12 +286,12 @@ endif()
 ################################################################################
 # Apply flags to target
 #
-# PRIVATE : le noyau est compilé avec ses propres options (avertissements
-# du noyau, sans -Werror). L'OS compile ses sources avec les siennes.
+# PRIVATE: the kernel is compiled with its own options.
+# The OS compiles its sources with its own.
 ################################################################################
 
 target_compile_options(mk_kernel PRIVATE
-    # Options C uniquement (appliquées aux .c)
+    # C-only options (applied to .c files)
     $<$<COMPILE_LANGUAGE:C>:
         ${CDIAL_OPTIONS}
         ${COMMON_OPTIONS}
@@ -298,7 +299,7 @@ target_compile_options(mk_kernel PRIVATE
         ${WARN_OPTIONS}
         -x c
     >
-    # Options ASM (les -x assembler-with-cpp sont dans set_source_files_properties)
+    # ASM options (-x assembler-with-cpp is set in set_source_files_properties)
     $<$<COMPILE_LANGUAGE:ASM>:
         ${COMMON_OPTIONS}
         ${BUILD_OPT_OPTIONS}
@@ -307,14 +308,14 @@ target_compile_options(mk_kernel PRIVATE
 )
 
 ################################################################################
-# Mode autonome : exécutable de validation (n'existe pas en sous-module)
+# Standalone mode: validation executable (not built as a submodule)
 ################################################################################
 
 if(MK_KERNEL_STANDALONE)
 
     set(LD_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/Mk/Make/linker.ld")
     if(NOT EXISTS "${LD_SCRIPT}")
-        message(FATAL_ERROR "Linker script '${LD_SCRIPT}' introuvable.")
+        message(FATAL_ERROR "Linker script '${LD_SCRIPT}' not found.")
     endif()
 
     add_executable(MkKernel $<TARGET_OBJECTS:mk_kernel>)
@@ -325,25 +326,25 @@ if(MK_KERNEL_STANDALONE)
     )
 
     target_link_options(MkKernel PRIVATE
-    -nostartfiles
-    -nodefaultlibs
-    -nolibc
-    -nostdlib
-    -no-pie
-    -export-dynamic
-    -T "${LD_SCRIPT}"
+        -nostartfiles
+        -nodefaultlibs
+        -nolibc
+        -nostdlib
+        -no-pie
+        -export-dynamic
+        -T "${LD_SCRIPT}"
         -Wl,-Map=${CMAKE_BINARY_DIR}/MkKernel.map
-)
+    )
 
     set(ELF_FILE "${CMAKE_BINARY_DIR}/MkKernel.elf")
 
-    # Cible utilitaire 'print' (taille seule, sans recompilation).
-    # Limitée au mode autonome : les noms de cibles sont globaux et l'OS
-    # définit déjà sa propre cible 'print'.
-add_custom_target(print
-    COMMAND ${CMAKE_SIZE_TOOL} --format=berkeley --totals "${ELF_FILE}"
+    # Utility target 'print' (size only, without rebuilding).
+    # Limited to standalone mode: target names are global and the OS
+    # already defines its own 'print' target.
+    add_custom_target(print
+        COMMAND ${CMAKE_SIZE_TOOL} --format=berkeley --totals "${ELF_FILE}"
         COMMENT "  SIZE  Mk.elf"
-)
+    )
 
     message(STATUS "[Kernel] Linker script: ${LD_SCRIPT}")
 endif()
