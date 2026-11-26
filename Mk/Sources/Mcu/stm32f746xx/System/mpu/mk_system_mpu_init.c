@@ -92,13 +92,27 @@ void mk_system_mpu_init ( void )
                    K_MPU_FETCH_DISABLED,
                    K_MPU_SUBREGION_DEFAULT );
 
+   /* DTCM_RAM : */
+   /* Cache L1 utilisé */
+   /* Mode priviligié : RW */
+   /* Mode non priviligié : RO */
+   /* Fetch désactivé */
+   /* Section : .mk_privileged_ro_memory */
+   mpu_setRegion ( K_MPU_REGION4, ( uint32_t ) 0x20008000, 
+                   K_MPU_REGION_SIZE_32KB,
+                   K_MPU_TYPE_NORMAL_NOT_SHAREABLE,
+                   K_MPU_RW_PRIVILEGED_ACCESS_RO_UNPRIVILEGED_ACCESS |
+                   K_MPU_TYPE_INNER_WRITEBACK_READ_WRITE_ALLOCATE |
+                   K_MPU_FETCH_DISABLED,
+                   K_MPU_SUBREGION_DEFAULT );
+
    /* SRAM1 : */
    /* Cache L1 utilisé */
    /* Mode priviligié : RW */
    /* Mode non priviligié : RW*/
    /* Fetch désactivé */
    /* Section : .mk_unprivileged_bss_memory, .mk_unprivileged_data_memory */
-   mpu_setRegion ( K_MPU_REGION4, 0x20010000,
+   mpu_setRegion ( K_MPU_REGION5, 0x20010000,
                    K_MPU_REGION_SIZE_64KB,
                    K_MPU_TYPE_NORMAL_NOT_SHAREABLE,
                    K_MPU_RW_PRIVILEGED_ACCESS_RW_UNPRIVILEGED_ACCESS |
@@ -112,24 +126,10 @@ void mk_system_mpu_init ( void )
    /* Mode non priviligié : pas d'accès */
    /* Fetch désactivé */
    /* Section : .main_stack */
-   mpu_setRegion ( K_MPU_REGION5, ( uint32_t ) 0x20020000, 
+   mpu_setRegion ( K_MPU_REGION6, ( uint32_t ) 0x20020000, 
                    K_MPU_REGION_SIZE_4KB,
                    K_MPU_TYPE_NORMAL_NOT_SHAREABLE,
                    K_MPU_RW_PRIVILEGED_ACCESS_NO_UNPRIVILEGED_ACCESS |
-                   K_MPU_TYPE_INNER_WRITEBACK_READ_WRITE_ALLOCATE |
-                   K_MPU_FETCH_DISABLED,
-                   K_MPU_SUBREGION_DEFAULT );
-
-   /* SRAM2 : */
-   /* Cache L1 utilisé */
-   /* Mode priviligié : RW */
-   /* Mode non priviligié : RO */
-   /* Fetch désactivé */
-   /* Section : .mk_privileged_ro_memory */
-   mpu_setRegion ( K_MPU_REGION6, ( uint32_t ) 0x2004C000, 
-                   K_MPU_REGION_SIZE_16KB,
-                   K_MPU_TYPE_NORMAL_NOT_SHAREABLE,
-                   K_MPU_RW_PRIVILEGED_ACCESS_RO_UNPRIVILEGED_ACCESS |
                    K_MPU_TYPE_INNER_WRITEBACK_READ_WRITE_ALLOCATE |
                    K_MPU_FETCH_DISABLED,
                    K_MPU_SUBREGION_DEFAULT );
